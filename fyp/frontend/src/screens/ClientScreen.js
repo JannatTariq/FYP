@@ -1,98 +1,134 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import BackButton from "../Components/BackButton";
 import { useNavigation } from "@react-navigation/native";
+import { Context } from "../context/authContext";
 
-
-const YourComponent = () => {
+const ClientScreen = () => {
   const navigation = useNavigation();
+  const { state, signUp, clearErrorMessage } = useContext(Context);
+
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [address, setAddress] = useState("");
-  const [location, setLocation] = useState("");
 
   const handleSignUp = () => {
     navigation.navigate("SignIn");
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1, paddingBottom:50 }}
-      keyboardShouldPersistTaps="handled"
-    >
-    
-      <View style={styles.container}>
-
-        
-        <Image source={require('../../assets/client_house.jpg')} style={styles.image} />
-        <Text style={styles.title}>Welcome Client!</Text>
-
-        <Text style={styles.subtitle}>
-          Building a house has never been easier! We hope you get your dream home.
-        </Text>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Username"
-            placeholderTextColor="#00716F"
-            style={styles.input}
-            onChangeText={(text) => setUsername(text)}
+    <View>
+      <BackButton />
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
+          <Image
+            source={require("../../assets/client_house.jpg")}
+            style={styles.image}
           />
-        </View>
+          <Text style={styles.title}>Welcome Client!</Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#00716F"
-            style={styles.input}
-            onChangeText={(text) => setEmail(text)}
-          />
-        </View>
+          <Text style={styles.subtitle}>
+            Building a house has never been easier! We hope you get your dream
+            home.
+          </Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            secureTextEntry
-            placeholder="Password"
-            placeholderTextColor="#00716F"
-            style={styles.input}
-            onChangeText={(text) => setPassword(text)}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Username"
+              value={username}
+              onChangeText={setUsername}
+              autoCorrect={false}
+              autoCapitalize="none"
+              placeholderTextColor="#00716F"
+              style={styles.input}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            secureTextEntry
-            placeholder="Confirm Password"
-            placeholderTextColor="#00716F"
-            style={styles.input}
-            onChangeText={(text) => setConfirmPassword(text)}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#00716F"
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Address"
-            placeholderTextColor="#00716F"
-            style={styles.input}
-            onChangeText={(text) => setAddress(text)}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              secureTextEntry
+              placeholder="Password"
+              placeholderTextColor="#00716F"
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              secureTextEntry
+              placeholder="Confirm Password"
+              placeholderTextColor="#00716F"
+              style={styles.input}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Address"
+              placeholderTextColor="#00716F"
+              style={styles.input}
+              value={address}
+              onChangeText={setAddress}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+          </View>
+
+          {/* <View style={styles.inputContainer}>
           <TextInput
             placeholder="Location"
             placeholderTextColor="#00716F"
             style={styles.input}
             onChangeText={(text) => setLocation(text)}
           />
-        </View>
+        </View> */}
 
-        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              signUp({ username, email, password, confirmPassword, address });
+            }}
+          >
+            <Text style={styles.buttonText}>Register</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -145,5 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default YourComponent;
-  
+export default ClientScreen;

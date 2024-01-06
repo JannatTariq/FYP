@@ -1,4 +1,5 @@
 require("../src/models/userModel");
+require("../src/models/constructorModel");
 const express = require("express");
 const bodyParser = require("body-parser");
 const requireAtuh = require("../src/middlewares/requireAuth");
