@@ -13,6 +13,9 @@ import Appointment from "./src/screens/AppointmentScreen.js";
 import ScheduleMeetingScreen from "./src/screens/ScheduleMeetingScreen.js";
 import BiddingListScreen from "./src/screens/BiddingListScreen.js";
 import BiddingPageScreen from "./src/screens/BiddingPageScreen.js";
+import BiddingScreen from "./src/screens/BiddingScreen.js";
+import UploadProposal from "./src/screens/UploadProposalScreen.js";
+import WorkerOptions from "./src/screens/WorkerOptionsScreen.js";
 import { Provider as AuthContext } from "./src/context/authContext.js";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setNavigator } from "./src/navigationRef.js";
@@ -50,6 +53,9 @@ export default function App() {
             />
             <Stack.Screen name="BiddingList" component={BiddingListScreen} />
             <Stack.Screen name="BiddingPage" component={BiddingPageScreen} />
+            <Stack.Screen name="Bidding" component={BiddingScreen} />
+            <Stack.Screen name="Proposal" component={UploadProposal} />
+            <Stack.Screen name="WorkerOption" component={WorkerOptions} />
           </Stack.Navigator>
         </NavigationContainer>
       </AuthContext>

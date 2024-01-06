@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -6,136 +6,220 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  StatusBar,
   ImageBackground,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
-
+import { Ionicons } from "@expo/vector-icons";
+import BackButton from "../Components/BackButton";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from "@react-navigation/native";
+import { Context } from "../context/authContext";
+import * as ImagePicker from "expo-image-picker";
 
-const SignUp = () => {
-  const [imageLoaded,setImageLoaded]=useState(false);
+const SignUp = ({ route }) => {
+  const { data } = route.params;
+  const { state, signUpConstructor, clearErrorMessage } = useContext(Context);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const navigation = useNavigation();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [userName, setUserName] = useState("");
+  const [role, setRole] = useState("");
+  const [firstname, setFirstName] = useState("");
+
+  const [lastname, setLastName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [document, setDocument] = useState(null); // State for document
+  const [uploadedDocument, setDocument] = useState(null); // State for document
 
   const handleSignUp = () => {
     navigation.navigate("SignIn");
   };
 
+  // const handleDocumentUpload = async () => {
+  //   try {
+  //     const result = await DocumentPicker.getDocumentAsync({
+  //       type: "application/pdf",
+  //     });
+  //     setDocument({ name: result.assets[0].name });
+  //   } catch (error) {
+  //     console.error("Error picking document:", error);
+  //   }
+  // };
   const handleDocumentUpload = async () => {
     try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== "granted") {
+        console.error("Permission denied");
+        return;
+      }
+
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/pdf",
       });
-      setDocument({ uri: result.assets[0].uri, name: result.assets[0].name });
+
+      // console.log("Document picked:", result);
+
+      if (!result.canceled) {
+        setDocument(result);
+      }
     } catch (error) {
       console.error("Error picking document:", error);
     }
   };
 
+  const handlePress = () => {
+    navigation.goBack();
+  };
+
   return (
-
     <ImageBackground
-    source={require('../../assets/workerBackgroundImage.jpg')}
-    style={styles.backgroundImage}
-    onLoad={()=>setImageLoaded(true)}
+      source={require("../../assets/workerBackgroundImage.jpg")}
+      style={styles.backgroundImage}
+      onLoad={() => setImageLoaded(true)}
     >
-    <ScrollView style={styles.scrollContainer}>
-      <View style={styles.container}>
-      
-      {!imageLoaded ? (
-          // Show loading indicator or any content while the image is loading
-          <ActivityIndicator size="large" color="#00716F" />
-        ) : (
-          <>
-        <Text style={styles.title}>Create Your Worker Account</Text>
-
-        <TextInput
-          style={[styles.input, styles.textStyling]}
-          placeholder="First Name"
-          value={firstName}
-          placeholderTextColor="#FFF"
-          onChangeText={(text) => setFirstName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          value={lastName}
-          placeholderTextColor="#FFF"
-          onChangeText={(text) => setLastName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="User Name"
-          value={userName}
-          placeholderTextColor="#FFF"
-          onChangeText={(text) => setUserName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email Address"
-          keyboardType="email-address"
-          value={email}
-          placeholderTextColor="#FFF"
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="City"
-          value={city}
-          placeholderTextColor="#FFF"
-          
-          onChangeText={(text) => setCity(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Address"
-          value={address}
-          placeholderTextColor="#FFF"
-          onChangeText={(text) => setAddress(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          placeholderTextColor="#FFF"
-          onChangeText={(text) => setPassword(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          secureTextEntry
-          value={confirmPassword}
-          placeholderTextColor="#FFF"
-          onChangeText={(text) => setConfirmPassword(text)}
-        />
-
-        <View style={styles.documentContainer}>
-          <TouchableOpacity
-            style={styles.documentButton}
-            onPress={handleDocumentUpload}
-          >
-            <Text style={styles.documentButtonText}>Choose Document</Text>
-          </TouchableOpacity>
-          {document && <Text style={styles.documentName}>{document.name}</Text>}
-        </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Sign Up</Text>
+      <BackButton />
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={handlePress} style={styles.container}>
+          <Ionicons name="arrow-back-outline" size={24} color="white" />
         </TouchableOpacity>
-        </>
-        )}
       </View>
-    </ScrollView>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.container}>
+          {!imageLoaded ? (
+            // Show loading indicator or any content while the image is loading
+            <ActivityIndicator size="large" color="#00716F" />
+          ) : (
+            <>
+              <Text style={styles.title}>Create Your {data} Account</Text>
+
+              <Text
+                style={[styles.inputRole, styles.input]}
+                placeholder="Role"
+                value={role}
+                placeholderTextColor="#FFF"
+                onChangeText={setRole}
+              >
+                {data}
+              </Text>
+              <TextInput
+                style={[styles.input, styles.textStyling]}
+                placeholder="First Name"
+                value={firstname}
+                placeholderTextColor="#FFF"
+                onChangeText={setFirstName}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Last Name"
+                value={lastname}
+                placeholderTextColor="#FFF"
+                onChangeText={setLastName}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="User Name"
+                value={username}
+                placeholderTextColor="#FFF"
+                onChangeText={setUserName}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Email Address"
+                keyboardType="email-address"
+                value={email}
+                placeholderTextColor="#FFF"
+                onChangeText={setEmail}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                secureTextEntry
+                value={password}
+                placeholderTextColor="#FFF"
+                onChangeText={setPassword}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password"
+                secureTextEntry
+                value={confirmPassword}
+                placeholderTextColor="#FFF"
+                onChangeText={setConfirmPassword}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="City"
+                value={city}
+                placeholderTextColor="#FFF"
+                onChangeText={setCity}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Address"
+                value={address}
+                placeholderTextColor="#FFF"
+                onChangeText={setAddress}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+
+              <View style={styles.documentContainer}>
+                <TouchableOpacity
+                  style={styles.documentButton}
+                  onPress={handleDocumentUpload}
+                >
+                  <Text style={styles.documentButtonText}>Choose Document</Text>
+                </TouchableOpacity>
+                {uploadedDocument && (
+                  <Text style={styles.documentName}>
+                    {uploadedDocument.name}
+                  </Text>
+                )}
+              </View>
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  signUpConstructor({
+                    firstname,
+                    lastname,
+                    username,
+                    email,
+                    password,
+                    confirmPassword,
+                    city,
+                    address,
+                    uploadedDocument,
+                  });
+                }}
+              >
+                <Text style={styles.buttonText}>Sign Up</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -144,9 +228,8 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
-  backgroundImage:{
-    flex:1,
-    
+  backgroundImage: {
+    flex: 1,
   },
   container: {
     flex: 1,
@@ -154,7 +237,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 30,
     padding: 16,
-    
   },
   title: {
     fontSize: 36,
@@ -164,10 +246,19 @@ const styles = StyleSheet.create({
     textShadowColor: "#000", // Black text shadow
     textShadowOffset: { width: 2, height: 2 }, // Adjust the shadow offset as needed
     textShadowRadius: 5, // Adjust the shadow radius as needed
-    
   },
-  textStyling:{
-    fontWeight:"bold"
+  textStyling: {
+    fontWeight: "bold",
+  },
+  navbar: {
+    height: 60,
+    top: 10,
+    left: 10,
+    padding: 10,
+    zIndex: 1,
+  },
+  inputRole: {
+    color: "white",
   },
   input: {
     flexDirection: "row",
@@ -179,10 +270,10 @@ const styles = StyleSheet.create({
     borderColor: "#00716F",
     borderRadius: 30,
     paddingVertical: 15,
-    width:"80%",
-    borderWidth:3,
+    width: "80%",
+    borderWidth: 3,
     backgroundColor: "rgba(169, 169, 169, 0.3)", // Greyish color with transparency,
-    fontWeight:"bold"
+    fontWeight: "bold",
   },
   button: {
     backgroundColor: "#00716F", // Green button
@@ -193,13 +284,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  
+
   buttonText: {
     color: "#FFF", // Green text
     fontSize: 16,
     fontWeight: "bold",
-    backgroundColor:"#00716F",
-    width:"40%"
+    backgroundColor: "#00716F",
+    width: "40%",
   },
   documentContainer: {
     flexDirection: "column",
@@ -218,7 +309,7 @@ const styles = StyleSheet.create({
   documentButtonText: {
     color: "#FFF", // Green text
     fontSize: 14,
-    fontWeight:"bold"
+    fontWeight: "bold",
   },
   documentName: {
     marginTop: 10,
