@@ -9,13 +9,19 @@ import ArchitectScreen from "./src/screens/ArchitectScreen.js";
 import ContractorScreen from "./src/screens/ContractorScreen.js";
 import InteriorDesignerScreen from "./src/screens/InteriorDesignerScreen.js";
 import TransactionScreen from "./src/screens/TransactionScreen.js";
-import Appointment from "./src/screens/AppointmentScreen.js";
+import AppointmentScreen from "./src/screens/AppointmentScreen.js";
 import ScheduleMeetingScreen from "./src/screens/ScheduleMeetingScreen.js";
 import BiddingListScreen from "./src/screens/BiddingListScreen.js";
-import BiddingPageScreen from "./src/screens/BiddingPageScreen.js";
+import BiddingSearchScreen from "./src/screens/BiddingSearchScreen.js";
 import BiddingScreen from "./src/screens/BiddingScreen.js";
 import UploadProposal from "./src/screens/UploadProposalScreen.js";
 import WorkerOptions from "./src/screens/WorkerOptionsScreen.js";
+import ProfileScreen from "./src/screens/ProfileScreen.js";
+import WorkerProfileScreen from "./src/screens/WorkerProfileSreen.js";
+import HomeScreen from "./src/screens/HomeScreen.js";
+import WorkerHomeScreen from "./src/screens/WorkerHomeScreen.js";
+import BidToProposal from "./src/screens/BidToProposal.js";
+import WPS_Client from "./src/screens/WPS_Client.js";
 import { Provider as AuthContext } from "./src/context/authContext.js";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setNavigator } from "./src/navigationRef.js";
@@ -46,16 +52,32 @@ export default function App() {
             />
             <Stack.Screen name="Contractor" component={ContractorScreen} />
             <Stack.Screen name="Transaction" component={TransactionScreen} />
-            <Stack.Screen name="Appointment" component={Appointment} />
+            <Stack.Screen name="Appointment" component={AppointmentScreen} />
             <Stack.Screen
               name="ScheduleMeeting"
               component={ScheduleMeetingScreen}
             />
-            <Stack.Screen name="BiddingList" component={BiddingListScreen} />
-            <Stack.Screen name="BiddingPage" component={BiddingPageScreen} />
+
             <Stack.Screen name="Bidding" component={BiddingScreen} />
             <Stack.Screen name="Proposal" component={UploadProposal} />
             <Stack.Screen name="WorkerOption" component={WorkerOptions} />
+
+            <Stack.Screen
+              name="BiddingSearchScreen"
+              component={BiddingSearchScreen}
+            />
+            <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+            <Stack.Screen
+              name="WorkerProfileScreen"
+              component={WorkerProfileScreen}
+            />
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen
+              name="WorkerHomeScreen"
+              component={WorkerHomeScreen}
+            />
+            <Stack.Screen name="BidToProposal" component={BidToProposal} />
+            <Stack.Screen name="WPS_Client" component={WPS_Client} />
           </Stack.Navigator>
         </NavigationContainer>
       </AuthContext>

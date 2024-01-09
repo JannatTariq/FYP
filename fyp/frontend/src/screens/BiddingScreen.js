@@ -29,13 +29,16 @@ const BiddingScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <BackButton />
-      <View style={styles.searchInputContainer}>
+      {/* <View style={styles.searchInputContainer}>
         <TextInput
           style={styles.searchInput}
           placeholder="Search properties..."
           onChangeText={handleSearch}
           value={searchText}
         />
+      </View> */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>Your Proposal</Text>
       </View>
       <View style={styles.card}>
         <Image source={{ uri: data.image }} style={styles.image} />
@@ -55,10 +58,12 @@ const BiddingScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 70,
+    paddingTop: 100,
     paddingLeft: 30,
     paddingRight: 30,
-    backgroundColor: "#004d40",
+    backgroundColor: "#f0f8ff",
+    // padding: 10,
+    marginBottom: 10,
   },
   searchInputContainer: {
     paddingHorizontal: 20,
@@ -73,9 +78,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   card: {
-    backgroundColor: "#c2eed0",
+    backgroundColor: "#d3f5e9",
     borderRadius: 10,
     shadowColor: "#000",
+    marginTop: 40,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -96,17 +102,19 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 20,
+    color: "#00716F",
     fontWeight: "bold",
     marginBottom: 5,
   },
   address: {
     fontSize: 16,
+    color: "#00716F",
     marginBottom: 5,
   },
   squareMeters: {
     fontSize: 14,
     marginBottom: 5,
-    color: "#666",
+    color: "#00716F",
   },
   cardFooter: {
     padding: 10,
@@ -117,13 +125,22 @@ const styles = StyleSheet.create({
   },
   beds: {
     fontSize: 14,
-    color: "blue",
+    color: "green",
     fontWeight: "bold",
   },
   baths: {
     fontSize: 14,
-    color: "blue",
+    color: "green",
     fontWeight: "bold",
+  },
+  headerContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#00716F",
   },
 });
 

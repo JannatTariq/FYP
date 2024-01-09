@@ -192,7 +192,7 @@ const UploadProposal = () => {
       <StatusBar barStyle="light-content" />
       <View style={styles.navbar}>
         <TouchableOpacity onPress={handlePress} style={styles.container}>
-          <Ionicons name="arrow-back-outline" size={24} color="white" />
+          <Ionicons name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#004d40",
+    backgroundColor: "#f0f8ff",
   },
   navbar: {
     height: 50,
@@ -269,16 +269,19 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH - 25,
     height: 100,
-    backgroundColor: "#c2eed0",
+    backgroundColor: "#d3f5e9",
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,
     marginTop: 30,
+    borderColor: "#00716F",
+    borderWidth: 2, // Added border width
+    borderBottomWidth: 1,
   },
   cardHeading: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "black",
+    color: "#00716F",
     marginBottom: 8,
   },
   cardTextInput: {
@@ -286,9 +289,11 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 8,
     minHeight: 50,
+
+    borderBottomWidth: 0.5,
   },
   pickImageButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#00716F",
     padding: 10,
     borderRadius: 8,
     marginVertical: 10,
@@ -299,7 +304,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   uploadButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#00716F",
     padding: 15,
     borderRadius: 8,
     marginVertical: 10,
@@ -312,7 +317,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
+    color: "#00716F",
     marginBottom: 16,
     marginTop: 20,
     textTransform: "capitalize",

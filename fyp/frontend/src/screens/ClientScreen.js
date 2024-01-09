@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -24,8 +24,66 @@ const ClientScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [address, setAddress] = useState("");
 
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [requiredFieldError, setRequiredFieldError] = useState("");
+
+  const validateRequiredFields = () => {
+    if (!username || !email || !password || !confirmPassword || !address) {
+      setRequiredFieldError("All fields are required");
+      setTimeout(() => setRequiredFieldError(""), 5000);
+      return false;
+    } else {
+      setRequiredFieldError("");
+      return true;
+    }
+  };
+
+  const validateEmail = (text) => {
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(text) || !text.endsWith("@gmail.com")) {
+      setEmailError("Must have a valid Gmail address (@gmail.com)");
+      setTimeout(() => setEmailError(""), 3000);
+    } else {
+      setEmailError("");
+    }
+
+    setEmail(text);
+  };
+
+  const validatePassword = (text) => {
+    if (text.length < 8) {
+      setPasswordError("Password must be at least 8 characters long");
+      setTimeout(() => setPasswordError(""), 3000);
+    } else {
+      setPasswordError("");
+    }
+
+    setPassword(text);
+  };
+
+  const validateConfirmPassword = (text) => {
+    if (text !== password) {
+      setConfirmPasswordError("Passwords do not match");
+      setTimeout(() => setConfirmPasswordError(""), 3000);
+    } else {
+      setConfirmPasswordError("");
+    }
+
+    setConfirmPassword(text);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      clearErrorMessage();
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [state.errorMessage]);
   const handleSignUp = () => {
-    navigation.navigate("SignIn");
+    const areRequiredFieldsValid = validateRequiredFields();
+
+    // navigation.navigate("SignIn");
   };
 
   return (
@@ -66,10 +124,14 @@ const ClientScreen = () => {
               style={styles.input}
               value={email}
               onChangeText={setEmail}
+              onBlur={() => validateEmail(email)}
               autoCorrect={false}
               autoCapitalize="none"
             />
           </View>
+          {emailError ? (
+            <Text style={styles.errorMessage}>{emailError}</Text>
+          ) : null}
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -79,10 +141,14 @@ const ClientScreen = () => {
               style={styles.input}
               value={password}
               onChangeText={setPassword}
+              onBlur={() => validatePassword(password)}
               autoCorrect={false}
               autoCapitalize="none"
             />
           </View>
+          {passwordError ? (
+            <Text style={styles.errorMessage}>{passwordError}</Text>
+          ) : null}
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -92,10 +158,14 @@ const ClientScreen = () => {
               style={styles.input}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
+              onBlur={() => validateConfirmPassword(confirmPassword)}
               autoCorrect={false}
               autoCapitalize="none"
             />
           </View>
+          {confirmPasswordError ? (
+            <Text style={styles.errorMessage}>{confirmPasswordError}</Text>
+          ) : null}
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -108,20 +178,25 @@ const ClientScreen = () => {
               autoCapitalize="none"
             />
           </View>
-
-          {/* <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Location"
-            placeholderTextColor="#00716F"
-            style={styles.input}
-            onChangeText={(text) => setLocation(text)}
-          />
-        </View> */}
-
+          {requiredFieldError ? (
+            <Text style={styles.errorMessage}>{requiredFieldError}</Text>
+          ) : null}
+          {state.errorMessage ? (
+            <Text style={styles.errorMessage}> {state.errorMessage}</Text>
+          ) : null}
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              signUp({ username, email, password, confirmPassword, address });
+              signUp(
+                {
+                  username,
+                  email,
+                  password,
+                  confirmPassword,
+                  address,
+                },
+                validateRequiredFields()
+              );
             }}
           >
             <Text style={styles.buttonText}>Register</Text>
@@ -131,7 +206,6 @@ const ClientScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -162,6 +236,7 @@ const styles = StyleSheet.create({
     borderColor: "#00716F",
     borderRadius: 30,
     paddingVertical: 15,
+    position: "relative",
   },
   input: {
     flex: 1,
@@ -178,6 +253,12 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
+  },
+  errorMessage: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 5,
+    marginLeft: 70,
   },
 });
 

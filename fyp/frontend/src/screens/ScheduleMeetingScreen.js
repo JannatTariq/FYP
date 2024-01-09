@@ -1,28 +1,3 @@
-// import React from "react";
-// import { useRoute } from "@react-navigation/native";
-// import { View, Text, StyleSheet } from "react-native";
-
-// const ScheduleMeetingScreen = ({ selectedDate, selectedTime }) => {
-//   console.log(selectedDate, selectedTime);
-//   return (
-//     <View style={styles.container}>
-//       <Text>Appointment Details</Text>
-//       <Text>Selected Date: {selectedDate?.toDateString()}</Text>
-//       <Text>Selected Time: {selectedTime?.toLocaleTimeString()}</Text>
-//       {/* <Text>Appointment ID: {appointmentId}</Text> */}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-// });
-
-// export default ScheduleMeetingScreen;
 import React from "react";
 import {
   Text,

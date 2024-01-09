@@ -115,7 +115,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: "#004d40",
+    // backgroundColor: "#004d40",
+    backgroundColor: "#f0f8ff",
   },
   list: {
     // backgroundColor: "#E6E6E6",
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     marginLeft: 20,
-    color: "black",
+    color: "#00716F",
     fontWeight: "bold",
   },
 });

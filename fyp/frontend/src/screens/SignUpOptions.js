@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#004d40",
+    backgroundColor: "#f0f8ff",
   },
   title: {
     fontSize: 25,
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     fontWeight: "bold",
     textAlign: "center",
-    color: "#FFF",
+    color: "#00716F",
   },
   cardContainer: {
     flexDirection: "column",
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     borderBottomWidth: 2,
-    borderColor: "black",
+    borderColor: "#00716F",
     alignItems: "center",
   },
   buttonImage: {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: "#333",
+    color: "#00716F",
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
