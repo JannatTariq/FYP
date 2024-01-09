@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -35,8 +35,64 @@ const SignUp = ({ route }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [uploadedDocument, setDocument] = useState(null); // State for document
 
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [requiredFieldError, setRequiredFieldError] = useState("");
+  const validateRequiredFields = () => {
+    if (!username || !email || !password || !confirmPassword || !address) {
+      setRequiredFieldError("All fields are required");
+      setTimeout(() => setRequiredFieldError(""), 5000);
+      return false;
+    } else {
+      setRequiredFieldError("");
+      return true;
+    }
+  };
+
+  const validateEmail = (text) => {
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(text) || !text.endsWith("@gmail.com")) {
+      setEmailError("Must have a valid Gmail address (@gmail.com)");
+      setTimeout(() => setEmailError(""), 3000);
+    } else {
+      setEmailError("");
+    }
+
+    setEmail(text);
+  };
+
+  const validatePassword = (text) => {
+    if (text.length < 8) {
+      setPasswordError("Password must be at least 8 characters long");
+      setTimeout(() => setPasswordError(""), 3000);
+    } else {
+      setPasswordError("");
+    }
+
+    setPassword(text);
+  };
+
+  const validateConfirmPassword = (text) => {
+    if (text !== password) {
+      setConfirmPasswordError("Passwords do not match");
+      setTimeout(() => setConfirmPasswordError(""), 3000);
+    } else {
+      setConfirmPasswordError("");
+    }
+
+    setConfirmPassword(text);
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      clearErrorMessage();
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [state.errorMessage]);
+
   const handleSignUp = () => {
-    navigation.navigate("SignIn");
+    const areRequiredFieldsValid = validateRequiredFields();
+    // navigation.navigate("SignIn");
   };
 
   // const handleDocumentUpload = async () => {
@@ -66,7 +122,7 @@ const SignUp = ({ route }) => {
       // console.log("Document picked:", result);
 
       if (!result.canceled) {
-        setDocument(result);
+        setDocument(result.assets);
       }
     } catch (error) {
       console.error("Error picking document:", error);
@@ -83,9 +139,8 @@ const SignUp = ({ route }) => {
       style={styles.backgroundImage}
       onLoad={() => setImageLoaded(true)}
     >
-      <BackButton />
       <View style={styles.navbar}>
-        <TouchableOpacity onPress={handlePress} style={styles.container}>
+        <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
           <Ionicons name="arrow-back-outline" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -103,7 +158,7 @@ const SignUp = ({ route }) => {
                 placeholder="Role"
                 value={role}
                 placeholderTextColor="#FFF"
-                onChangeText={setRole}
+                // onChangeText={() => setRole(data)}
               >
                 {data}
               </Text>
@@ -134,6 +189,7 @@ const SignUp = ({ route }) => {
                 autoCorrect={false}
                 autoCapitalize="none"
               />
+
               <TextInput
                 style={styles.input}
                 placeholder="Email Address"
@@ -141,9 +197,13 @@ const SignUp = ({ route }) => {
                 value={email}
                 placeholderTextColor="#FFF"
                 onChangeText={setEmail}
+                onBlur={() => validateEmail(email)}
                 autoCorrect={false}
                 autoCapitalize="none"
               />
+              {emailError ? (
+                <Text style={styles.errorMessage}>{emailError}</Text>
+              ) : null}
               <TextInput
                 style={styles.input}
                 placeholder="Password"
@@ -151,9 +211,13 @@ const SignUp = ({ route }) => {
                 value={password}
                 placeholderTextColor="#FFF"
                 onChangeText={setPassword}
+                onBlur={() => validatePassword(password)}
                 autoCorrect={false}
                 autoCapitalize="none"
               />
+              {passwordError ? (
+                <Text style={styles.errorMessage}>{passwordError}</Text>
+              ) : null}
               <TextInput
                 style={styles.input}
                 placeholder="Confirm Password"
@@ -161,9 +225,14 @@ const SignUp = ({ route }) => {
                 value={confirmPassword}
                 placeholderTextColor="#FFF"
                 onChangeText={setConfirmPassword}
+                onBlur={() => validateConfirmPassword(confirmPassword)}
                 autoCorrect={false}
                 autoCapitalize="none"
               />
+              {confirmPasswordError ? (
+                <Text style={styles.errorMessage}>{confirmPasswordError}</Text>
+              ) : null}
+
               <TextInput
                 style={styles.input}
                 placeholder="City"
@@ -193,25 +262,34 @@ const SignUp = ({ route }) => {
                 </TouchableOpacity>
                 {uploadedDocument && (
                   <Text style={styles.documentName}>
-                    {uploadedDocument.name}
+                    {uploadedDocument[0].name}
                   </Text>
                 )}
               </View>
-
+              {requiredFieldError ? (
+                <Text style={styles.errorMessage}>{requiredFieldError}</Text>
+              ) : null}
+              {state.errorMessage ? (
+                <Text style={styles.errorMessage}> {state.errorMessage}</Text>
+              ) : null}
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  signUpConstructor({
-                    firstname,
-                    lastname,
-                    username,
-                    email,
-                    password,
-                    confirmPassword,
-                    city,
-                    address,
-                    uploadedDocument,
-                  });
+                  signUpConstructor(
+                    {
+                      firstname,
+                      lastname,
+                      username,
+                      email,
+                      password,
+                      confirmPassword,
+                      city,
+                      address,
+                      uploadedDocument,
+                      role: data,
+                    },
+                    validateRequiredFields()
+                  );
                 }}
               >
                 <Text style={styles.buttonText}>Sign Up</Text>
@@ -250,9 +328,12 @@ const styles = StyleSheet.create({
   textStyling: {
     fontWeight: "bold",
   },
+  barContainer: {
+    flex: 1,
+  },
   navbar: {
     height: 60,
-    top: 10,
+    top: 60,
     left: 10,
     padding: 10,
     zIndex: 1,
@@ -272,6 +353,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     width: "80%",
     borderWidth: 3,
+    color: "white",
     backgroundColor: "rgba(169, 169, 169, 0.3)", // Greyish color with transparency,
     fontWeight: "bold",
   },
@@ -314,7 +396,14 @@ const styles = StyleSheet.create({
   documentName: {
     marginTop: 10,
     fontSize: 14,
-    color: "#00716F",
+    color: "white",
+    fontWeight: "bold",
+  },
+  errorMessage: {
+    color: "white",
+    fontSize: 12,
+    marginTop: 5,
+    fontWeight: "bold",
   },
 });
 

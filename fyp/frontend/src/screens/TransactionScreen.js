@@ -80,7 +80,7 @@ const TransactionScreen = () => {
     setCvc("");
     setRecipient("");
     setExpirationDate("");
-    // navigation.navigate("SignIn");
+    navigation.navigate("HomeScreen");
   };
   const handleCVC = (text) => {
     const numericValue = text.replace(/[^0-9]/g, "");
