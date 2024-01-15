@@ -49,7 +49,7 @@ const WPS_Client = () => {
     name: "Worker Name",
     email: "worker@example.com",
     location: "City, Country",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.",
+    bio: "I am passionate about turning your construction dreams into reality. Whether you're envisioning a new home, a commercial space, or a transformative renovation, I have the expertise and dedication to make it happen. Let's collaborate to build something extraordinary. ",
   };
   const handlePress = () => {
     navigation.goBack();

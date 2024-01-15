@@ -1,17 +1,33 @@
 require("../src/models/userModel");
 require("../src/models/constructorModel");
+require("./models/proposalModel");
 const express = require("express");
 const bodyParser = require("body-parser");
 const requireAtuh = require("../src/middlewares/requireAuth");
 const authRoutes = require("../src/routes/authRoute");
+const proposalRoutes = require("../src/routes/proposalRoute");
 const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary");
+const fileUpload = require("express-fileupload");
 
 app.use(bodyParser.json());
+app.use(
+  fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 },
+  })
+);
 app.use(authRoutes);
+app.use(proposalRoutes);
 //connection
 dotenv.config({ path: "src/config/config.env" });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 mongoose.connect(process.env.DB_URI);
 mongoose.connection.on("connected", () => {
