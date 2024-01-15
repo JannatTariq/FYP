@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   View,
   Text,
@@ -14,12 +14,15 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { Context as ProposalContext } from "../context/proposalContext";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width - 20;
 
 const UploadProposal = () => {
   const navigation = useNavigation();
+  const { state, uploadProposal, clearErrorMessage } =
+    useContext(ProposalContext);
   const [image, setImage] = useState(null);
   const [cardData, setCardData] = useState([
     { heading: "Address", value: "" },
@@ -60,6 +63,41 @@ const UploadProposal = () => {
     }
   };
 
+  // const handleUpload = () => {
+  //   const isEmptyField = cardData.some((item) => item.value.trim() === "");
+
+  //   if (image && !isEmptyField) {
+  //     const dataToSend = {
+  //       image,
+  //       address: cardData.find((item) => item.heading === "Address").value,
+  //       area: cardData.find((item) => item.heading === "Area").value,
+
+  //       price: cardData.find((item) => item.heading === "Expected Price").value,
+  //       bedrooms: cardData.find((item) => item.heading === "Bedrooms").value,
+  //       bathrooms: cardData.find((item) => item.heading === "Bathrooms").value,
+  //     };
+
+  //     setImage(null);
+  //     setCardData([
+  //       { heading: "Address", value: "" },
+  //       { heading: "Area", value: "" },
+  //       { heading: "Expected Price", value: "" },
+  //       { heading: "Bedrooms", value: "" },
+  //       { heading: "Bathrooms", value: "" },
+  //     ]);
+
+  //     setErrorMessage(null);
+
+  //     navigation.navigate("Bidding", { data: dataToSend });
+
+  //     console.log("Image:", image);
+  //     console.log("Card Data:", cardData);
+  //   } else {
+  //     // Show error message if any field is empty
+  //     setErrorMessage("Please fill out all fields.");
+  //   }
+  // };
+
   const handleUpload = () => {
     const isEmptyField = cardData.some((item) => item.value.trim() === "");
 
@@ -68,12 +106,22 @@ const UploadProposal = () => {
         image,
         address: cardData.find((item) => item.heading === "Address").value,
         area: cardData.find((item) => item.heading === "Area").value,
-
         price: cardData.find((item) => item.heading === "Expected Price").value,
-        bedrooms: cardData.find((item) => item.heading === "Bedrooms").value,
-        bathrooms: cardData.find((item) => item.heading === "Bathrooms").value,
+        bedroom: cardData.find((item) => item.heading === "Bedrooms").value,
+        bathroom: cardData.find((item) => item.heading === "Bathrooms").value,
       };
 
+      // Assuming uploadProposal is available in the context
+      uploadProposal({
+        image,
+        address: cardData.find((item) => item.heading === "Address").value,
+        area: cardData.find((item) => item.heading === "Area").value,
+        price: cardData.find((item) => item.heading === "Expected Price").value,
+        bedroom: cardData.find((item) => item.heading === "Bedrooms").value,
+        bathroom: cardData.find((item) => item.heading === "Bathrooms").value,
+      });
+
+      // Clearing state and error message
       setImage(null);
       setCardData([
         { heading: "Address", value: "" },
@@ -84,11 +132,6 @@ const UploadProposal = () => {
       ]);
 
       setErrorMessage(null);
-
-      navigation.navigate("Bidding", { data: dataToSend });
-
-      console.log("Image:", image);
-      console.log("Card Data:", cardData);
     } else {
       // Show error message if any field is empty
       setErrorMessage("Please fill out all fields.");

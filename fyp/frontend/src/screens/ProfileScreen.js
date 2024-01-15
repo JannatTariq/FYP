@@ -22,10 +22,10 @@ const ProfileScreen = () => {
       projectDetails: [
         {
           heading: "Description",
-          value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          value: "Project in Lahore.",
         },
         { heading: "Area", value: "200 sq. ft." },
-        { heading: "Expected Price", value: "$50,000" },
+        { heading: "Expected Price", value: "Rs.5,00,000" },
         { heading: "No. of Bedrooms", value: "3" },
         { heading: "No. of Bathrooms", value: "2" },
       ],
@@ -36,11 +36,10 @@ const ProfileScreen = () => {
       projectDetails: [
         {
           heading: "Description",
-          value:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          value: "Project in Wapda Town",
         },
         { heading: "Area", value: "150 sq. ft." },
-        { heading: "Expected Price", value: "$40,000" },
+        { heading: "Expected Price", value: "Rs.4,00,000" },
         { heading: "No. of Bedrooms", value: "2" },
         { heading: "No. of Bathrooms", value: "1" },
       ],
@@ -52,8 +51,8 @@ const ProfileScreen = () => {
     avatarUri: "https://www.bootdey.com/img/Content/avatar/avatar6.png",
     name: "Alien",
     email: "Alien@example.com",
-    location: "Los Angeles",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.",
+    location: "Cantt",
+    bio: "I am Client.",
   };
   const handlePress = () => {
     navigation.goBack();

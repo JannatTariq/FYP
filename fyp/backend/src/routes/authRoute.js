@@ -91,7 +91,9 @@ router.post("/signin", async (req, res) => {
       res.send({ token });
     }
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    res
+      .status(400)
+      .send({ error: "An error occurred during the sign-in process." });
   }
 });
 
@@ -173,7 +175,9 @@ router.post("/signup", async (req, res) => {
 
     res.send({ token });
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    res
+      .status(400)
+      .send({ error: "An error occurred during the sign-up process." });
   }
 });
 
@@ -198,7 +202,7 @@ router.get("/checkConstructor", async (req, res) => {
       res.send(false);
     }
   } catch (error) {
-    console.error("Error checking constructor:", error);
+    // console.error("Error checking constructor:", error);
     res.status(500).send({ error: "Internal Server Error" });
   }
 });

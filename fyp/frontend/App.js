@@ -22,65 +22,68 @@ import HomeScreen from "./src/screens/HomeScreen.js";
 import WorkerHomeScreen from "./src/screens/WorkerHomeScreen.js";
 import BidToProposal from "./src/screens/BidToProposal.js";
 import WPS_Client from "./src/screens/WPS_Client.js";
-import { Provider as AuthContext } from "./src/context/authContext.js";
+import { Provider as AuthProvider } from "./src/context/authContext.js";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setNavigator } from "./src/navigationRef.js";
+import { Provider as ProposalProvider } from "./src/context/proposalContext.js";
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AuthContext>
-        <NavigationContainer
-          ref={(navigator) => {
-            setNavigator(navigator);
-          }}
-        >
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="SignIn" component={SignInScreen} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen
-              name="SignUpOptions"
-              component={SignupOptionsScreen}
-            />
-            <Stack.Screen name="Client" component={ClientScreen} />
-            <Stack.Screen name="Architect" component={ArchitectScreen} />
-            <Stack.Screen
-              name="InteriorDesigner"
-              component={InteriorDesignerScreen}
-            />
-            <Stack.Screen name="Contractor" component={ContractorScreen} />
-            <Stack.Screen name="Transaction" component={TransactionScreen} />
-            <Stack.Screen name="Appointment" component={AppointmentScreen} />
-            <Stack.Screen
-              name="ScheduleMeeting"
-              component={ScheduleMeetingScreen}
-            />
+      <ProposalProvider>
+        <AuthProvider>
+          <NavigationContainer
+            ref={(navigator) => {
+              setNavigator(navigator);
+            }}
+          >
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="SignIn" component={SignInScreen} />
+              <Stack.Screen name="SignUp" component={SignUpScreen} />
+              <Stack.Screen
+                name="SignUpOptions"
+                component={SignupOptionsScreen}
+              />
+              <Stack.Screen name="Client" component={ClientScreen} />
+              <Stack.Screen name="Architect" component={ArchitectScreen} />
+              <Stack.Screen
+                name="InteriorDesigner"
+                component={InteriorDesignerScreen}
+              />
+              <Stack.Screen name="Contractor" component={ContractorScreen} />
+              <Stack.Screen name="Transaction" component={TransactionScreen} />
+              <Stack.Screen name="Appointment" component={AppointmentScreen} />
+              <Stack.Screen
+                name="ScheduleMeeting"
+                component={ScheduleMeetingScreen}
+              />
 
-            <Stack.Screen name="Bidding" component={BiddingScreen} />
-            <Stack.Screen name="Proposal" component={UploadProposal} />
-            <Stack.Screen name="WorkerOption" component={WorkerOptions} />
+              <Stack.Screen name="Bidding" component={BiddingScreen} />
+              <Stack.Screen name="Proposal" component={UploadProposal} />
+              <Stack.Screen name="WorkerOption" component={WorkerOptions} />
 
-            <Stack.Screen
-              name="BiddingSearchScreen"
-              component={BiddingSearchScreen}
-            />
-            <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-            <Stack.Screen
-              name="WorkerProfileScreen"
-              component={WorkerProfileScreen}
-            />
-            <Stack.Screen name="HomeScreen" component={HomeScreen} />
-            <Stack.Screen
-              name="WorkerHomeScreen"
-              component={WorkerHomeScreen}
-            />
-            <Stack.Screen name="BidToProposal" component={BidToProposal} />
-            <Stack.Screen name="WPS_Client" component={WPS_Client} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </AuthContext>
+              <Stack.Screen
+                name="BiddingSearchScreen"
+                component={BiddingSearchScreen}
+              />
+              <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+              <Stack.Screen
+                name="WorkerProfileScreen"
+                component={WorkerProfileScreen}
+              />
+              <Stack.Screen name="HomeScreen" component={HomeScreen} />
+              <Stack.Screen
+                name="WorkerHomeScreen"
+                component={WorkerHomeScreen}
+              />
+              <Stack.Screen name="BidToProposal" component={BidToProposal} />
+              <Stack.Screen name="WPS_Client" component={WPS_Client} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </AuthProvider>
+      </ProposalProvider>
     </SafeAreaProvider>
   );
 }
