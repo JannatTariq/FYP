@@ -1,31 +1,57 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
   Text,
   TextInput,
+  ScrollView,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import BackButton from "../Components/BackButton";
+import { Context as ProposalContext } from "../context/proposalContext";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width - 20;
 
 const BiddingScreen = ({ route }) => {
-  const { data } = route.params;
-  console.log("Image:", data.image);
-  console.log("Card Data:", data.area);
-  console.log("Card Data:", data.bedrooms);
-  console.log("Card Data:", data.bathrooms);
-  console.log("Card Data:", data.address);
-  console.log("Card Data:", data.price);
+  const { state, fetchProposals } = useContext(ProposalContext);
+  // const { data } = route.params;
+  // console.log(data);
 
+  // console.log("Image:", data.image);
+  // console.log("Card Data:", data.area);
+  // console.log("Card Data:", data.bedrooms);
+  // console.log("Card Data:", data.bathrooms);
+  // console.log("Card Data:", data.address);
+  // console.log("Card Data:", data.price);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+  const [proposals, setProposals] = useState(state.proposal);
   const [searchText, setSearchText] = useState("");
 
   const handleSearch = (text) => {
     setSearchText(text);
   };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true); // Set isLoading to true before starting to fetch new data
+      await fetchProposals();
+      setIsLoading(false); // Set isLoading to false after data is fetched
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <BackButton />
@@ -37,21 +63,46 @@ const BiddingScreen = ({ route }) => {
           value={searchText}
         />
       </View> */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Your Proposal</Text>
-      </View>
-      <View style={styles.card}>
-        <Image source={{ uri: data.image }} style={styles.image} />
-        <View style={styles.cardContent}>
-          <Text style={styles.price}>{data.price}</Text>
-          <Text style={styles.address}>{data.address}</Text>
-          <Text style={styles.squareMeters}>{data.area}</Text>
-        </View>
-        <View style={styles.cardFooter}>
-          <Text style={styles.beds}>{data.bedrooms} beds</Text>
-          <Text style={styles.baths}>{data.bathrooms} baths</Text>
-        </View>
-      </View>
+      <ScrollView>
+        {isLoading && (
+          <View style={styles.activityIndicatorContainer}>
+            <ActivityIndicator size="large" color={activityIndicatorColor} />
+          </View>
+        )}
+        {!isLoading && (
+          <View>
+            {state.proposal !== null ? (
+              Array.isArray(state.proposal) && state.proposal.length > 0 ? (
+                state.proposal.map((proposal, index) => (
+                  <View key={index} style={styles.card}>
+                    <Image
+                      source={{ uri: proposal.image }}
+                      style={styles.image}
+                    />
+                    <View style={styles.cardContent}>
+                      <Text style={styles.price}>Rs. {proposal.price}</Text>
+                      <Text style={styles.address}>{proposal.address}</Text>
+                      <Text style={styles.squareMeters}>
+                        {proposal.area} sq.ft.
+                      </Text>
+                    </View>
+                    <View style={styles.cardFooter}>
+                      <Text style={styles.beds}>{proposal.bedroom} beds</Text>
+                      <Text style={styles.baths}>
+                        {proposal.bathroom} baths
+                      </Text>
+                    </View>
+                  </View>
+                ))
+              ) : (
+                <Text>No proposals available</Text>
+              )
+            ) : (
+              <Text>Loading...</Text>
+            )}
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 };

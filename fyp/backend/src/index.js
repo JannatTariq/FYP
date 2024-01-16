@@ -10,14 +10,11 @@ const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary");
-const fileUpload = require("express-fileupload");
+// const fileUpload = require("express-fileupload");
 
 app.use(bodyParser.json());
-app.use(
-  fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 },
-  })
-);
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(fileUpload());
 app.use(authRoutes);
 app.use(proposalRoutes);
 //connection

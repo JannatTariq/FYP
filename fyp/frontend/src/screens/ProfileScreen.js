@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -12,9 +12,11 @@ import BackButton from "../Components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
+import { Context as AuthContext } from "../context/authContext";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+  const { signOut } = useContext(AuthContext);
   const userProjects = [
     {
       id: 1,
@@ -164,7 +166,7 @@ const ProfileScreen = () => {
           </View>
           <View style={styles.navbarLogOut}>
             <TouchableOpacity
-              onPress={handleLogOut}
+              onPress={signOut}
               style={styles.barContainerLogOut}
             >
               <AntDesign name="logout" size={24} color="black" />

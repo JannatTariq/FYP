@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
+const Constructor = mongoose.model("Constructor");
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
@@ -16,8 +17,16 @@ module.exports = (req, res, next) => {
     }
 
     const { userId } = payload;
-    const user = await User.findById(userId);
-    req.user = user;
-    next();
+
+    const client = await User.findById(userId);
+    const constructor = await Constructor.findById(userId);
+    if (client) {
+      req.user = client;
+      // console.log(req.user);
+      next();
+    } else {
+      req.user = constructor;
+      next();
+    }
   });
 };

@@ -225,10 +225,14 @@ const UploadProposal = () => {
   const handlePress = () => {
     navigation.goBack();
   };
-  const renderCards = () =>
-    Array.isArray(cardData)
-      ? cardData.map((item, index) => renderCard(item, index))
-      : null;
+  const renderCards = () => {
+    if (Array.isArray(cardData)) {
+      return cardData.map((item, index) => renderCard(item, index));
+    } else {
+      console.error("cardData is not an array:", cardData);
+      return null;
+    }
+  };
 
   return (
     <View style={styles.container}>

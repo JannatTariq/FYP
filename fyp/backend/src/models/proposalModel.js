@@ -1,16 +1,11 @@
 const mongoose = require("mongoose");
 
 const proposalSchema = new mongoose.Schema({
-  image: {
-    public_id: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
+  image: String,
   address: {
     type: String,
     required: true,
