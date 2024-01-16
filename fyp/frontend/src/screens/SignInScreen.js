@@ -87,8 +87,8 @@ const SignInScreen = () => {
               <TouchableOpacity
                 style={styles.signInButton}
                 onPress={() => {
-                  navigation.navigate("HomeScreen");
-                  // signIn({ email, password });
+                  // navigation.navigate("WorkerHomeScreen");
+                  signIn({ email, password });
                 }}
               >
                 <Text style={styles.signInButtonText}>Log In</Text>

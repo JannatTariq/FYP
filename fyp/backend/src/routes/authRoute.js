@@ -69,8 +69,9 @@ router.post("/signin", async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ email });
-    const constructor = await Constructor.findOne({ email });
+    const cleanedEmail = email.trim();
+    const user = await User.findOne({ email: cleanedEmail });
+    const constructor = await Constructor.findOne({ email: cleanedEmail });
     // console.log(user);
 
     if (!user && !constructor) {

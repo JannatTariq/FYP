@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,11 +12,14 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import BackButton from "../Components/BackButton";
 import { AntDesign } from "@expo/vector-icons";
+import { Context as ProposalContext } from "../context/proposalContext";
 
 const HomeScreen = () => {
   // Dummy data for worker recommendations
 
   const navigation = useNavigation();
+  const { state } = useContext(ProposalContext);
+  // console.log(state.proposal);
 
   const workerRecommendations = [
     {
@@ -111,7 +114,8 @@ const HomeScreen = () => {
     );
   };
   const handleBidding = () => {
-    navigation.navigate("BiddingSearchScreen");
+    // navigation.navigate("Bidding", { data: state.proposal });
+    navigation.navigate("Bidding");
   };
   return (
     <ScrollView style={styles.mainContainer}>

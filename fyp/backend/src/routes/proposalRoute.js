@@ -3,8 +3,19 @@ const mongoose = require("mongoose");
 const Proposal = mongoose.model("Proposal");
 const cloudinary = require("cloudinary");
 const { geocode } = require("opencage-api-client");
-const fs = require("fs").promises;
+const multer = require("multer");
+const requireAuth = require("../middlewares/requireAuth");
 
+const storage = multer.diskStorage({});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb("invalid image file!", false);
+  }
+};
+const uploads = multer({ storage, fileFilter });
 function validateAddress(response) {
   if (
     response &&
@@ -28,18 +39,18 @@ function validateAddress(response) {
 }
 
 const router = express.Router();
+router.use(requireAuth);
 
-router.post("/uploadProposal", async (req, res) => {
+router.post("/uploadProposal", uploads.single("profile"), async (req, res) => {
   try {
-    console.log(req.body);
-    const imageData = await fs.readFile(image);
-    console.log(imageData);
-
-    const result = await cloudinary.v2.uploader.upload(imageData, {
+    const userId = req.user._id;
+    // console.log(req.file, req.body);
+    const result = await cloudinary.v2.uploader.upload(req.file.path, {
       folder: "image",
       width: 250,
-      crop: "scale",
+      crop: "fill",
     });
+    // console.log(result);
 
     const { address, area, price, bedroom, bathroom } = req.body;
 
@@ -59,10 +70,8 @@ router.post("/uploadProposal", async (req, res) => {
     }
 
     const proposal = new Proposal({
-      image: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
+      userId: userId,
+      image: result.url,
       address,
       area,
       price,
@@ -71,7 +80,7 @@ router.post("/uploadProposal", async (req, res) => {
     });
 
     await proposal.save();
-
+    // console.log(proposal);
     res.status(201).json({
       success: true,
       proposal,
@@ -81,6 +90,16 @@ router.post("/uploadProposal", async (req, res) => {
       error: "An error occurred during the uploading proposal process.",
     });
   }
+});
+
+router.get("/getProposals", async (req, res) => {
+  // console.log(req.user._id);
+  const proposal = await Proposal.find({ userId: req.user._id });
+  // console.log(proposal);
+  res.status(201).json({
+    success: true,
+    proposal,
+  });
 });
 
 module.exports = router;
