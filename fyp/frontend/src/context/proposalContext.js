@@ -17,6 +17,8 @@ const proposalReducer = (state = initialState, action) => {
 
     case "fetch_proposals":
       return action.payload;
+    case "fetch_worker_proposals":
+      return { ...state, proposal: action.payload };
 
     case "clear_error_message":
       return { ...state, errorMessage: "" };
@@ -36,6 +38,15 @@ const uploadProposal =
   async ({ image, address, area, price, bedroom, bathroom }) => {
     try {
       const authToken = await AsyncStorage.getItem("token");
+
+      if (!image || !address || !area || !price || !bedroom || !bathroom) {
+        dispatch({
+          type: "add_error",
+          payload: "Please provide all required information.",
+        });
+        return;
+      }
+
       const formData = new FormData();
       formData.append("profile", {
         uri: image,
@@ -96,8 +107,29 @@ const fetchProposals = (dispatch) => async () => {
   }
 };
 
+const fetchWorkerProposals = (dispatch) => async () => {
+  try {
+    const authToken = await AsyncStorage.getItem("token");
+    const response = await api.get("/workerProposals", {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    // console.log(response);
+
+    dispatch({
+      type: "fetch_worker_proposals",
+      payload: response.data.proposals,
+    });
+  } catch (error) {
+    console.error(error);
+    dispatch({
+      type: "add_error",
+      payload: "An error occurred while fetching worker proposals.",
+    });
+  }
+};
+
 export const { Provider, Context } = createDataContext(
   proposalReducer,
-  { uploadProposal, clearErrorMessage, fetchProposals },
+  { uploadProposal, clearErrorMessage, fetchProposals, fetchWorkerProposals },
   []
 );

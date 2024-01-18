@@ -208,4 +208,41 @@ router.get("/checkConstructor", async (req, res) => {
   }
 });
 
+router.get("/getWorkers", async (req, res) => {
+  try {
+    const workers = await Constructor.find();
+    // console.log(workers);
+
+    const separatedWorkers = {
+      contractor: [],
+      architect: [],
+      interior_designer: [],
+      blacksmith: [],
+      electrician: [],
+      plumber: [],
+    };
+
+    workers.forEach((worker) => {
+      if (worker.role === "Contractor") {
+        separatedWorkers.contractor.push(worker);
+      } else if (worker.role === "Architect") {
+        separatedWorkers.architect.push(worker);
+      } else if (worker.role === "Interior Designer") {
+        separatedWorkers.interior_designer.push(worker);
+      } else if (worker.role === "BlackSmith") {
+        separatedWorkers.blacksmith.push(worker);
+      } else if (worker.role === "Electrician") {
+        separatedWorkers.electrician.push(worker);
+      } else if (worker.role === "Plumber") {
+        separatedWorkers.plumber.push(worker);
+      }
+    });
+
+    res.json(separatedWorkers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

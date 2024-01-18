@@ -16,6 +16,8 @@ const authReducer = (state, action) => {
       return { ...state, errorMessage: "" };
     case "signout":
       return { token: null, errorMessage: "" };
+    case "fetch_workers":
+      return { ...state, worker: action.payload };
     default:
       return state;
   }
@@ -214,8 +216,32 @@ const signOut = (dispatch) => async () => {
   }
 };
 
+const fetchWorkers = (dispatch) => async () => {
+  try {
+    const response = await api.get("/getWorkers");
+    // console.log(response.data);
+
+    dispatch({
+      type: "fetch_workers",
+      payload: response.data,
+    });
+  } catch (error) {
+    console.error(error);
+    dispatch({
+      type: "add_error",
+      payload: "An error occurred while fetching worker proposals.",
+    });
+  }
+};
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signIn, clearErrorMessage, signUp, signUpConstructor, signOut },
+  {
+    signIn,
+    clearErrorMessage,
+    signUp,
+    signUpConstructor,
+    signOut,
+    fetchWorkers,
+  },
   { token: null, errorMessage: "" }
 );

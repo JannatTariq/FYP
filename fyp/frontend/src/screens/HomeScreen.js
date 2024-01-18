@@ -12,6 +12,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import BackButton from "../Components/BackButton";
 import { AntDesign } from "@expo/vector-icons";
+import { Context as AuthContext } from "../context/authContext";
 import { Context as ProposalContext } from "../context/proposalContext";
 
 const HomeScreen = () => {
@@ -19,6 +20,9 @@ const HomeScreen = () => {
 
   const navigation = useNavigation();
   const { state } = useContext(ProposalContext);
+  const { state: workerState, fetchWorkers } = useContext(AuthContext);
+  // console.log(workerState.worker);
+
   // console.log(state.proposal);
 
   const workerRecommendations = [
@@ -80,42 +84,74 @@ const HomeScreen = () => {
     workerRecommendations
   );
   const [currentTip, setCurrentTip] = useState(tipsoftheWeek[0]);
+  // console.log(recommendations, currentTip);
+  // const [recommendations, setRecommeßndations] = useState([]);
+  // const [currentTip, setCurrentTip] = useState(tipsoftheWeek[0]);
+  // useEffect(() => {
+  //   setRecommeßndations(workerRecommendations);
+  // }, []);
+
+  useEffect(() => {
+    fetchWorkers();
+  }, []);
 
   const handleRecommendationPress = (item) => {
     navigation.navigate("WPS_Client", { worker: item });
     // Implement navigation or other actions based on the selected worker
   };
 
-  const renderWorkerList = (titleFilter) => {
-    const filteredWorkers = recommendations.filter((worker) =>
-      worker.title.includes(titleFilter)
-    );
-
-    return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ flexDirection: "row" }}
-      >
-        {filteredWorkers.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.recommendationCard}
-            onPress={() => handleRecommendationPress(item)}
-          >
-            <Image source={item.image} style={styles.recommendationImage} />
-            <Text style={styles.recommendationTitle}>{item.title}</Text>
-            <Text style={styles.recommendationDescription}>
-              {item.description}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    );
+  const capitalFirstLetter = (str) => {
+    if (!str) return;
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
+  const renderWorkerList = () => {
+    if (workerState.worker !== undefined) {
+      const roles = Object.keys(workerState.worker);
+
+      return roles.map((role) => (
+        <View key={role}>
+          {workerState.worker[role] && workerState.worker[role].length > 0 && (
+            <>
+              <Text style={styles.subHeading}>
+                {`${capitalFirstLetter(role)}s:`}
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ flexDirection: "row" }}
+              >
+                {workerState.worker[role].map((worker) => (
+                  <TouchableOpacity
+                    key={worker._id}
+                    style={styles.recommendationCard}
+                    onPress={() => handleRecommendationPress(worker)}
+                  >
+                    <Image
+                      source={require("../../assets/user.png")}
+                      style={styles.recommendationImage}
+                    />
+                    <Text style={styles.recommendationTitle}>
+                      {capitalFirstLetter(worker.username)}
+                    </Text>
+                    <Text style={styles.recommendationDescription}>
+                      {worker.role}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </>
+          )}
+        </View>
+      ));
+    }
+  };
+
   const handleBidding = () => {
-    // navigation.navigate("Bidding", { data: state.proposal });
-    navigation.navigate("Bidding");
+    navigation.navigate("Bidding", { data: state.proposal });
+    // navigation.navigate("Bidding");
   };
   return (
     <ScrollView style={styles.mainContainer}>
@@ -131,14 +167,14 @@ const HomeScreen = () => {
           </View>
         </View>
 
-        <Text style={styles.subHeading}>Recommended Contractors:</Text>
-        {renderWorkerList("Contractor")}
+        <Text style={styles.subHeading}></Text>
+        {renderWorkerList()}
 
-        <Text style={styles.subHeading}>Recommended Architects:</Text>
+        {/* <Text style={styles.subHeading}>Recommended Architects:</Text>
         {renderWorkerList("Architect")}
 
         <Text style={styles.subHeading}>Recommended Interior Designers:</Text>
-        {renderWorkerList("Interior Designer")}
+        {renderWorkerList("Interior Designer")} */}
       </View>
 
       {/* Bottom Navigation Bar */}
@@ -150,7 +186,6 @@ const HomeScreen = () => {
         <TouchableOpacity
           style={styles.bottomBarItem}
           onPress={() => navigation.navigate("Proposal")}
-          // onPress={s}
         >
           <Ionicons name="add-circle" size={30} color="#00716F" />
           <Text>Post</Text>
@@ -160,7 +195,6 @@ const HomeScreen = () => {
           onPress={() => navigation.navigate("ProfileScreen")}
         >
           <Ionicons name="person" size={30} color="#00716F" />
-
           <Text>Profile</Text>
         </TouchableOpacity>
       </View>
