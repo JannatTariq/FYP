@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import { Context as ProposalContext } from "../context/proposalContext";
 
 const WorkerHomeScreen = () => {
   const navigation = useNavigation();
+  const { state, fetchWorkerProposals } = useContext(ProposalContext);
+  // console.log(state);
+  // console.log(state.proposal[1]);
 
   const areaDemo = "200 sq. ft.";
   const expectedPriceDemo = "$50,000";
@@ -47,6 +52,19 @@ const WorkerHomeScreen = () => {
   ];
 
   const [projects, setProjects] = useState(clientProjects);
+
+  const capitalizeFirstLetter = (str) => {
+    if (!str) {
+      return "";
+    }
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+  useEffect(() => {
+    fetchWorkerProposals();
+  }, []);
   const handleBidding = () => {
     navigation.navigate("BiddingSearchScreen");
   };
@@ -57,21 +75,32 @@ const WorkerHomeScreen = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexDirection: "row" }}
       >
-        {projects.map((project) => (
+        {state.proposal?.map((proposal, index) => (
           <TouchableOpacity
-            key={project.id}
+            key={`${index}_${proposal.userId}`}
             style={styles.projectCard}
-            onPress={() => navigation.navigate("BidToProposal", project)}
+            onPress={() =>
+              navigation.navigate("BidToProposal", { proposal, index })
+            }
           >
-            <Text style={styles.projectName}>{project.projectName}</Text>
-            <Text style={styles.projectName}>{project.clientName}</Text>
+            <Text style={styles.projectName}>Project {`${index + 1}`}</Text>
+            <Text style={styles.projectName}>
+              {capitalizeFirstLetter(proposal.username)}
+            </Text>
+            <Image
+              source={{ uri: proposal?.image }}
+              style={{ width: 100, height: 100 }}
+            />
             <Text style={styles.projectDescription}>
-              {project.projectDetails.description}
-              {project.projectDetails.area}
-              {project.projectDetails.location}
-              {project.projectDetails.expectedPrice}
-              {project.projectDetails.bedrooms}
-              {project.projectDetails.bathrooms}
+              {proposal?.address}
+              {"\n"}
+              {proposal?.area}
+              {"\n"}
+              {proposal?.price}
+              {"\n"}
+              {proposal?.bedroom}
+              {"\n"}
+              {proposal?.bathroom}
             </Text>
           </TouchableOpacity>
         ))}
@@ -146,8 +175,8 @@ const styles = StyleSheet.create({
     color: "#00716F", // Dark green text color
   },
   projectCard: {
-    width: 150,
-    height: 200,
+    width: 170,
+    height: 270,
     marginRight: 15,
     borderWidth: 1,
     borderColor: "#ddd",

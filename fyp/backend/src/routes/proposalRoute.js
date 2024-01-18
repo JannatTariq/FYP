@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const Proposal = mongoose.model("Proposal");
+const User = mongoose.model("User");
 const cloudinary = require("cloudinary");
 const { geocode } = require("opencage-api-client");
 const multer = require("multer");
@@ -100,6 +101,40 @@ router.get("/getProposals", async (req, res) => {
     success: true,
     proposal,
   });
+});
+
+router.get("/workerProposals", async (req, res) => {
+  try {
+    const proposals = await Proposal.find();
+    // console.log(proposals);
+
+    const proposalsWithUserInfo = await Promise.all(
+      proposals.map(async (proposal) => {
+        const user = await User.findById(proposal.userId);
+
+        return {
+          userId: proposal.userId,
+          username: user ? user.username : "Unknown",
+          image: proposal.image,
+          address: proposal.address,
+          area: proposal.area,
+          price: proposal.price,
+          bedroom: proposal.bedroom,
+          bathroom: proposal.bathroom,
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      proposals: proposalsWithUserInfo,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "An error occurred while fetching proposals.",
+    });
+  }
 });
 
 module.exports = router;

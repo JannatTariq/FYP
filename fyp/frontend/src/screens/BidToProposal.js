@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  Image,
 } from "react-native";
 import BackButton from "../Components/BackButton";
 import Modal from "react-native-modal";
 
 const BidToProposal = ({ route }) => {
-  const { projectName, projectDetails, clientName } = route.params;
+  // const { projectName, projectDetails, clientName } = route.params;
+  const { proposal, index } = route.params;
 
   const [bidPrice, setBidPrice] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
@@ -28,6 +30,14 @@ const BidToProposal = ({ route }) => {
     toggleModal();
   };
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return str;
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   const submitBid = () => {
     if (bidPrice) {
       Alert.alert("Bid Submitted", `Bid Price: ${bidPrice}`);
@@ -40,24 +50,27 @@ const BidToProposal = ({ route }) => {
   return (
     <View style={styles.cardContainer}>
       <BackButton />
-      <View style={styles.card}>
-        <Text style={styles.mainHeading}>{projectName}</Text>
-        <Text style={styles.clientName}>{clientName}</Text>
 
-        <Text style={styles.description}>{projectDetails.description}</Text>
-        <Text style={styles.detailsText}>Area: {projectDetails.area}</Text>
-        <Text style={styles.detailsText}>
-          Address: {projectDetails.location}
+      <View style={styles.card}>
+        <Text style={styles.mainHeading}>{`Project ${index + 1}`}</Text>
+        <Text style={styles.clientName}>
+          {capitalizeFirstLetter(proposal.username)}
         </Text>
-        <Text style={styles.detailsText}>
-          Expected Price: {projectDetails.expectedPrice}
-        </Text>
-        <Text style={styles.detailsText}>
-          Bedrooms: {projectDetails.bedrooms}
-        </Text>
-        <Text style={styles.detailsText}>
-          Bathrooms: {projectDetails.bathrooms}
-        </Text>
+        <Image
+          source={{ uri: proposal?.image }}
+          style={{
+            width: 200,
+            height: 200,
+            alignSelf: "center",
+          }}
+        />
+
+        {/* <Text style={styles.description}>{projectDetails.description}</Text> */}
+        <Text style={styles.detailsText}>Area: {proposal.area}</Text>
+        <Text style={styles.detailsText}>Address: {proposal.address}</Text>
+        <Text style={styles.detailsText}>Expected Price: {proposal.price}</Text>
+        <Text style={styles.detailsText}>Bedrooms: {proposal.bedroom}</Text>
+        <Text style={styles.detailsText}>Bathrooms: {proposal.bathroom}</Text>
 
         <TouchableOpacity
           style={[
