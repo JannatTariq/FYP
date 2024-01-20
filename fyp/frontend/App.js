@@ -26,6 +26,7 @@ import { Provider as AuthProvider } from "./src/context/authContext.js";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setNavigator } from "./src/navigationRef.js";
 import { Provider as ProposalProvider } from "./src/context/proposalContext.js";
+import NotificationsScreen from "./src/screens/NotificationScreen.js";
 
 const Stack = createStackNavigator();
 
@@ -80,6 +81,10 @@ export default function App() {
               />
               <Stack.Screen name="BidToProposal" component={BidToProposal} />
               <Stack.Screen name="WPS_Client" component={WPS_Client} />
+              <Stack.Screen
+                name="Notification"
+                component={NotificationsScreen}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </AuthProvider>

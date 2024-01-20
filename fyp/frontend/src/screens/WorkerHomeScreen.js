@@ -64,7 +64,7 @@ const WorkerHomeScreen = () => {
   };
   useEffect(() => {
     fetchWorkerProposals();
-  }, []);
+  }, [fetchWorkerProposals]);
   const handleBidding = () => {
     navigation.navigate("BiddingSearchScreen");
   };
