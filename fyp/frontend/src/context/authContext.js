@@ -18,6 +18,8 @@ const authReducer = (state, action) => {
       return { token: null, errorMessage: "" };
     case "fetch_workers":
       return { ...state, worker: action.payload };
+    case "user_id":
+      return { ...state, userId: action.payload };
     default:
       return state;
   }
@@ -233,6 +235,26 @@ const fetchWorkers = (dispatch) => async () => {
     });
   }
 };
+
+const getUserId = (dispatch) => async () => {
+  try {
+    const authToken = await AsyncStorage.getItem("token");
+    const response = await api.get("/currentUser", {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    userId = response.data.userId;
+    dispatch({
+      type: "user_id",
+      payload: response.data.userId,
+    });
+    return userId;
+  } catch (error) {
+    dispatch({
+      type: "add_error",
+      payload: "Error getting user.",
+    });
+  }
+};
 export const { Provider, Context } = createDataContext(
   authReducer,
   {
@@ -242,6 +264,7 @@ export const { Provider, Context } = createDataContext(
     signUpConstructor,
     signOut,
     fetchWorkers,
+    getUserId,
   },
   { token: null, errorMessage: "" }
 );

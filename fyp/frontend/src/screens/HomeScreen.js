@@ -13,13 +13,13 @@ import { useNavigation } from "@react-navigation/native";
 import BackButton from "../Components/BackButton";
 import { AntDesign } from "@expo/vector-icons";
 import { Context as AuthContext } from "../context/authContext";
-import { Context as ProposalContext } from "../context/proposalContext";
+// import { Context as ProposalContext } from "../context/proposalContext";
 
 const HomeScreen = () => {
   // Dummy data for worker recommendations
 
   const navigation = useNavigation();
-  const { state } = useContext(ProposalContext);
+  // const { state } = useContext(ProposalContext);
   const { state: workerState, fetchWorkers } = useContext(AuthContext);
   // console.log(workerState.worker);
 
@@ -150,8 +150,8 @@ const HomeScreen = () => {
   };
 
   const handleBidding = () => {
-    navigation.navigate("Bidding", { data: state.proposal });
-    // navigation.navigate("Bidding");
+    // navigation.navigate("Bidding", { data: state.proposal });
+    navigation.navigate("Bidding");
   };
   return (
     <ScrollView style={styles.mainContainer}>
@@ -196,6 +196,13 @@ const HomeScreen = () => {
         >
           <Ionicons name="person" size={30} color="#00716F" />
           <Text>Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomBarItem}
+          onPress={() => navigation.navigate("Notification")}
+        >
+          <Ionicons name="notifications-outline" size={30} color="#00716F" />
+          <Text>Notification</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

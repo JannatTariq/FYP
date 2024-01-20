@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = mongoose.model("User");
 const Constructor = mongoose.model("Constructor");
 const { geocode } = require("opencage-api-client");
+const requireAuth = require("../middlewares/requireAuth");
 
 const router = express.Router();
 
@@ -243,6 +244,11 @@ router.get("/getWorkers", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+router.get("/currentUser", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+  res.json({ userId });
 });
 
 module.exports = router;
