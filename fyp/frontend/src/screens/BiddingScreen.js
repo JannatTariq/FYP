@@ -16,9 +16,9 @@ const { width } = Dimensions.get("window");
 const CARD_WIDTH = width - 20;
 
 const BiddingScreen = ({ route }) => {
-  // const { state, fetchProposals } = useContext(ProposalContext);
-  const { fetchProposals } = useContext(ProposalContext);
-  const { data } = route.params;
+  const { state, fetchProposals } = useContext(ProposalContext);
+  // const { fetchProposals } = useContext(ProposalContext);
+  // const { data } = route.params;
   // console.log(data[0].address);
 
   // console.log("Image:", data.image);
@@ -72,9 +72,9 @@ const BiddingScreen = ({ route }) => {
         )}
         {!isLoading && (
           <View>
-            {data !== null ? (
-              Array.isArray(data) && data.length > 0 ? (
-                data.map((proposal, index) => (
+            {state.proposal !== null ? (
+              Array.isArray(state.proposal) && state.proposal.length > 0 ? (
+                state.proposal.map((proposal, index) => (
                   <View key={index} style={styles.card}>
                     <Image
                       source={{ uri: proposal.image }}

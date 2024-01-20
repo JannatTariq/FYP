@@ -111,7 +111,6 @@ const UploadProposal = () => {
         bathroom: cardData.find((item) => item.heading === "Bathrooms").value,
       };
 
-      // Assuming uploadProposal is available in the context
       uploadProposal({
         image,
         address: cardData.find((item) => item.heading === "Address").value,

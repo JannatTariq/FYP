@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,13 @@ import {
 } from "react-native";
 import BackButton from "../Components/BackButton";
 import Modal from "react-native-modal";
+import { Context as ProposalContext } from "../context/proposalContext";
 
 const BidToProposal = ({ route }) => {
   // const { projectName, projectDetails, clientName } = route.params;
+  const { state, submitBid: bidSubmit } = useContext(ProposalContext);
   const { proposal, index } = route.params;
+  // console.log(proposal._id);
 
   const [bidPrice, setBidPrice] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
@@ -91,9 +94,15 @@ const BidToProposal = ({ route }) => {
             placeholder="Bid Price"
             keyboardType="numeric"
             value={bidPrice}
-            onChangeText={(text) => setBidPrice(text)}
+            onChangeText={setBidPrice}
           />
-          <TouchableOpacity style={styles.submitButton} onPress={submitBid}>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => {
+              bidSubmit({ proposalId: proposal._id, bidPrice });
+              toggleModal();
+            }}
+          >
             <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
         </View>

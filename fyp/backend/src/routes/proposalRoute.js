@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Proposal = mongoose.model("Proposal");
 const User = mongoose.model("User");
+const Constructor = mongoose.model("Constructor");
 const cloudinary = require("cloudinary");
 const { geocode } = require("opencage-api-client");
 const multer = require("multer");
@@ -45,7 +46,7 @@ router.use(requireAuth);
 router.post("/uploadProposal", uploads.single("profile"), async (req, res) => {
   try {
     const userId = req.user._id;
-    // console.log(req.file, req.body);
+    // console.log(req.file.path, req.body);
     const result = await cloudinary.v2.uploader.upload(req.file.path, {
       folder: "image",
       width: 250,
@@ -113,6 +114,7 @@ router.get("/workerProposals", async (req, res) => {
         const user = await User.findById(proposal.userId);
 
         return {
+          _id: proposal._id,
           userId: proposal.userId,
           username: user ? user.username : "Unknown",
           image: proposal.image,
@@ -134,6 +136,114 @@ router.get("/workerProposals", async (req, res) => {
     res.status(500).json({
       error: "An error occurred while fetching proposals.",
     });
+  }
+});
+
+router.post("/submitBid", async (req, res) => {
+  try {
+    const { proposalId, bidPrice } = req.body;
+    const existingProposal = await Proposal.findById(proposalId);
+    if (!existingProposal) {
+      return res.status(404).send({ error: "Proposal not found." });
+    }
+
+    existingProposal.status = "accepted";
+    const bidderNameDocument = await Constructor.findById(req.user.id);
+    const bidderName = bidderNameDocument.username;
+    const bid = {
+      userId: req.user.id,
+      price: bidPrice,
+      status: "pending",
+      bidderName: bidderName,
+    };
+    existingProposal.bids.push(bid);
+    await existingProposal.save();
+
+    res.json({ success: true, proposals: existingProposal });
+  } catch (error) {
+    console.error("Error submitting bid:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/proposalsWithBids", async (req, res) => {
+  try {
+    const proposalsWithBids = await Proposal.find({
+      "bids.0": { $exists: true },
+    });
+    // console.log(proposalsWithBids);
+
+    res.json({ success: true, proposalsWithBids });
+  } catch (error) {
+    console.error("Error fetching proposals with bids:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/acceptBid", async (req, res) => {
+  try {
+    const { proposalId, bidId } = req.body;
+    const existingProposal = await Proposal.findById(proposalId);
+
+    if (!existingProposal) {
+      return res.status(404).json({ error: "Proposal not found." });
+    }
+
+    const acceptedBid = existingProposal.bids.id(bidId);
+
+    if (!acceptedBid) {
+      return res.status(404).json({ error: "Bid not found." });
+    }
+    acceptedBid.status = "accepted";
+    await existingProposal.save();
+
+    res.json({ success: true, proposal: existingProposal });
+  } catch (error) {
+    console.error("Error accepting bid:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/rejectBid", async (req, res) => {
+  try {
+    const { proposalId, bidId } = req.body;
+    const existingProposal = await Proposal.findById(proposalId);
+
+    if (!existingProposal) {
+      return res.status(404).json({ error: "Proposal not found." });
+    }
+
+    const rejectedBid = existingProposal.bids.id(bidId);
+
+    if (!rejectedBid) {
+      return res.status(404).json({ error: "Bid not found." });
+    }
+
+    rejectedBid.status = "rejected";
+    await existingProposal.save();
+
+    res.json({ success: true, proposal: existingProposal });
+  } catch (error) {
+    console.error("Error rejecting bid:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.delete("/workerProposals/:id", async (req, res) => {
+  try {
+    const proposalId = req.params.id;
+
+    const proposal = await Proposal.findById(proposalId);
+    if (!proposal) {
+      return res.status(404).json({ error: "Proposal not found" });
+    }
+
+    await Proposal.findByIdAndDelete(proposalId);
+
+    res.json({ success: true, message: "Proposal deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting proposal:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

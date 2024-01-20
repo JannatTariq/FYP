@@ -26,6 +26,26 @@ const proposalSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  bids: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Constructor",
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected"],
+        default: "pending",
+      },
+      bidderName: {
+        type: String,
+      },
+    },
+  ],
 });
 
 mongoose.model("Proposal", proposalSchema);
