@@ -81,25 +81,28 @@ const NotificationsScreen = () => {
           (proposal, index) =>
             proposal.bids &&
             proposal.userId === userId &&
-            proposal.bids.map((bid) => (
-              <View key={bid._id} style={styles.notificationItem}>
-                {/* <Text>{bid.bidderName.match(/username: '([^']+)'/)}</Text> */}
-                <TouchableOpacity
-                  onPress={() => handleAcceptBid(proposal._id, bid._id)}
-                >
-                  <Text style={styles.acceptButton}>
-                    Accept Bid {capitalizeFirstLetter(bid.bidderName)}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleRejectBid(proposal._id, bid._id)}
-                >
-                  <Text style={styles.rejectButton}>
-                    Reject Bid {capitalizeFirstLetter(bid.bidderName)}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))
+            proposal.bids.map(
+              (bid) =>
+                bid.status !== "accepted" && (
+                  <View key={bid._id} style={styles.notificationItem}>
+                    {/* <Text>{bid.bidderName.match(/username: '([^']+)'/)}</Text> */}
+                    <TouchableOpacity
+                      onPress={() => handleAcceptBid(proposal._id, bid._id)}
+                    >
+                      <Text style={styles.acceptButton}>
+                        Accept Bid {capitalizeFirstLetter(bid.bidderName)}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleRejectBid(proposal._id, bid._id)}
+                    >
+                      <Text style={styles.rejectButton}>
+                        Reject Bid {capitalizeFirstLetter(bid.bidderName)}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )
+            )
         )}
     </View>
   );
