@@ -188,20 +188,48 @@ const acceptBid =
         { proposalId, bidId },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      // console.log(response.data.proposal);
 
-      const bids = response.data.proposal.bids;
+      const acceptedBid = response.data.proposal.bids.find(
+        (bid) => bid._id === bidId && bid.status === "accepted"
+      );
 
-      for (const bid of bids) {
-        // console.log(bid.status);
-        if (bid.status === "accepted") {
-          // console.log("Deleting proposal:", bid._id);
-          await api.delete(`/workerProposals/${proposalId}`, {
+      // console.log(acceptBid);
+      if (!acceptedBid) {
+        console.error("Accepted bid not found in the response.");
+        dispatch({
+          type: "add_error",
+          payload: "Error accepting bid.",
+        });
+        return;
+      }
+
+      const acceptedWorkerId = acceptedBid.userId;
+      // console.log(acceptedWorkerId);
+
+      // Fetch all worker proposals for the given proposalId
+      const allWorkerProposalsResponse = await api.get(
+        `/workerProposals/${proposalId}`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      const allWorkerProposals =
+        allWorkerProposalsResponse.data &&
+        allWorkerProposalsResponse.data.proposal;
+
+      // console.log(allWorkerProposals);
+      const mainObjectId = allWorkerProposals._id;
+      // console.log(mainObjectId, acceptedWorkerId);
+      for (const workerProposal of Object.values(allWorkerProposals.bids)) {
+        // console.log(workerProposal);
+        if (workerProposal.userId !== acceptedWorkerId) {
+          // console.log(workerProposal._id);
+          await api.delete(`/workerProposals/${mainObjectId}`, {
             headers: { Authorization: `Bearer ${authToken}` },
           });
-          // console.log("Proposal deleted successfully");
         }
       }
+      navigate("HomeScreen");
 
       dispatch({
         type: "accept_bid",
@@ -229,6 +257,7 @@ const rejectBid =
         }
       );
       const bids = response.data.proposal.bids;
+      navigate("HomeScreen");
 
       // for (const bid of bids) {
       //   console.log(`Rejecting bid ${bid._id}`);
