@@ -27,6 +27,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setNavigator } from "./src/navigationRef.js";
 import { Provider as ProposalProvider } from "./src/context/proposalContext.js";
 import NotificationsScreen from "./src/screens/NotificationScreen.js";
+import WorkerProjectsScreen from "./src/screens/WorkerProjects.js";
 
 const Stack = createStackNavigator();
 
@@ -84,6 +85,10 @@ export default function App() {
               <Stack.Screen
                 name="Notification"
                 component={NotificationsScreen}
+              />
+              <Stack.Screen
+                name="WorkerProjectsScreen"
+                component={WorkerProjectsScreen}
               />
             </Stack.Navigator>
           </NavigationContainer>

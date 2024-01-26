@@ -123,6 +123,7 @@ router.get("/workerProposals", async (req, res) => {
           price: proposal.price,
           bedroom: proposal.bedroom,
           bathroom: proposal.bathroom,
+          bids: proposal.bids,
         };
       })
     );
@@ -190,6 +191,7 @@ router.post("/acceptBid", async (req, res) => {
     }
 
     const acceptedBid = existingProposal.bids.id(bidId);
+    // console.log(acceptedBid);
 
     if (!acceptedBid) {
       return res.status(404).json({ error: "Bid not found." });
@@ -232,15 +234,35 @@ router.post("/rejectBid", async (req, res) => {
 router.delete("/workerProposals/:id", async (req, res) => {
   try {
     const proposalId = req.params.id;
+    // console.log(proposalId);
 
     const proposal = await Proposal.findById(proposalId);
+    // console.log(proposal);
     if (!proposal) {
       return res.status(404).json({ error: "Proposal not found" });
     }
-
-    await Proposal.findByIdAndDelete(proposalId);
+    await Proposal.findByIdAndUpdate(proposalId, {
+      $pull: { bids: { status: { $ne: "accepted" } } },
+    });
 
     res.json({ success: true, message: "Proposal deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting proposal:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/workerProposals/:id", async (req, res) => {
+  try {
+    const proposalId = req.params.id;
+    // console.log(proposalId);
+
+    const proposal = await Proposal.findById(proposalId);
+    // console.log(proposal);
+    if (!proposal) {
+      return res.status(404).json({ error: "Proposal not found" });
+    }
+    res.json({ success: true, proposal });
   } catch (error) {
     console.error("Error deleting proposal:", error);
     res.status(500).json({ error: "Internal Server Error" });

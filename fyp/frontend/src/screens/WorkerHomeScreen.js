@@ -10,6 +10,7 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { Context as ProposalContext } from "../context/proposalContext";
+import WorkerProjects from "../screens/WorkerProjects";
 
 const WorkerHomeScreen = () => {
   const navigation = useNavigation();
@@ -64,46 +65,58 @@ const WorkerHomeScreen = () => {
   };
   useEffect(() => {
     fetchWorkerProposals();
+    // proposalBids();
   }, [fetchWorkerProposals]);
   const handleBidding = () => {
     navigation.navigate("BiddingSearchScreen");
   };
+  // console.log(state.proposal);
   const renderProjectList = () => {
+    let index = 0;
     return (
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexDirection: "row" }}
       >
-        {state.proposal?.map((proposal, index) => (
-          <TouchableOpacity
-            key={`${index}_${proposal.userId}`}
-            style={styles.projectCard}
-            onPress={() =>
-              navigation.navigate("BidToProposal", { proposal, index })
-            }
-          >
-            <Text style={styles.projectName}>Project {`${index + 1}`}</Text>
-            <Text style={styles.projectName}>
-              {capitalizeFirstLetter(proposal.username)}
-            </Text>
-            <Image
-              source={{ uri: proposal?.image }}
-              style={{ width: 100, height: 100 }}
-            />
-            <Text style={styles.projectDescription}>
-              {proposal?.address}
-              {"\n"}
-              {proposal?.area}
-              {"\n"}
-              {proposal?.price}
-              {"\n"}
-              {proposal?.bedroom}
-              {"\n"}
-              {proposal?.bathroom}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {state.proposal?.map((proposal) =>
+          proposal.bids.length === 0 ||
+          proposal.bids[0].status === "pending" ? (
+            <TouchableOpacity
+              key={`${proposal._id}`}
+              style={styles.projectCard}
+              onPress={() =>
+                navigation.navigate("BidToProposal", { proposal, index })
+              }
+            >
+              {/* <Text>{console.log(proposal)}</Text> */}
+              <Text style={styles.projectName}>Project {`${++index}`}</Text>
+              <Text style={styles.projectName}>
+                {capitalizeFirstLetter(proposal.username)}
+              </Text>
+              <Image
+                source={{ uri: proposal?.image }}
+                style={{ width: 100, height: 100 }}
+              />
+              <Text style={styles.projectDescription}>
+                {proposal?.address}
+                {"\n"}
+                {proposal?.area}
+                {"\n"}
+                {proposal?.price}
+                {"\n"}
+                {proposal?.bedroom}
+                {"\n"}
+                {proposal?.bathroom}
+              </Text>
+              {/* {proposal.bids.map((bid, bidIndex) => (
+                <Text key={`bid_${bidIndex}`}>Bid Status: {bid.status}</Text>
+              ))} */}
+            </TouchableOpacity>
+          ) : (
+            <Text key={`bid_${proposal._id}_${index}`}></Text>
+          )
+        )}
       </ScrollView>
     );
   };
@@ -141,7 +154,15 @@ const WorkerHomeScreen = () => {
           <Ionicons name="person" size={30} color="#00716F" />
           <Text>Profile</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomBarItem}
+          onPress={() => navigation.navigate("WorkerProjectsScreen")}
+        >
+          <Ionicons name="notifications-outline" size={30} color="#00716F" />
+          <Text>Profile</Text>
+        </TouchableOpacity>
       </View>
+      <WorkerProjects />
     </View>
   );
 };

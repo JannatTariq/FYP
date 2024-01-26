@@ -55,7 +55,7 @@ const BidToProposal = ({ route }) => {
       <BackButton />
 
       <View style={styles.card}>
-        <Text style={styles.mainHeading}>{`Project ${index + 1}`}</Text>
+        <Text style={styles.mainHeading}>{`Project`}</Text>
         <Text style={styles.clientName}>
           {capitalizeFirstLetter(proposal.username)}
         </Text>
