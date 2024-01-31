@@ -10,8 +10,6 @@ import {
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
 
-// ... (previous imports and styles)
-
 const NotificationsScreen = () => {
   const { state, acceptBid, rejectBid, fetchWorkerProposals, proposalBids } =
     useContext(ProposalContext);

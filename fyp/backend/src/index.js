@@ -1,6 +1,6 @@
 require("../src/models/userModel");
 require("../src/models/constructorModel");
-require("./models/proposalModel");
+require("../src/models/proposalModel");
 const express = require("express");
 const bodyParser = require("body-parser");
 const requireAtuh = require("../src/middlewares/requireAuth");
