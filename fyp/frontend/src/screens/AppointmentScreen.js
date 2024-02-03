@@ -18,7 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 const AppointmentScreen = ({ route }) => {
   const navigation = useNavigation();
   const { workerInfo } = route.params;
-  console.log(workerInfo);
+  // console.log(workerInfo);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -97,7 +97,7 @@ const AppointmentScreen = ({ route }) => {
   }, [notification]);
 
   const sendNotification = async () => {
-    console.log("pressed");
+    // console.log("pressed");
     navigation.navigate("Transaction");
     if (selectedDate && selectedTime) {
       const schedulingOptions = {
