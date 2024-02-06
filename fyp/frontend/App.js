@@ -28,72 +28,91 @@ import { setNavigator } from "./src/navigationRef.js";
 import { Provider as ProposalProvider } from "./src/context/proposalContext.js";
 import NotificationsScreen from "./src/screens/NotificationScreen.js";
 import WorkerProjectsScreen from "./src/screens/WorkerProjects.js";
+import { Provider as AppointmentProvider } from "./src/context/appointmentContext.js";
+import WorkerAppointmentScreen from "./src/screens/WorkerAppointmentScreen.js";
+import MeetingsScreen from "./src/screens/MeetingsScreen.js";
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <ProposalProvider>
-        <AuthProvider>
-          <NavigationContainer
-            ref={(navigator) => {
-              setNavigator(navigator);
-            }}
-          >
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="SignIn" component={SignInScreen} />
-              <Stack.Screen name="SignUp" component={SignUpScreen} />
-              <Stack.Screen
-                name="SignUpOptions"
-                component={SignupOptionsScreen}
-              />
-              <Stack.Screen name="Client" component={ClientScreen} />
-              <Stack.Screen name="Architect" component={ArchitectScreen} />
-              <Stack.Screen
-                name="InteriorDesigner"
-                component={InteriorDesignerScreen}
-              />
-              <Stack.Screen name="Contractor" component={ContractorScreen} />
-              <Stack.Screen name="Transaction" component={TransactionScreen} />
-              <Stack.Screen name="Appointment" component={AppointmentScreen} />
-              <Stack.Screen
-                name="ScheduleMeeting"
-                component={ScheduleMeetingScreen}
-              />
+      <AppointmentProvider>
+        <ProposalProvider>
+          <AuthProvider>
+            <NavigationContainer
+              ref={(navigator) => {
+                setNavigator(navigator);
+              }}
+            >
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="SignIn" component={SignInScreen} />
+                <Stack.Screen name="SignUp" component={SignUpScreen} />
+                <Stack.Screen
+                  name="SignUpOptions"
+                  component={SignupOptionsScreen}
+                />
+                <Stack.Screen name="Client" component={ClientScreen} />
+                <Stack.Screen name="Architect" component={ArchitectScreen} />
+                <Stack.Screen
+                  name="InteriorDesigner"
+                  component={InteriorDesignerScreen}
+                />
+                <Stack.Screen name="Contractor" component={ContractorScreen} />
+                <Stack.Screen
+                  name="Transaction"
+                  component={TransactionScreen}
+                />
+                <Stack.Screen
+                  name="Appointment"
+                  component={AppointmentScreen}
+                />
+                <Stack.Screen
+                  name="ScheduleMeeting"
+                  component={ScheduleMeetingScreen}
+                />
 
-              <Stack.Screen name="Bidding" component={BiddingScreen} />
-              <Stack.Screen name="Proposal" component={UploadProposal} />
-              <Stack.Screen name="WorkerOption" component={WorkerOptions} />
+                <Stack.Screen name="Bidding" component={BiddingScreen} />
+                <Stack.Screen name="Proposal" component={UploadProposal} />
+                <Stack.Screen name="WorkerOption" component={WorkerOptions} />
 
-              <Stack.Screen
-                name="BiddingSearchScreen"
-                component={BiddingSearchScreen}
-              />
-              <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-              <Stack.Screen
-                name="WorkerProfileScreen"
-                component={WorkerProfileScreen}
-              />
-              <Stack.Screen name="HomeScreen" component={HomeScreen} />
-              <Stack.Screen
-                name="WorkerHomeScreen"
-                component={WorkerHomeScreen}
-              />
-              <Stack.Screen name="BidToProposal" component={BidToProposal} />
-              <Stack.Screen name="WPS_Client" component={WPS_Client} />
-              <Stack.Screen
-                name="Notification"
-                component={NotificationsScreen}
-              />
-              <Stack.Screen
-                name="WorkerProjectsScreen"
-                component={WorkerProjectsScreen}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </AuthProvider>
-      </ProposalProvider>
+                <Stack.Screen
+                  name="BiddingSearchScreen"
+                  component={BiddingSearchScreen}
+                />
+                <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+                <Stack.Screen
+                  name="WorkerProfileScreen"
+                  component={WorkerProfileScreen}
+                />
+                <Stack.Screen name="HomeScreen" component={HomeScreen} />
+                <Stack.Screen
+                  name="WorkerHomeScreen"
+                  component={WorkerHomeScreen}
+                />
+                <Stack.Screen name="BidToProposal" component={BidToProposal} />
+                <Stack.Screen name="WPS_Client" component={WPS_Client} />
+                <Stack.Screen
+                  name="Notification"
+                  component={NotificationsScreen}
+                />
+                <Stack.Screen
+                  name="WorkerProjectsScreen"
+                  component={WorkerProjectsScreen}
+                />
+                <Stack.Screen
+                  name="WorkerAppointment"
+                  component={WorkerAppointmentScreen}
+                />
+                <Stack.Screen
+                  name="MeetingsScreen"
+                  component={MeetingsScreen}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </AuthProvider>
+        </ProposalProvider>
+      </AppointmentProvider>
     </SafeAreaProvider>
   );
 }

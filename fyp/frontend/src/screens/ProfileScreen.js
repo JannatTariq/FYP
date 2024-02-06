@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,8 @@ import { Context as AuthContext } from "../context/authContext";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { signOut } = useContext(AuthContext);
+  const { state, signOut, userProfile } = useContext(AuthContext);
+  // console.log(state.email);
   const userProjects = [
     {
       id: 1,
@@ -51,9 +52,9 @@ const ProfileScreen = () => {
 
   const userInfo = {
     avatarUri: "https://www.bootdey.com/img/Content/avatar/avatar6.png",
-    name: "Alien",
-    email: "Alien@example.com",
-    location: "Cantt",
+    name: state.username,
+    email: state.email,
+    location: state.address,
     bio: "I am Client.",
   };
   const handlePress = () => {
@@ -62,6 +63,10 @@ const ProfileScreen = () => {
   const handleLogOut = () => {
     navigation.navigate("SignIn");
   };
+
+  useEffect(() => {
+    userProfile();
+  }, []);
   //   return (
   //     <ScrollView contentContainerStyle={styles.container}>
   //       <View style={styles.navbar}>

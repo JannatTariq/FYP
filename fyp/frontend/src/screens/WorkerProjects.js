@@ -11,14 +11,11 @@ const WorkerProjectsScreen = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Fetch worker proposals
         // await fetchWorkerProposals();
 
-        // Fetch user ID
         const id = await getUserId();
         setUserId(id);
 
-        // Fetch proposal bids
         await proposalBids();
       } catch (error) {
         console.error("Error fetching data:", error);

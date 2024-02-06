@@ -21,7 +21,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   // const { state } = useContext(ProposalContext);
   const { state: workerState, fetchWorkers } = useContext(AuthContext);
-  // console.log(workerState.worker);
+  // console.log(workerState);
 
   // console.log(state.proposal);
 
@@ -96,6 +96,7 @@ const HomeScreen = () => {
   }, []);
 
   const handleRecommendationPress = (item) => {
+    // console.log(item);
     navigation.navigate("WPS_Client", { worker: item });
     // Implement navigation or other actions based on the selected worker
   };
