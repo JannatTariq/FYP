@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -14,9 +14,12 @@ import NotificationAlert from "../Components/NotificationAlert";
 import * as Notifications from "expo-notifications";
 import BackButton from "../Components/BackButton";
 import { useNavigation } from "@react-navigation/native";
+import { Context as AppointmentContext } from "../context/appointmentContext";
 
 const AppointmentScreen = ({ route }) => {
   const navigation = useNavigation();
+  const { submitAppointment } = useContext(AppointmentContext);
+
   const { workerInfo } = route.params;
   // console.log(workerInfo);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -96,25 +99,25 @@ const AppointmentScreen = ({ route }) => {
     }
   }, [notification]);
 
-  const sendNotification = async () => {
-    // console.log("pressed");
-    navigation.navigate("Transaction");
-    if (selectedDate && selectedTime) {
-      const schedulingOptions = {
-        content: {
-          title: `Appointment Scheduled`,
-          body: `You have an appointment with ${
-            workerInfo.name
-          } on ${selectedDate.toDateString()} at ${selectedTime.toLocaleTimeString()}.`,
-        },
-        trigger: {
-          seconds: 1,
-          channelId: "appointments",
-        },
-      };
-      await Notifications.scheduleNotificationAsync(schedulingOptions);
-    }
-  };
+  // const sendNotification = async () => {
+  //   // console.log("pressed");
+  //   navigation.navigate("Transaction");
+  //   if (selectedDate && selectedTime) {
+  //     const schedulingOptions = {
+  //       content: {
+  //         title: Appointment Scheduled,
+  //         body: `You have an appointment with ${
+  //           workerInfo.name
+  //         } on ${selectedDate.toDateString()} at ${selectedTime.toLocaleTimeString()}.`,
+  //       },
+  //       trigger: {
+  //         seconds: 1,
+  //         channelId: "appointments",
+  //       },
+  //     };
+  //     await Notifications.scheduleNotificationAsync(schedulingOptions);
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
@@ -174,7 +177,16 @@ const AppointmentScreen = ({ route }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={sendNotification}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          submitAppointment({
+            workerId: "65a96176cc612a66c8412c03",
+            selectedDate,
+            selectedTime,
+          })
+        }
+      >
         <Text style={styles.buttonText}>Transaction</Text>
       </TouchableOpacity>
       {notification && (

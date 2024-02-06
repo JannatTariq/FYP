@@ -4,10 +4,11 @@ require("../src/models/proposalModel");
 require("../src/models/appointmentModel");
 const express = require("express");
 const bodyParser = require("body-parser");
-const requireAtuh = require("../src/middlewares/requireAuth");
+const requireAuth = require("../src/middlewares/requireAuth");
 const authRoutes = require("../src/routes/authRoute");
 const proposalRoutes = require("../src/routes/proposalRoute");
 const appointmentRoute = require("../src/routes/appointmentRoute");
+
 const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authRoutes);
 app.use(proposalRoutes);
 app.use(appointmentRoute);
+
 //connection
 dotenv.config({ path: "src/config/config.env" });
 
@@ -38,7 +40,7 @@ mongoose.connection.on("error", (err) => {
   console.error("error connecting to mongo", err);
 });
 
-app.get("/", requireAtuh, (req, res) => {
+app.get("/", requireAuth, (req, res) => {
   res.send(`Your email: ${req.user.email}`);
 });
 
