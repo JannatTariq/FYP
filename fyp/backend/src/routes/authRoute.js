@@ -251,4 +251,104 @@ router.get("/currentUser", requireAuth, async (req, res) => {
   res.json({ userId });
 });
 
+router.get("/userProfile", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+  // console.log(userId);
+  let user = await User.findById(userId);
+  if (!user) {
+    user = await Constructor.findById(userId);
+  }
+  res.json(user);
+});
+
+router.post("/createReviews", requireAuth, async (req, res) => {
+  try {
+    const { rating, comment, workerId } = req.body;
+
+    // console.log(req.user);
+    const review = {
+      user: req.user._id,
+      name: req.user.username,
+      rating: Number(rating),
+      comment,
+    };
+    // console.log(review);
+
+    const worker = await Constructor.findById(workerId);
+    // console.log(worker.reviews);
+
+    const isReviewed = worker.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+    // console.log(isReviewed);
+
+    if (isReviewed) {
+      worker.reviews.forEach((review) => {
+        if (review.user.toString() === req.user._id.toString()) {
+          review.comment = comment;
+          review.rating = rating;
+        }
+      });
+    } else {
+      worker.reviews.push(review);
+      worker.numOfReviews = worker.reviews.length;
+    }
+
+    worker.ratings =
+      worker.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      worker.reviews.length;
+    // console.log(worker);
+
+    await worker.save();
+
+    res.send({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/getReviews/:id", requireAuth, async (req, res) => {
+  const workerId = req.params.id;
+  const worker = await Constructor.findById(workerId);
+  // console.log(worker);
+  res.json({
+    success: true,
+    reviews: worker.reviews,
+  });
+});
+
+router.delete("/deleteReviews/:reviewId", requireAuth, async (req, res) => {
+  const reviewId = req.params.reviewId;
+  const worker = await Constructor.findOneAndUpdate(
+    { "reviews._id": reviewId },
+    {
+      $pull: { reviews: { _id: reviewId } },
+      $inc: { numOfReviews: -1 },
+    },
+    { new: true }
+  );
+
+  // console.log(worker);
+  if (!worker) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Review not found" });
+  }
+  const totalRatings = worker.reviews.reduce(
+    (acc, review) => acc + review.rating,
+    0
+  );
+  const numOfReviews = worker.numOfReviews;
+  // console.log(numOfReviews);
+  const ratings = numOfReviews > 0 ? totalRatings / numOfReviews : 0;
+  // console.log(ratings);
+
+  worker.ratings = ratings;
+  // console.log(worker);
+  await worker.save();
+
+  res.json({ success: true });
+});
+
 module.exports = router;

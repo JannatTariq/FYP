@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -14,17 +14,36 @@ import NotificationAlert from "../Components/NotificationAlert";
 import * as Notifications from "expo-notifications";
 import BackButton from "../Components/BackButton";
 import { useNavigation } from "@react-navigation/native";
+import { Context as AppointmentContext } from "../context/appointmentContext";
+import { Context as AuthContext } from "../context/authContext";
 
 const AppointmentScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { workerInfo } = route.params;
-  // console.log(workerInfo);
+  const { submitAppointment } = useContext(AppointmentContext);
+
+  const { worker } = route.params;
+  // console.log(worker);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [notification, setNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { getUserId } = useContext(AuthContext);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const id = await getUserId();
+        setUserId(id);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    loadData();
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -96,25 +115,25 @@ const AppointmentScreen = ({ route }) => {
     }
   }, [notification]);
 
-  const sendNotification = async () => {
-    // console.log("pressed");
-    navigation.navigate("Transaction");
-    if (selectedDate && selectedTime) {
-      const schedulingOptions = {
-        content: {
-          title: `Appointment Scheduled`,
-          body: `You have an appointment with ${
-            workerInfo.name
-          } on ${selectedDate.toDateString()} at ${selectedTime.toLocaleTimeString()}.`,
-        },
-        trigger: {
-          seconds: 1,
-          channelId: "appointments",
-        },
-      };
-      await Notifications.scheduleNotificationAsync(schedulingOptions);
-    }
-  };
+  // const sendNotification = async () => {
+  //   // console.log("pressed");
+  //   navigation.navigate("Transaction");
+  //   if (selectedDate && selectedTime) {
+  //     const schedulingOptions = {
+  //       content: {
+  //         title: `Appointment Scheduled`,
+  //         body: `You have an appointment with ${
+  //           workerInfo.name
+  //         } on ${selectedDate.toDateString()} at ${selectedTime.toLocaleTimeString()}.`,
+  //       },
+  //       trigger: {
+  //         seconds: 1,
+  //         channelId: "appointments",
+  //       },
+  //     };
+  //     await Notifications.scheduleNotificationAsync(schedulingOptions);
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
@@ -174,8 +193,23 @@ const AppointmentScreen = ({ route }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={sendNotification}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          submitAppointment({
+            workerId: worker,
+            selectedDate,
+            selectedTime,
+          })
+        }
+      >
         <Text style={styles.buttonText}>Transaction</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("MeetingsScreen")}
+      >
+        <Text style={styles.buttonText}>Appointments</Text>
       </TouchableOpacity>
       {notification && (
         <NotificationAlert

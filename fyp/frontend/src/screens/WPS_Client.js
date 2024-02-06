@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,9 +9,14 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { Context as AuthContext } from "../context/authContext";
 
-const WPS_Client = () => {
+const WPS_Client = ({ route }) => {
   const navigation = useNavigation();
+  const { state, userProfile } = useContext(AuthContext);
+  const { worker } = route.params;
+  // console.log(worker._id);
+
   const workerProjects = [
     {
       id: 1,
@@ -57,6 +62,11 @@ const WPS_Client = () => {
   const handleAppointment = () => {
     navigation.navigate("Appointment");
   };
+
+  useEffect(() => {
+    userProfile();
+  }, []);
+
   return (
     <FlatList
       data={[{ key: "profile" }]}
@@ -113,7 +123,9 @@ const WPS_Client = () => {
           </View>
           <TouchableOpacity
             style={styles.bidButton}
-            onPress={() => navigation.navigate("Appointment", { workerInfo })}
+            onPress={() =>
+              navigation.navigate("Appointment", { worker: worker._id })
+            }
           >
             <Text style={styles.bidButtonText}>Schedule Appointment</Text>
           </TouchableOpacity>

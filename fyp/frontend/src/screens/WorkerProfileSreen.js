@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,8 +11,12 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import WorkerProjects from "../screens/WorkerProjects";
+import { Context as AuthContext } from "../context/authContext";
+
 const WorkerProfileScreen = () => {
   const navigation = useNavigation();
+  const { state, userProfile } = useContext(AuthContext);
   const workerProjects = [
     {
       id: 1,
@@ -58,6 +62,11 @@ const WorkerProfileScreen = () => {
   const handleLogOut = () => {
     navigation.navigate("SignIn");
   };
+
+  useEffect(() => {
+    userProfile();
+  }, []);
+
   return (
     <FlatList
       data={[{ key: "profile" }]}
@@ -87,7 +96,7 @@ const WorkerProfileScreen = () => {
             <Text style={styles.infoLabel}>Bio:</Text>
             <Text style={styles.infoValue}>{workerInfo.bio}</Text>
           </View>
-
+          {/* <WorkerProjects /> */}
           <View style={styles.projectsContainer}>
             <Text style={styles.projectsHeading}>Projects</Text>
             <FlatList

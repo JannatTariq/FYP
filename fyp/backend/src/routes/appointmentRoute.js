@@ -43,4 +43,83 @@ router.post("/submitAppointment", async (req, res) => {
   }
 });
 
+router.post("/acceptAppointment", async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    // console.log(appointmentId);
+
+    const appointment = await Appointment.findOne({
+      "appointments._id": appointmentId,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found." });
+    }
+
+    const appointmentIndex = appointment.appointments.findIndex(
+      (appt) => appt._id.toString() === appointmentId
+    );
+
+    if (appointmentIndex === -1) {
+      return res
+        .status(404)
+        .json({ error: "Appointment not found in the array." });
+    }
+
+    appointment.appointments[appointmentIndex].status = "accepted";
+
+    await appointment.save();
+
+    res.json({ success: true, appointment });
+  } catch (error) {
+    console.error("Error accepting appointment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/rejectAppointment", async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    // console.log(appointmentId);
+
+    const appointment = await Appointment.findOne({
+      "appointments._id": appointmentId,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found." });
+    }
+
+    const appointmentIndex = appointment.appointments.findIndex(
+      (appt) => appt._id.toString() === appointmentId
+    );
+
+    if (appointmentIndex === -1) {
+      return res
+        .status(404)
+        .json({ error: "Appointment not found in the array." });
+    }
+
+    appointment.appointments[appointmentIndex].status = "rejected";
+
+    await appointment.save();
+
+    res.json({ success: true, appointment });
+  } catch (error) {
+    console.error("Error accepting appointment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/getAppointments", async (req, res) => {
+  try {
+    const appointemnt = await Appointment.find();
+
+    res.send({ appointemnt });
+  } catch (error) {
+    console.error("Error rejecting appointment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

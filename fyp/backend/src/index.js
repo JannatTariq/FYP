@@ -8,6 +8,7 @@ const requireAtuh = require("../src/middlewares/requireAuth");
 const authRoutes = require("../src/routes/authRoute");
 const proposalRoutes = require("../src/routes/proposalRoute");
 const appointmentRoute = require("../src/routes/appointmentRoute");
+const paymentRoute = require("../src/routes/paymentRoute");
 const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authRoutes);
 app.use(proposalRoutes);
 app.use(appointmentRoute);
+app.use(paymentRoute);
 //connection
 dotenv.config({ path: "src/config/config.env" });
 

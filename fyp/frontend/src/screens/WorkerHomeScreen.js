@@ -10,7 +10,6 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { Context as ProposalContext } from "../context/proposalContext";
-import WorkerProjects from "../screens/WorkerProjects";
 
 const WorkerHomeScreen = () => {
   const navigation = useNavigation();
@@ -161,8 +160,14 @@ const WorkerHomeScreen = () => {
           <Ionicons name="notifications-outline" size={30} color="#00716F" />
           <Text>Profile</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomBarItem}
+          onPress={() => navigation.navigate("WorkerAppointment")}
+        >
+          <Ionicons name="notifications-outline" size={30} color="#00716F" />
+          <Text>Appointments</Text>
+        </TouchableOpacity>
       </View>
-      <WorkerProjects />
     </View>
   );
 };
