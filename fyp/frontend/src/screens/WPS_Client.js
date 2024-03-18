@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,15 +6,29 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Context as AuthContext } from "../context/authContext";
+import { AntDesign } from "@expo/vector-icons";
 
 const WPS_Client = ({ route }) => {
   const navigation = useNavigation();
-  const { state, userProfile } = useContext(AuthContext);
+  const {
+    state,
+    userProfile,
+    createReviews,
+    getReviews,
+    deleteReview,
+    getUserId,
+  } = useContext(AuthContext);
+  // console.log("State", state.reviews.rating);
   const { worker } = route.params;
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [userId, setUserId] = useState(null);
+
   // console.log(worker._id);
 
   const workerProjects = [
@@ -65,7 +79,30 @@ const WPS_Client = ({ route }) => {
 
   useEffect(() => {
     userProfile();
+    getReviews({ workerId: worker._id });
   }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const id = await getUserId();
+        setUserId(id);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // console.log(state.userId);
+  const handleRatingSubmit = async () => {
+    await createReviews({ rating, comment, workerId: worker._id });
+  };
+  const handleDeleteReview = async (reviewId) => {
+    await deleteReview({ reviewId });
+    getReviews({ workerId: worker._id });
+  };
 
   return (
     <FlatList
@@ -128,6 +165,77 @@ const WPS_Client = ({ route }) => {
             }
           >
             <Text style={styles.bidButtonText}>Schedule Appointment</Text>
+          </TouchableOpacity>
+          <View style={styles.reviewsContainer}>
+            <Text style={styles.reviewsHeading}>Reviews</Text>
+            {state.reviews?.reviews.map((review, index) => (
+              <View key={index} style={styles.review}>
+                <Text style={styles.name}>Name: {review.name}</Text>
+                <Text style={styles.reviewRating}>Rating: {review.rating}</Text>
+                <Text style={styles.reviewComment}>
+                  Comment: {review.comment}
+                </Text>
+                {/* <Text>{console.log(userId, review.user)}</Text> */}
+                {userId === review.user && (
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => handleDeleteReview(review._id)}
+                  >
+                    {/* <Text>{console.log(review._id)}</Text> */}
+                    <AntDesign name="delete" size={24} color="orange" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            ))}
+          </View>
+          <View style={styles.ratingContainer}>
+            <Text style={styles.ratingLabel}>Rate this worker:</Text>
+            {/* Display stars for rating */}
+            <Ionicons
+              name="star"
+              size={24}
+              color={rating >= 1 ? "orange" : "gray"}
+              onPress={() => setRating(1)}
+            />
+            <Ionicons
+              name="star"
+              size={24}
+              color={rating >= 2 ? "orange" : "gray"}
+              onPress={() => setRating(2)}
+            />
+            <Ionicons
+              name="star"
+              size={24}
+              color={rating >= 3 ? "orange" : "gray"}
+              onPress={() => setRating(3)}
+            />
+            <Ionicons
+              name="star"
+              size={24}
+              color={rating >= 4 ? "orange" : "gray"}
+              onPress={() => setRating(4)}
+            />
+            <Ionicons
+              name="star"
+              size={24}
+              color={rating >= 5 ? "orange" : "gray"}
+              onPress={() => setRating(5)}
+            />
+          </View>
+
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Add a comment (optional)"
+            value={comment}
+            onChangeText={setComment}
+            multiline
+          />
+
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleRatingSubmit}
+          >
+            <Text style={styles.submitButtonText}>Submit Rating</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -268,6 +376,56 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  ratingLabel: {
+    marginRight: 10,
+  },
+  commentInput: {
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 10,
+    minHeight: 100,
+  },
+  submitButton: {
+    backgroundColor: "#00716F",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  reviewsContainer: {
+    marginTop: 20,
+  },
+  reviewsHeading: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#00716F",
+    marginBottom: 10,
+  },
+  review: {
+    backgroundColor: "#d3f5e9",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  reviewRating: {
+    fontWeight: "bold",
+    color: "#00716F",
+  },
+  reviewComment: {
+    marginTop: 5,
   },
 });
 

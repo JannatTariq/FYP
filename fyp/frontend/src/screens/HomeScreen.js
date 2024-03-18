@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,10 +9,11 @@ import {
   Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import BackButton from "../Components/BackButton";
 import { AntDesign } from "@expo/vector-icons";
 import { Context as AuthContext } from "../context/authContext";
+import StarRating from "../Components/StarRating";
 // import { Context as ProposalContext } from "../context/proposalContext";
 
 const HomeScreen = () => {
@@ -20,7 +21,22 @@ const HomeScreen = () => {
 
   const navigation = useNavigation();
   // const { state } = useContext(ProposalContext);
-  const { state: workerState, fetchWorkers } = useContext(AuthContext);
+  const { state, fetchWorkers, getReviews } = useContext(AuthContext);
+  const [id, setId] = useState(false);
+
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isFocused) {
+        const i = await fetchWorkers();
+        // console.log(state.worker);
+      }
+    };
+
+    fetchData();
+  }, [isFocused, fetchWorkers]);
+  // console.log(state);
+
   // console.log(workerState);
 
   // console.log(state.proposal);
@@ -91,8 +107,38 @@ const HomeScreen = () => {
   //   setRecommeßndations(workerRecommendations);
   // }, []);
 
+  // console.log(workerState);
+  // const memoizedFetchWorkers = useCallback(() => {
+  //   fetchWorkers();
+  //   setWorkersFetched(true);
+  // }, [fetchWorkers]);
+
+  // useEffect(() => {
+  //   if (!workersFetched) {
+  //     memoizedFetchWorkers();
+  //   }
+  // }, [workersFetched, memoizedFetchWorkers]);
+
+  // fetchWorkers();
+
+  // fetchWorkers();
+  // console.log(state.worker);
+
   useEffect(() => {
-    fetchWorkers();
+    if (state.worker !== undefined) {
+      const roles = Object.keys(state.worker);
+      roles.forEach((role) => {
+        if (
+          state.worker[role] &&
+          Array.isArray(state.worker[role]) &&
+          state.worker[role].length > 0
+        ) {
+          state.worker[role].forEach((worker) => {
+            getReviews({ workerId: worker._id });
+          });
+        }
+      });
+    }
   }, []);
 
   const handleRecommendationPress = (item) => {
@@ -109,42 +155,48 @@ const HomeScreen = () => {
       .join(" ");
   };
   const renderWorkerList = () => {
-    if (workerState.worker !== undefined) {
-      const roles = Object.keys(workerState.worker);
+    if (state.worker !== undefined) {
+      const roles = Object.keys(state.worker);
 
       return roles.map((role) => (
         <View key={role}>
-          {workerState.worker[role] && workerState.worker[role].length > 0 && (
-            <>
-              <Text style={styles.subHeading}>
-                {`${capitalFirstLetter(role)}s:`}
-              </Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ flexDirection: "row" }}
-              >
-                {workerState.worker[role].map((worker) => (
-                  <TouchableOpacity
-                    key={worker._id}
-                    style={styles.recommendationCard}
-                    onPress={() => handleRecommendationPress(worker)}
-                  >
-                    <Image
-                      source={require("../../assets/user.png")}
-                      style={styles.recommendationImage}
-                    />
-                    <Text style={styles.recommendationTitle}>
-                      {capitalFirstLetter(worker.username)}
-                    </Text>
-                    <Text style={styles.recommendationDescription}>
-                      {worker.role}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </>
-          )}
+          {state.worker[role] &&
+            Array.isArray(state.worker[role]) &&
+            state.worker[role].length > 0 && (
+              <>
+                <Text style={styles.subHeading}>
+                  {`${capitalFirstLetter(role)}s:`}
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ flexDirection: "row" }}
+                >
+                  {state.worker[role].map((worker) => (
+                    <TouchableOpacity
+                      key={worker._id}
+                      style={styles.recommendationCard}
+                      onPress={() => handleRecommendationPress(worker)}
+                    >
+                      <Image
+                        source={require("../../assets/user.png")}
+                        style={styles.recommendationImage}
+                      />
+                      <Text style={styles.recommendationTitle}>
+                        {capitalFirstLetter(worker.username)}
+                      </Text>
+                      <Text style={styles.recommendationDescription}>
+                        {worker.role}
+                      </Text>
+                      <View style={{ alignItems: "center" }}>
+                        {/* <Text>{console.log(worker)}</Text> */}
+                        <StarRating rating={worker.ratings} />
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </>
+            )}
         </View>
       ));
     }
@@ -298,6 +350,11 @@ const styles = StyleSheet.create({
   },
   tipDescription: {
     fontSize: 14,
+  },
+  rating: {
+    fontSize: 12,
+    color: "#00716F",
+    marginTop: 5,
   },
 });
 

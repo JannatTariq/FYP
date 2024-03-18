@@ -15,13 +15,11 @@ const NotificationsScreen = () => {
     useContext(ProposalContext);
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
-  // console.log(state.proposal[1].userId);
 
   useEffect(() => {
     const loadNotifications = async () => {
       await fetchWorkerProposals();
     };
-
     loadNotifications();
   }, []);
 
@@ -34,7 +32,6 @@ const NotificationsScreen = () => {
         console.error("Error fetching user ID:", error);
       }
     };
-
     fetchUserId();
   }, []);
 
@@ -48,7 +45,6 @@ const NotificationsScreen = () => {
     };
     fetchUserId();
   }, [proposalBids]);
-  // console.log(state.proposals);
 
   const handleAcceptBid = async (proposalId, bidId) => {
     await acceptBid({ proposalId, bidId });
@@ -57,6 +53,7 @@ const NotificationsScreen = () => {
   const handleRejectBid = async (proposalId, bidId) => {
     await rejectBid({ proposalId, bidId });
   };
+
   const capitalizeFirstLetter = (str) => {
     if (!str) {
       return "";
@@ -66,42 +63,48 @@ const NotificationsScreen = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
-  // console.log("userId:", userId);
-  // console.log("clientId:", clientId);
-  // console.log(state.proposal.bids);
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Notifications</Text>
 
-      {state.proposal &&
-        state.proposal.map(
-          (proposal, index) =>
-            proposal.bids &&
-            proposal.userId === userId &&
-            proposal.bids.map(
-              (bid) =>
-                bid.status !== "accepted" && (
-                  <View key={bid._id} style={styles.notificationItem}>
-                    {/* <Text>{bid.bidderName.match(/username: '([^']+)'/)}</Text> */}
-                    <TouchableOpacity
-                      onPress={() => handleAcceptBid(proposal._id, bid._id)}
-                    >
-                      <Text style={styles.acceptButton}>
-                        Accept Bid {capitalizeFirstLetter(bid.bidderName)}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => handleRejectBid(proposal._id, bid._id)}
-                    >
-                      <Text style={styles.rejectButton}>
-                        Reject Bid {capitalizeFirstLetter(bid.bidderName)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-            )
-        )}
+      <ScrollView>
+        {state.proposal &&
+          state.proposal.map((proposal, index) => (
+            <View key={proposal._id} style={styles.notificationItem}>
+              {proposal.bids &&
+                proposal.userId === userId &&
+                proposal.bids.map(
+                  (bid) =>
+                    bid.status !== "accepted" && (
+                      <View key={bid._id} style={styles.bidItem}>
+                        <Text style={styles.bidderName}>
+                          Bidder: {capitalizeFirstLetter(bid.bidderName)}
+                        </Text>
+                        <View style={styles.buttonContainer}>
+                          <TouchableOpacity
+                            onPress={() =>
+                              handleAcceptBid(proposal._id, bid._id)
+                            }
+                            style={[styles.button, styles.acceptButton]}
+                          >
+                            <Text style={styles.buttonText}>Accept</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() =>
+                              handleRejectBid(proposal._id, bid._id)
+                            }
+                            style={[styles.button, styles.rejectButton]}
+                          >
+                            <Text style={styles.buttonText}>Reject</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    )
+                )}
+            </View>
+          ))}
+      </ScrollView>
     </View>
   );
 };
@@ -119,12 +122,34 @@ const styles = StyleSheet.create({
   notificationItem: {
     marginBottom: 20,
   },
-  acceptButton: {
-    color: "green",
+  bidItem: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+  },
+  bidderName: {
+    fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 5,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  acceptButton: {
+    backgroundColor: "green",
   },
   rejectButton: {
-    color: "red",
+    backgroundColor: "red",
+  },
+  buttonText: {
+    color: "white",
     fontWeight: "bold",
   },
 });
