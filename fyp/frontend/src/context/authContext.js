@@ -284,6 +284,28 @@ const userProfile = (dispatch) => async () => {
   }
 };
 
+const workerProfile =
+  (dispatch) =>
+  async ({ id }) => {
+    try {
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.get(`/userProfile/${id}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      // console.log(response.data);
+      dispatch({
+        type: "user_profile",
+        payload: response.data,
+      });
+      return response.data;
+    } catch (error) {
+      dispatch({
+        type: "add_error",
+        payload: "Error getting user.",
+      });
+    }
+  };
+
 const createReviews =
   (dispatch) =>
   async ({ rating, comment, workerId }) => {
@@ -370,6 +392,7 @@ export const { Provider, Context } = createDataContext(
     createReviews,
     getReviews,
     deleteReview,
+    workerProfile,
   },
   { token: null, errorMessage: "" }
 );
