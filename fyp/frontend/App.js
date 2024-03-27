@@ -31,6 +31,7 @@ import WorkerProjectsScreen from "./src/screens/WorkerProjects.js";
 import { Provider as AppointmentProvider } from "./src/context/appointmentContext.js";
 import WorkerAppointmentScreen from "./src/screens/WorkerAppointmentScreen.js";
 import MeetingsScreen from "./src/screens/MeetingsScreen.js";
+import WorkerDetail from "./src/screens/WorkerDetailScreen.js";
 
 const Stack = createStackNavigator();
 
@@ -107,6 +108,10 @@ export default function App() {
                 <Stack.Screen
                   name="MeetingsScreen"
                   component={MeetingsScreen}
+                />
+                <Stack.Screen
+                  name="WorkerDetailScreen"
+                  component={WorkerDetail}
                 />
               </Stack.Navigator>
             </NavigationContainer>
