@@ -11,16 +11,15 @@ import {
 import BackButton from "../Components/BackButton";
 import Modal from "react-native-modal";
 import { Context as ProposalContext } from "../context/proposalContext";
+import { useNavigation } from '@react-navigation/native';
 
 const BidToProposal = ({ route }) => {
-  // const { projectName, projectDetails, clientName } = route.params;
   const { state, submitBid: bidSubmit } = useContext(ProposalContext);
   const { proposal, index } = route.params;
-  // console.log(proposal._id);
-
   const [bidPrice, setBidPrice] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
   const [isBidButtonPressed, setBidButtonPressed] = useState(false);
+  const navigation=useNavigation();
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -41,19 +40,31 @@ const BidToProposal = ({ route }) => {
       .join(" ");
   };
 
-  const submitBid = () => {
+  const submitBid = (action, proposalId, bidId) => {
     if (bidPrice) {
-      Alert.alert("Bid Submitted", `Bid Price: ${bidPrice}`);
+      const updatedProposal = {
+        ...proposal,
+        bidAmount: bidPrice,
+      };
+      
+      // Perform the action (accept or reject) based on the provided action parameter
+      if (action === 'accept') {
+        acceptBid({ proposalId, bidId });
+        Alert.alert("Bid Accepted", `Bid Price: ${bidPrice}`);
+      } else if (action === 'reject') {
+        rejectBid({ proposalId, bidId });
+        Alert.alert("Bid Rejected", `Bid Price: ${bidPrice}`);
+      }
     } else {
       Alert.alert("Bid Canceled", "You canceled the bid.");
     }
     toggleModal();
   };
+  
 
   return (
-    <View style={styles.cardContainer}>
-      <BackButton />
-
+    <View style={styles.container}>
+      <BackButton style={styles.backButton}/>
       <View style={styles.card}>
         <Text style={styles.mainHeading}>{`Project`}</Text>
         <Text style={styles.clientName}>
@@ -61,20 +72,29 @@ const BidToProposal = ({ route }) => {
         </Text>
         <Image
           source={{ uri: proposal?.image }}
-          style={{
-            width: 200,
-            height: 200,
-            alignSelf: "center",
-          }}
+          style={styles.image}
         />
-
-        {/* <Text style={styles.description}>{projectDetails.description}</Text> */}
-        <Text style={styles.detailsText}>Area: {proposal.area}</Text>
-        <Text style={styles.detailsText}>Address: {proposal.address}</Text>
-        <Text style={styles.detailsText}>Expected Price: {proposal.price}</Text>
-        <Text style={styles.detailsText}>Bedrooms: {proposal.bedroom}</Text>
-        <Text style={styles.detailsText}>Bathrooms: {proposal.bathroom}</Text>
-
+        <View style={styles.line}></View>
+        <Text style={styles.detailsText}>
+          <Text style={styles.highlight}>Area:</Text> {proposal.area}
+        </Text>
+        <Text style={styles.detailsText}>
+          <Text style={styles.highlight}>Address:</Text> {proposal.address}
+        </Text>
+        <Text style={styles.detailsText}>
+          <Text style={styles.highlight}>Expected Price: </Text>
+          {proposal.price}
+          </Text>
+        <Text style={styles.detailsText}>
+          <Text style={styles.highlight}>Bedrooms: </Text>
+          {proposal.bedroom}
+          </Text>
+        <Text style={styles.detailsText}>
+            <Text style={styles.highlight}>
+              Bathrooms: 
+            </Text>
+            {proposal.bathroom}
+          </Text>
         <TouchableOpacity
           style={[
             styles.bidButton,
@@ -85,7 +105,6 @@ const BidToProposal = ({ route }) => {
           <Text style={styles.bidButtonText}>Bid Now</Text>
         </TouchableOpacity>
       </View>
-
       <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalHeading}>Enter Bid Price</Text>
@@ -112,19 +131,28 @@ const BidToProposal = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  cardContainer: {
+  container: {
     flex: 1,
     backgroundColor: "#f0f8ff",
     padding: 20,
     justifyContent: "center",
-    // alignItems: "center",
+    justifyContent: "flex-start", // Align content at the top
+    marginTop: 50,
+    position: 'relative', // Add relative positioning
   },
   card: {
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
-    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   mainHeading: {
     fontSize: 24,
@@ -138,25 +166,37 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  description: {
-    fontSize: 16,
+  image: {
+    width: 200,
+    height: 200,
+    alignSelf: "center",
     marginBottom: 10,
-    // textAlign: "center",
+    borderRadius: 10, // Add border radius for rounded edges
+  },
+  line: {
+    height: 1,
+    backgroundColor: "#ccc", // Color of the line
+    marginVertical: 10,
   },
   detailsText: {
     fontSize: 16,
     marginBottom: 5,
-    // textAlign: "center",
+  },
+  highlight: {
+    fontWeight: "bold",
+    color: "#00716F",
+  },
+  backButton:{
+    position: 'absolute', // Use absolute positioning
+    top: 20, // Adjust top position as needed
+    left: 20, // Adjust left position as needed
+    zIndex: 1,
   },
   bidButton: {
     backgroundColor: "#00716F",
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
-    // alignSelf: "center",
-  },
-  bidButtonPressed: {
-    paddingTop: 10,
   },
   bidButtonText: {
     color: "#fff",

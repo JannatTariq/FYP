@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
+  Alert,
 } from "react-native";
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
@@ -15,93 +15,87 @@ const NotificationsScreen = () => {
     useContext(ProposalContext);
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
-  // console.log(state.proposal[1].userId);
 
   useEffect(() => {
-    const loadNotifications = async () => {
+    const fetchData = async () => {
       await fetchWorkerProposals();
+      const id = await getUserId();
+      setUserId(id);
+      await proposalBids();
     };
-
-    loadNotifications();
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchUserId = async () => {
-      try {
-        const id = await getUserId();
-        setUserId(id);
-      } catch (error) {
-        console.error("Error fetching user ID:", error);
+  const submitBid = async (action, proposalId, bidId, bidPrice) => {
+    try {
+      if (action === "accept") {
+        await acceptBid({ proposalId, bidId });
+        removeBid(proposalId, bidId);
+        Alert.alert("Bid Accepted", `Bid Price: ${bidPrice}`);
+      } else if (action === "reject") {
+        await rejectBid({ proposalId, bidId });
+        removeBid(proposalId, bidId);
+        Alert.alert("Bid Rejected", `Bid Price: ${bidPrice}`);
       }
-    };
-
-    fetchUserId();
-  }, []);
-
-  useEffect(() => {
-    const fetchUserId = async () => {
-      try {
-        await proposalBids();
-      } catch (error) {
-        console.error("Error fetching user ID:", error);
-      }
-    };
-    fetchUserId();
-  }, [proposalBids]);
-  // console.log(state.proposals);
-
-  const handleAcceptBid = async (proposalId, bidId) => {
-    await acceptBid({ proposalId, bidId });
-  };
-
-  const handleRejectBid = async (proposalId, bidId) => {
-    await rejectBid({ proposalId, bidId });
-  };
-  const capitalizeFirstLetter = (str) => {
-    if (!str) {
-      return "";
+    } catch (error) {
+      console.error("Error submitting bid:", error);
+      Alert.alert("Error", "An error occurred while submitting the bid.");
     }
-    return str
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
   };
-  // console.log("userId:", userId);
-  // console.log("clientId:", clientId);
-  // console.log(state.proposal.bids);
+
+  const removeBid = (proposalId, bidId) => {
+    const updatedProposal = state.proposal.map((proposal) => {
+      if (proposal._id === proposalId) {
+        return {
+          ...proposal,
+          bids: proposal.bids.filter((bid) => bid._id !== bidId),
+        };
+      }
+      return proposal;
+    });
+
+    // Update state using proposalBids function from ProposalContext
+    proposalBids(updatedProposal);
+  };
+
+  
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Notifications</Text>
 
-      {state.proposal &&
-        state.proposal.map(
-          (proposal, index) =>
+      <ScrollView>
+        {state.proposal &&
+          state.proposal.map((proposal) =>
             proposal.bids &&
             proposal.userId === userId &&
-            proposal.bids.map(
-              (bid) =>
-                bid.status !== "accepted" && (
-                  <View key={bid._id} style={styles.notificationItem}>
-                    {/* <Text>{bid.bidderName.match(/username: '([^']+)'/)}</Text> */}
-                    <TouchableOpacity
-                      onPress={() => handleAcceptBid(proposal._id, bid._id)}
-                    >
-                      <Text style={styles.acceptButton}>
-                        Accept Bid {capitalizeFirstLetter(bid.bidderName)}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => handleRejectBid(proposal._id, bid._id)}
-                    >
-                      <Text style={styles.rejectButton}>
-                        Reject Bid {capitalizeFirstLetter(bid.bidderName)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-            )
-        )}
+            proposal.bids.map((bid) => (
+              <View key={bid._id} style={styles.notificationItem}>
+                <Text style={styles.bidderName}>{bid.bidderName}</Text>
+                <Text style={styles.bidAmount}>Bid Amount: {bid.price}</Text>
+
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={[styles.button, styles.acceptButton]}
+                    onPress={() =>
+                      submitBid("accept", proposal._id, bid._id, bid.price)
+                    }
+                  >
+                    <Text style={styles.buttonText}>Accept</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.button, styles.rejectButton]}
+                    onPress={() =>
+                      submitBid("reject", proposal._id, bid._id, bid.price)
+                    }
+                  >
+                    <Text style={styles.buttonText}>Reject</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          )}
+      </ScrollView>
     </View>
   );
 };
@@ -118,14 +112,42 @@ const styles = StyleSheet.create({
   },
   notificationItem: {
     marginBottom: 20,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: "#ddd",
+    backgroundColor: "#fff",
+  },
+  bidderName: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  bidAmount: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   acceptButton: {
-    color: "green",
-    fontWeight: "bold",
+    backgroundColor: "green",
   },
   rejectButton: {
-    color: "red",
-    fontWeight: "bold",
+    backgroundColor: "red",
   },
 });
 

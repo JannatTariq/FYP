@@ -10,48 +10,63 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { Context as ProposalContext } from "../context/proposalContext";
+import { Context as AuthContext } from "../context/authContext";
 
 const WorkerHomeScreen = () => {
   const navigation = useNavigation();
+  
   const { state, fetchWorkerProposals } = useContext(ProposalContext);
-  // console.log(state);
-  // console.log(state.proposal[1]);
+  const { state: authState, signOut, userProfile } = useContext(AuthContext);
 
-  const areaDemo = "200 sq. ft.";
-  const expectedPriceDemo = "$50,000";
-  const bedroomsDemo = 3;
-  const bathroomsDemo = 2;
+  useEffect(() => {
+    fetchWorkerProposals();
+    
+  }, []);
+  useEffect(() => {
+    // Fetch user profile data when component mounts
+    userProfile();
+  }, []);
+  
+  const handleBidding = () => {
+    navigation.navigate("BiddingSearchScreen");
+  };
 
-  const clientProjects = [
-    {
-      id: 1,
-      clientName: "Fatima",
-      projectName: "Project 1",
-      projectDetails: {
-        description: "Property in Johar Town.",
-        area: "200 sq. ft.",
-        location: "349-L Block Johar Town",
-        expectedPrice: "Rs. 2,000,000",
-        bedrooms: 5,
-        bathrooms: 4,
-      },
-    },
-    {
-      id: 2,
-      clientName: "Aaliyan",
-      projectName: "Project 2",
-      projectDetails: {
-        description: "100 square feet property in Cantt",
-        area: "100 sq. ft.",
-        location: "359-F Block Cantt",
-        expectedPrice: "Rs. 1,000,000",
-        bedrooms: 3,
-        bathrooms: 2,
-      },
-    },
-  ];
-
-  const [projects, setProjects] = useState(clientProjects);
+  const renderProjectList = () => {
+    return (
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {state.proposal?.map((proposal, index) => (
+          <TouchableOpacity
+            key={proposal._id}
+            style={styles.projectCard}
+            onPress={() =>
+              navigation.navigate("BidToProposal", { proposal, index })
+            }
+          >
+            <Text style={styles.projectName}>Project {index + 1}</Text>
+            <Text style={[styles.projectName, styles.bold]}>
+              {capitalizeFirstLetter(proposal.username)}
+            </Text>
+            <Image
+              source={{ uri: proposal?.image }}
+              style={styles.projectImage}
+            />
+            <Text style={styles.projectDescription}>
+              <Text style={styles.bold}>Address: </Text>
+              {`${capitalizeFirstLetter(proposal.address)}\n`}
+              <Text style={styles.bold}>Area: </Text>
+              {`${proposal.area}\n`}
+              <Text style={styles.bold}>Price: </Text>
+              {`${proposal.price}\n`}
+              <Text style={styles.bold}>Bedrooms: </Text>
+              {`${proposal.bedroom}\n`}
+              <Text style={styles.bold}>Bathrooms: </Text>
+              {`${proposal.bathroom}`}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    );
+  };
 
   const capitalizeFirstLetter = (str) => {
     if (!str) {
@@ -62,79 +77,28 @@ const WorkerHomeScreen = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
-  useEffect(() => {
-    fetchWorkerProposals();
-    // proposalBids();
-  }, [fetchWorkerProposals]);
-  const handleBidding = () => {
-    navigation.navigate("BiddingSearchScreen");
-  };
-  // console.log(state.proposal);
-  const renderProjectList = () => {
-    let index = 0;
-    return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ flexDirection: "row" }}
-      >
-        {state.proposal?.map((proposal) =>
-          proposal.bids.length === 0 ||
-          proposal.bids[0].status === "pending" ? (
-            <TouchableOpacity
-              key={`${proposal._id}`}
-              style={styles.projectCard}
-              onPress={() =>
-                navigation.navigate("BidToProposal", { proposal, index })
-              }
-            >
-              {/* <Text>{console.log(proposal)}</Text> */}
-              <Text style={styles.projectName}>Project {`${++index}`}</Text>
-              <Text style={styles.projectName}>
-                {capitalizeFirstLetter(proposal.username)}
-              </Text>
-              <Image
-                source={{ uri: proposal?.image }}
-                style={{ width: 100, height: 100 }}
-              />
-              <Text style={styles.projectDescription}>
-                {proposal?.address}
-                {"\n"}
-                {proposal?.area}
-                {"\n"}
-                {proposal?.price}
-                {"\n"}
-                {proposal?.bedroom}
-                {"\n"}
-                {proposal?.bathroom}
-              </Text>
-              {/* {proposal.bids.map((bid, bidIndex) => (
-                <Text key={`bid_${bidIndex}`}>Bid Status: {bid.status}</Text>
-              ))} */}
-            </TouchableOpacity>
-          ) : (
-            <Text key={`bid_${proposal._id}_${index}`}></Text>
-          )
-        )}
-      </ScrollView>
-    );
-  };
 
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
-        <Text style={styles.heading}>Welcome to Your Home Page!</Text>
-
+        <Text style={styles.heading}>Welcome Home {authState.username}!</Text>
+        
+        
+        
+      
         <View style={styles.tipContainer}>
           <Text style={styles.tipHeading}>Tip of the Day</Text>
           <Text style={styles.tipText}>
             Always ensure to communicate effectively with clients to understand
             their project requirements thoroughly.
           </Text>
+          
         </View>
 
+        <View style={styles.separator}/>
+
         <View style={styles.subContainer}>
-          <Text style={styles.subHeading}>Your Projects:</Text>
+          <Text style={styles.subHeading}>Client's Projects:</Text>
           {renderProjectList()}
         </View>
       </View>
@@ -143,7 +107,7 @@ const WorkerHomeScreen = () => {
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomBarItem} onPress={handleBidding}>
           <Ionicons name="search" size={30} color="#00716F" />
-          <Text>Search</Text>
+          <Text style={styles.bottomBarText}>Search</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -151,21 +115,7 @@ const WorkerHomeScreen = () => {
           onPress={() => navigation.navigate("WorkerProfileScreen")}
         >
           <Ionicons name="person" size={30} color="#00716F" />
-          <Text>Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomBarItem}
-          onPress={() => navigation.navigate("WorkerProjectsScreen")}
-        >
-          <Ionicons name="notifications-outline" size={30} color="#00716F" />
-          <Text>Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomBarItem}
-          onPress={() => navigation.navigate("WorkerAppointment")}
-        >
-          <Ionicons name="notifications-outline" size={30} color="#00716F" />
-          <Text>Appointments</Text>
+          <Text style={styles.bottomBarText}>Profile</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -175,8 +125,14 @@ const WorkerHomeScreen = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#f0f8ff", // Light green background
-    marginTop: 30,
+    backgroundColor: "#f0f8ff",
+    marginTop: 0,
+  },
+  separator:{
+    borderBottomWidth:1,
+    borderBottomColor:"#ccc",
+    marginTop:10,
+    marginBottom:20,
   },
   container: {
     flex: 1,
@@ -191,49 +147,68 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
-    color: "#00716F", // Dark green text color
+    color: "#00716F",
   },
   subHeading: {
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 10,
     marginBottom: 10,
-    color: "#00716F", // Dark green text color
+    color: "#00716F",
   },
   projectCard: {
     width: 170,
     height: 270,
     marginRight: 15,
-    borderWidth: 1,
-    borderColor: "#ddd",
     borderRadius: 10,
     padding: 10,
     marginBottom: 20,
-    backgroundColor: "#fff", // White background for each project card
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderTopLeftRadius: 20, // Rounded top left corner
+    borderTopRightRadius: 20, // Rounded top right corner
+    borderWidth: 1,
+    borderColor: "#eee", // Lighter border color
   },
   projectName: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 5,
-    color: "#00716F", // Dark green text color
+    color: "#00716F",
+  },
+  projectImage: {
+    width: "100%",
+    height: 100,
+    marginBottom: 5,
+    borderRadius: 5,
   },
   projectDescription: {
     fontSize: 14,
-    color: "#333", // Dark gray text color
+    color: "#333",
   },
   bottomBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#FFF", // Dark green background for bottom bar
+    backgroundColor: "#FFF",
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   bottomBarItem: {
     alignItems: "center",
   },
+  bottomBarText: {
+    color: "#00716F",
+  },
   tipContainer: {
-    backgroundColor: "#d3f5e9", // Light green background for tip container
+    backgroundColor: "#d3f5e9",
     padding: 20,
     marginTop: 20,
     borderRadius: 10,
@@ -242,11 +217,18 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#00716F", // Dark green text color
+    color: "#00716F",
   },
   tipText: {
-    fontSize: 16,
-    color: "#333", // Dark gray text color
+    fontSize: 16, 
+    color: "#333",
+    fontWeight: "bold",
+  },
+  username: {
+    color: "#FF5733", // Example color
+  },
+  bold: {
+    fontWeight: "bold",
   },
 });
 
