@@ -8,57 +8,29 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import WorkerProjects from "../screens/WorkerProjects";
+import { useNavigation } from "@react-navigation/native";
 import { Context as AuthContext } from "../context/authContext";
 
 const WorkerProfileScreen = () => {
   const navigation = useNavigation();
   const { state, userProfile } = useContext(AuthContext);
   const workerProjects = [
-    {
-      id: 1,
-      projectName: "Project 1",
-      projectDetails: [
-        {
-          heading: "Description",
-          value: "Property in Lahore.",
-        },
-        { heading: "Area", value: "200 sq. ft." },
-        { heading: "Expected Price", value: "Rs. 50,000" },
-        { heading: "No. of Bedrooms", value: "3" },
-        { heading: "No. of Bathrooms", value: "2" },
-      ],
-    },
-    {
-      id: 2,
-      projectName: "Project 2",
-      projectDetails: [
-        {
-          heading: "Description",
-          value: "Property in Wapda Town.",
-        },
-        { heading: "Area", value: "150 sq. ft." },
-        { heading: "Expected Price", value: "$40,000" },
-        { heading: "No. of Bedrooms", value: "2" },
-        { heading: "No. of Bathrooms", value: "1" },
-      ],
-    },
-    // Add more projects as needed
+    // Define workerProjects array as per your requirements
   ];
 
   const workerInfo = {
     avatarUri: "https://www.bootdey.com/img/Content/avatar/avatar6.png",
-    name: "Worker Name",
-    email: "worker@example.com",
-    location: "City, Country",
+    name: state.username, // Use real name from AuthContext state
+    email: state.email, // Use real email from AuthContext state
+    location: "City, Country", // Use real location from AuthContext state
     bio: "I am passionate about turning your construction dreams into reality. Whether you're envisioning a new home, a commercial space, or a transformative renovation, I have the expertise and dedication to make it happen. Let's collaborate to build something extraordinary.",
   };
+
   const handlePress = () => {
     navigation.goBack();
   };
+
   const handleLogOut = () => {
     navigation.navigate("SignIn");
   };
@@ -67,21 +39,30 @@ const WorkerProfileScreen = () => {
     userProfile();
   }, []);
 
-  return (
-    <FlatList
-      data={[{ key: "profile" }]}
-      renderItem={({ item }) => (
-        <View key={item.key} style={styles.container}>
-          <View style={styles.navbar}>
-            <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
-              <Ionicons name="arrow-back-outline" size={24} color="#004d40" />
-            </TouchableOpacity>
+  const renderProjectItem = ({ item }) => {
+    return (
+      <View style={styles.projectCard}>
+        <Text style={styles.projectName}>{item.projectName}</Text>
+        {item.projectDetails.map((detail, index) => (
+          <View key={index} style={styles.projectDetail}>
+            <Text style={styles.detailHeading}>{detail.heading}:</Text>
+            <Text style={styles.detailValue}>{detail.value}</Text>
           </View>
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <ScrollView>
+        <TouchableOpacity onPress={handlePress} style={styles.navbar}>
+          <AntDesign name="arrowleft" size={24} color="#004d40" />
+        </TouchableOpacity>
+
+        <View style={styles.card}>
           <View style={styles.avatarContainer}>
-            <Image
-              source={{ uri: workerInfo.avatarUri }}
-              style={styles.avatar}
-            />
+            <Image source={{ uri: workerInfo.avatarUri }} style={styles.avatar} />
             <Text style={styles.name}>{workerInfo.name}</Text>
           </View>
           <View style={styles.infoContainer}>
@@ -96,62 +77,47 @@ const WorkerProfileScreen = () => {
             <Text style={styles.infoLabel}>Bio:</Text>
             <Text style={styles.infoValue}>{workerInfo.bio}</Text>
           </View>
-          {/* <WorkerProjects /> */}
+
           <View style={styles.projectsContainer}>
             <Text style={styles.projectsHeading}>Projects</Text>
             <FlatList
               data={workerProjects}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.projectCard}>
-                  <Text style={styles.projectName}>{item.projectName}</Text>
-                  <FlatList
-                    data={item.projectDetails}
-                    keyExtractor={(detail) => detail.heading}
-                    renderItem={({ item: detail }) => (
-                      <View style={styles.projectDetail}>
-                        <Text style={styles.detailHeading}>
-                          {detail.heading}:
-                        </Text>
-                        <Text style={styles.detailValue}>{detail.value}</Text>
-                      </View>
-                    )}
-                  />
-                </View>
-              )}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderProjectItem}
             />
           </View>
-          <View style={styles.navbarLogOut}>
-            <TouchableOpacity
-              onPress={handleLogOut}
-              style={styles.barContainerLogOut}
-            >
-              <AntDesign name="logout" size={24} color="black" />
-              <Text style={styles.barText}>Log Out</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      )}
-    />
+      </ScrollView>
+
+      <TouchableOpacity onPress={handleLogOut} style={styles.navbarLogOut}>
+        <AntDesign name="logout" size={24} color="black" />
+        <Text style={styles.barText}>Log Out</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor: "#f0f8ff", // Green texture background color
-    padding: 20,
-  },
-  scrollContainer: {
     flex: 1,
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#f0f8ff", // Green texture background color
   },
-  container1: {
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
     padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   avatarContainer: {
     alignItems: "center",
-    marginTop: 20,
   },
   navbarLogOut: {
     flexDirection: "row",
@@ -159,6 +125,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingTop: 10,
+    paddingBottom: 20, // Add paddingBottom to create space for the logout button
   },
   barContainerLogOut: {
     flexDirection: "row",
@@ -166,10 +133,6 @@ const styles = StyleSheet.create({
   },
   barText: {
     marginLeft: 5,
-  },
-  barContainer: {
-    flex: 1,
-    // backgroundColor: "#004d40",
   },
   navbar: {
     height: 50,
@@ -195,21 +158,11 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontWeight: "bold",
     color: "#00716F",
+    textDecorationLine: "underline",
   },
   infoValue: {
     marginTop: 5,
     color: "black",
-  },
-  barContainer: {
-    flex: 1,
-    // backgroundColor: "#004d40",
-  },
-  navbar: {
-    height: 50,
-    top: 20,
-    left: 10,
-    padding: 10,
-    zIndex: 1,
   },
   projectsContainer: {
     marginTop: 20,
@@ -245,18 +198,6 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     flex: 1,
-  },
-  bidButton: {
-    backgroundColor: "#00716F",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  bidButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });
 
