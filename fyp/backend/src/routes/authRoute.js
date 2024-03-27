@@ -6,6 +6,7 @@ const Constructor = mongoose.model("Constructor");
 const { geocode } = require("opencage-api-client");
 const requireAuth = require("../middlewares/requireAuth");
 
+const maxAge = 3600;
 const router = express.Router();
 
 function validateAddress(response) {
@@ -238,7 +239,7 @@ router.get("/getWorkers", async (req, res) => {
         separatedWorkers.plumber.push(worker);
       }
     });
-
+    // console.log(separatedWorkers);
     res.json(separatedWorkers);
   } catch (error) {
     console.error(error);
@@ -261,7 +262,7 @@ router.get("/userProfile", requireAuth, async (req, res) => {
   res.json(user);
 });
 
-router.post("/createReviews", requireAuth, async (req, res) => {
+router.put("/createReviews", requireAuth, async (req, res) => {
   try {
     const { rating, comment, workerId } = req.body;
 
@@ -277,31 +278,36 @@ router.post("/createReviews", requireAuth, async (req, res) => {
     const worker = await Constructor.findById(workerId);
     // console.log(worker.reviews);
 
-    const isReviewed = worker.reviews.find(
-      (r) => r.user.toString() === req.user._id.toString()
-    );
-    // console.log(isReviewed);
+    if (worker.reviews && Array.isArray(worker.reviews)) {
+      const isReviewed = worker.reviews.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
+      // console.log(isReviewed);
 
-    if (isReviewed) {
-      worker.reviews.forEach((review) => {
-        if (review.user.toString() === req.user._id.toString()) {
-          review.comment = comment;
-          review.rating = rating;
-        }
-      });
+      if (isReviewed) {
+        worker.reviews.forEach((review) => {
+          if (review.user.toString() === req.user._id.toString()) {
+            review.comment = comment;
+            review.rating = rating;
+          }
+        });
+      } else {
+        worker.reviews.push(review);
+        worker.numOfReviews = worker.reviews.length;
+      }
+
+      worker.ratings =
+        worker.reviews.reduce((acc, item) => item.rating + acc, 0) /
+        worker.reviews.length;
     } else {
-      worker.reviews.push(review);
-      worker.numOfReviews = worker.reviews.length;
+      // If reviews is null or not an array, initialize it as an empty array
+      worker.reviews = [];
     }
-
-    worker.ratings =
-      worker.reviews.reduce((acc, item) => item.rating + acc, 0) /
-      worker.reviews.length;
     // console.log(worker);
 
     await worker.save();
 
-    res.send({ success: true });
+    res.send({ success: true, worker });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -315,6 +321,7 @@ router.get("/getReviews/:id", requireAuth, async (req, res) => {
   res.json({
     success: true,
     reviews: worker.reviews,
+    rating: worker.ratings,
   });
 });
 
