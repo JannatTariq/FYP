@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Context as AuthContext } from "../context/authContext";
 import { AntDesign } from "@expo/vector-icons";
+import WorkerProjectsScreen from "./WorkerProjects";
 
 const WPS_Client = ({ route }) => {
   const navigation = useNavigation();
@@ -29,7 +30,7 @@ const WPS_Client = ({ route }) => {
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
 
-  // console.log(worker._id);
+  console.log(worker);
 
   const workerProjects = [
     {
@@ -61,6 +62,7 @@ const WPS_Client = ({ route }) => {
       ],
     },
     // Add more projects as needed
+    // console.log(worker),
   ];
 
   const workerInfo = {
@@ -116,24 +118,24 @@ const WPS_Client = ({ route }) => {
           </View>
           <View style={styles.avatarContainer}>
             <Image
-              source={{ uri: workerInfo.avatarUri }}
+              source={require("../../assets/user.png")}
               style={styles.avatar}
             />
-            <Text style={styles.name}>{workerInfo.name}</Text>
+            <Text style={styles.name}>{worker.username}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{workerInfo.email}</Text>
+            <Text style={styles.infoValue}>{worker.email}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Location:</Text>
-            <Text style={styles.infoValue}>{workerInfo.location}</Text>
+            <Text style={styles.infoValue}>{worker.address}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Bio:</Text>
             <Text style={styles.infoValue}>{workerInfo.bio}</Text>
           </View>
-
+          {/* 
           <View style={styles.projectsContainer}>
             <Text style={styles.projectsHeading}>Projects</Text>
             <FlatList
@@ -157,7 +159,8 @@ const WPS_Client = ({ route }) => {
                 </View>
               )}
             />
-          </View>
+          </View> */}
+          <WorkerProjectsScreen />
           <TouchableOpacity
             style={styles.bidButton}
             onPress={() =>
