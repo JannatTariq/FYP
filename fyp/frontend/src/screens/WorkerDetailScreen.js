@@ -12,26 +12,26 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Context as AuthContext } from "../context/authContext";
 import { AntDesign } from "@expo/vector-icons";
-import WorkerProjectsScreen from "./WorkerProjects";
 
-const WPS_Client = ({ route }) => {
+const WorkerDetail = ({ route }) => {
   const navigation = useNavigation();
   const {
     state,
-    userProfile,
+    workerProfile,
     createReviews,
     getReviews,
     deleteReview,
     getUserId,
   } = useContext(AuthContext);
   // console.log("State", state.reviews.rating);
-  const { worker } = route.params;
+  const { worker, review } = route.params;
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
+  const [workerProfileData, setWorkerProfileData] = useState(null);
+  const [reviewsData, setReviewsData] = useState([]);
 
-  console.log(worker);
-  // console.log(worker);
+  //   console.log(worker, review);
 
   const workerProjects = [
     {
@@ -63,16 +63,16 @@ const WPS_Client = ({ route }) => {
       ],
     },
     // Add more projects as needed
-    // console.log(worker),
   ];
 
   const workerInfo = {
     avatarUri: "https://www.bootdey.com/img/Content/avatar/avatar6.png",
-    name: "Worker Name",
-    email: "worker@example.com",
-    location: "City, Country",
+    name: workerProfileData?._j?.username,
+    email: workerProfileData?._j?.email,
+    location: workerProfileData?._j?.address,
     bio: "I am passionate about turning your construction dreams into reality. Whether you're envisioning a new home, a commercial space, or a transformative renovation, I have the expertise and dedication to make it happen. Let's collaborate to build something extraordinary. ",
   };
+  //   console.log(workerInfo.name);
   const handlePress = () => {
     navigation.goBack();
   };
@@ -80,17 +80,19 @@ const WPS_Client = ({ route }) => {
     navigation.navigate("Appointment");
   };
 
-  useEffect(() => {
-    userProfile();
-    getReviews({ workerId: worker._id });
-  }, []);
-  // console.log(state);
+  //   console.log(state.reviews);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const id = await getUserId();
         setUserId(id);
+
+        const workerProfileData = workerProfile({ id: worker });
+        setWorkerProfileData(workerProfileData);
+
+        const reviewsData = await getReviews({ workerId: worker });
+        setReviewsData(reviewsData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -99,13 +101,13 @@ const WPS_Client = ({ route }) => {
     loadData();
   }, []);
 
-  // console.log(state.userId);
+  //   console.log(workerProfileData?._j?.username);
   const handleRatingSubmit = async () => {
-    await createReviews({ rating, comment, workerId: worker._id });
+    await createReviews({ rating, comment, workerId: worker });
   };
   const handleDeleteReview = async (reviewId) => {
     await deleteReview({ reviewId });
-    getReviews({ workerId: worker._id });
+    getReviews({ workerId: worker });
   };
 
   return (
@@ -120,24 +122,24 @@ const WPS_Client = ({ route }) => {
           </View>
           <View style={styles.avatarContainer}>
             <Image
-              source={require("../../assets/user.png")}
+              source={{ uri: workerInfo.avatarUri }}
               style={styles.avatar}
             />
-            <Text style={styles.name}>{worker.username}</Text>
+            <Text style={styles.name}>{workerInfo.name}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{worker.email}</Text>
+            <Text style={styles.infoValue}>{workerInfo.email}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Location:</Text>
-            <Text style={styles.infoValue}>{worker.address}</Text>
+            <Text style={styles.infoValue}>{workerInfo.location}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Bio:</Text>
             <Text style={styles.infoValue}>{workerInfo.bio}</Text>
           </View>
-          {/* 
+
           <View style={styles.projectsContainer}>
             <Text style={styles.projectsHeading}>Projects</Text>
             <FlatList
@@ -161,19 +163,18 @@ const WPS_Client = ({ route }) => {
                 </View>
               )}
             />
-          </View> */}
-          <WorkerProjectsScreen />
+          </View>
           <TouchableOpacity
             style={styles.bidButton}
             onPress={() =>
-              navigation.navigate("Appointment", { worker: worker._id })
+              navigation.navigate("Appointment", { worker: worker })
             }
           >
             <Text style={styles.bidButtonText}>Schedule Appointment</Text>
           </TouchableOpacity>
           <View style={styles.reviewsContainer}>
             <Text style={styles.reviewsHeading}>Reviews</Text>
-            {state.reviews?.reviews.map((review, index) => (
+            {state.reviews?.reviews?.map((review, index) => (
               <View key={index} style={styles.review}>
                 <Text style={styles.name}>Name: {review.name}</Text>
                 <Text style={styles.reviewRating}>Rating: {review.rating}</Text>
@@ -434,4 +435,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WPS_Client;
+export default WorkerDetail;

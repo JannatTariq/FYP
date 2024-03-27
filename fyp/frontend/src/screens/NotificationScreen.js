@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
+import { useNavigation } from "@react-navigation/native";
 
 const NotificationsScreen = () => {
   const navigation = useNavigation();
@@ -62,6 +63,14 @@ const NotificationsScreen = () => {
     // Update state using proposalBids function from ProposalContext
     proposalBids(updatedProposal);
   };
+  // console.log(state.proposal[0].bids);
+  const navigateToBidderPage = (bidderId, reviewId) => {
+    // console.log(reviewId);
+    navigation.navigate("WorkerDetailScreen", {
+      worker: bidderId,
+      review: reviewId,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -103,6 +112,56 @@ const NotificationsScreen = () => {
                   </View>
                 </View>
               ))
+              proposal.bids.map(
+                (bid) =>
+                  bid.status !== "accepted" &&
+                  bid.status !== "rejected" && (
+                    <View key={bid._id} style={styles.notificationItem}>
+                      <TouchableOpacity
+                        style={styles.notificationItem}
+                        onPress={() =>
+                          navigateToBidderPage(bid.userId, bid._id)
+                        }
+                      >
+                        <Text style={styles.bidderName}>
+                          Bid Name: {bid.bidderName}
+                        </Text>
+                      </TouchableOpacity>
+                      <Text style={styles.bidAmount}>
+                        Bid Amount: {bid.price}
+                      </Text>
+
+                      <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                          style={[styles.button, styles.acceptButton]}
+                          onPress={() =>
+                            submitBid(
+                              "accept",
+                              proposal._id,
+                              bid._id,
+                              bid.price
+                            )
+                          }
+                        >
+                          <Text style={styles.buttonText}>Accept</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[styles.button, styles.rejectButton]}
+                          onPress={() =>
+                            submitBid(
+                              "reject",
+                              proposal._id,
+                              bid._id,
+                              bid.price
+                            )
+                          }
+                        >
+                          <Text style={styles.buttonText}>Reject</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )
+              )
           )}
       </ScrollView>
     </View>

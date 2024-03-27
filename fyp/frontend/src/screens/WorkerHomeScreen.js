@@ -14,19 +14,18 @@ import { Context as AuthContext } from "../context/authContext";
 
 const WorkerHomeScreen = () => {
   const navigation = useNavigation();
-  
+
   const { state, fetchWorkerProposals } = useContext(ProposalContext);
   const { state: authState, signOut, userProfile } = useContext(AuthContext);
 
   useEffect(() => {
     fetchWorkerProposals();
-    
-  }, []);
+  }, [fetchWorkerProposals]);
   useEffect(() => {
     // Fetch user profile data when component mounts
     userProfile();
   }, []);
-  
+
   const handleBidding = () => {
     navigation.navigate("BiddingSearchScreen");
   };
@@ -82,20 +81,16 @@ const WorkerHomeScreen = () => {
     <View style={styles.mainContainer}>
       <View style={styles.container}>
         <Text style={styles.heading}>Welcome Home {authState.username}!</Text>
-        
-        
-        
-      
+
         <View style={styles.tipContainer}>
           <Text style={styles.tipHeading}>Tip of the Day</Text>
           <Text style={styles.tipText}>
             Always ensure to communicate effectively with clients to understand
             their project requirements thoroughly.
           </Text>
-          
         </View>
 
-        <View style={styles.separator}/>
+        <View style={styles.separator} />
 
         <View style={styles.subContainer}>
           <Text style={styles.subHeading}>Client's Projects:</Text>
@@ -128,11 +123,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f8ff",
     marginTop: 0,
   },
-  separator:{
-    borderBottomWidth:1,
-    borderBottomColor:"#ccc",
-    marginTop:10,
-    marginBottom:20,
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    marginTop: 10,
+    marginBottom: 20,
   },
   container: {
     flex: 1,
@@ -220,7 +215,7 @@ const styles = StyleSheet.create({
     color: "#00716F",
   },
   tipText: {
-    fontSize: 16, 
+    fontSize: 16,
     color: "#333",
     fontWeight: "bold",
   },

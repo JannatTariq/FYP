@@ -123,7 +123,7 @@ router.post("/signup", async (req, res) => {
 
     const response1 = await geocode({
       q: `${address}, Pakistan`,
-      key: "494016b2e2604b44932b85fe186be028",
+      key: "45f6d5efa9594c1a9a3b34dded34afb6",
     });
 
     const isValidAddress = validateAddress(response1);
@@ -144,7 +144,7 @@ router.post("/signup", async (req, res) => {
     if (uploadedDocument) {
       const response = await geocode({
         q: `${city}, Pakistan`,
-        key: "494016b2e2604b44932b85fe186be028",
+        key: "45f6d5efa9594c1a9a3b34dded34afb6",
       });
       if (!isValidCity(response)) {
         return res.status(400).send({ error: "Invalid city" });
@@ -358,6 +358,22 @@ router.delete("/deleteReviews/:reviewId", requireAuth, async (req, res) => {
   res.json({ success: true });
 });
 
-
+router.get("/userProfile/:userId", requireAuth, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    let user = await User.findById(userId);
+    if (!user) {
+      user = await Constructor.findById(userId);
+    }
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+    // console.log(user);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 module.exports = router;
