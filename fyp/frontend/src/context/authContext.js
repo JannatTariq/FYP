@@ -22,6 +22,12 @@ const authReducer = (state, action) => {
       return { ...state, userId: action.payload };
     case "user_profile":
       return action.payload;
+    case "get_reviews":
+      return { reviews: action.payload };
+    case "delete_reviews":
+      return {
+        ...state,
+      };
     default:
       return state;
   }
@@ -229,6 +235,7 @@ const fetchWorkers = (dispatch) => async () => {
       type: "fetch_workers",
       payload: response.data,
     });
+    // console.log(response.data);
   } catch (error) {
     console.error(error);
     dispatch({
@@ -277,6 +284,78 @@ const userProfile = (dispatch) => async () => {
   }
 };
 
+const createReviews =
+  (dispatch) =>
+  async ({ rating, comment, workerId }) => {
+    try {
+      // console.log(rating, comment, workerId);
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.put(
+        "/createReviews",
+        { rating, comment, workerId },
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      // console.log(response.data);
+      navigate("HomeScreen");
+      dispatch({
+        type: "user_profile",
+        payload: response.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "add_error",
+        payload: "Error getting user.",
+      });
+    }
+  };
+
+const getReviews =
+  (dispatch) =>
+  async ({ workerId }) => {
+    try {
+      // console.log(workerId);
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.get(`/getReviews/${workerId}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      // console.log(response.data);
+      // navigate("HomeScreen");
+      dispatch({
+        type: "get_reviews",
+        payload: response.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "add_error",
+        payload: "Error getting user.",
+      });
+    }
+  };
+
+const deleteReview =
+  (dispatch) =>
+  async ({ reviewId }) => {
+    try {
+      // console.log("Review", reviewId);
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.delete(`/deleteReviews/${reviewId}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      // console.log(response.data);
+      // navigate("HomeScreen");
+      dispatch({
+        type: "delete_reviews",
+        payload: response.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "add_error",
+        payload: "Error getting user.",
+      });
+    }
+  };
 export const { Provider, Context } = createDataContext(
   authReducer,
   {
@@ -288,6 +367,9 @@ export const { Provider, Context } = createDataContext(
     fetchWorkers,
     getUserId,
     userProfile,
+    createReviews,
+    getReviews,
+    deleteReview,
   },
   { token: null, errorMessage: "" }
 );
