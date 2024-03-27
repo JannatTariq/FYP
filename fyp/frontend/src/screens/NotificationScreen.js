@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
+  Alert,
 } from "react-native";
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
@@ -17,38 +17,59 @@ const NotificationsScreen = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const loadNotifications = async () => {
+    const fetchData = async () => {
       await fetchWorkerProposals();
+      const id = await getUserId();
+      setUserId(id);
+      await proposalBids();
     };
+
+    fetchData();
+
     loadNotifications();
+
   }, []);
 
-  useEffect(() => {
-    const fetchUserId = async () => {
-      try {
-        const id = await getUserId();
-        setUserId(id);
-      } catch (error) {
-        console.error("Error fetching user ID:", error);
+  const submitBid = async (action, proposalId, bidId, bidPrice) => {
+    try {
+      if (action === "accept") {
+        await acceptBid({ proposalId, bidId });
+        removeBid(proposalId, bidId);
+        Alert.alert("Bid Accepted", `Bid Price: ${bidPrice}`);
+      } else if (action === "reject") {
+        await rejectBid({ proposalId, bidId });
+        removeBid(proposalId, bidId);
+        Alert.alert("Bid Rejected", `Bid Price: ${bidPrice}`);
       }
+
+    } catch (error) {
+      console.error("Error submitting bid:", error);
+      Alert.alert("Error", "An error occurred while submitting the bid.");
+    }
+  };
     };
     fetchUserId();
   }, []);
 
-  useEffect(() => {
-    const fetchUserId = async () => {
-      try {
-        await proposalBids();
-      } catch (error) {
-        console.error("Error fetching user ID:", error);
+
+  const removeBid = (proposalId, bidId) => {
+    const updatedProposal = state.proposal.map((proposal) => {
+      if (proposal._id === proposalId) {
+        return {
+          ...proposal,
+          bids: proposal.bids.filter((bid) => bid._id !== bidId),
+        };
       }
+      return proposal;
+    });
     };
     fetchUserId();
   }, [proposalBids]);
 
-  const handleAcceptBid = async (proposalId, bidId) => {
-    await acceptBid({ proposalId, bidId });
+    // Update state using proposalBids function from ProposalContext
+    proposalBids(updatedProposal);
   };
+
 
   const handleRejectBid = async (proposalId, bidId) => {
     await rejectBid({ proposalId, bidId });
@@ -70,6 +91,35 @@ const NotificationsScreen = () => {
 
       <ScrollView>
         {state.proposal &&
+          state.proposal.map((proposal) =>
+            proposal.bids &&
+            proposal.userId === userId &&
+            proposal.bids.map((bid) => (
+              <View key={bid._id} style={styles.notificationItem}>
+                <Text style={styles.bidderName}>{bid.bidderName}</Text>
+                <Text style={styles.bidAmount}>Bid Amount: {bid.price}</Text>
+
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={[styles.button, styles.acceptButton]}
+                    onPress={() =>
+                      submitBid("accept", proposal._id, bid._id, bid.price)
+                    }
+                  >
+                    <Text style={styles.buttonText}>Accept</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.button, styles.rejectButton]}
+                    onPress={() =>
+                      submitBid("reject", proposal._id, bid._id, bid.price)
+                    }
+                  >
+                    <Text style={styles.buttonText}>Reject</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          )}
           state.proposal.map((proposal, index) => (
             <View key={proposal._id} style={styles.notificationItem}>
               {proposal.bids &&
@@ -121,7 +171,35 @@ const styles = StyleSheet.create({
   },
   notificationItem: {
     marginBottom: 20,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: "#ddd",
+    backgroundColor: "#fff",
   },
+  bidderName: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  bidAmount: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
   bidItem: {
     marginBottom: 10,
     padding: 10,
@@ -151,6 +229,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  acceptButton: {
+    backgroundColor: "green",
+  },
+  rejectButton: {
+    backgroundColor: "red",
   },
 });
 
