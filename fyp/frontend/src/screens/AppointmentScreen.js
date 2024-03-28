@@ -22,7 +22,7 @@ const AppointmentScreen = ({ route }) => {
   const { submitAppointment } = useContext(AppointmentContext);
 
   const { worker } = route.params;
-  // console.log(worker);
+  // console.log(worker._id);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -197,7 +197,7 @@ const AppointmentScreen = ({ route }) => {
         style={styles.button}
         onPress={() =>
           submitAppointment({
-            workerId: worker,
+            workerId: worker._id,
             selectedDate,
             selectedTime,
           })
@@ -207,7 +207,13 @@ const AppointmentScreen = ({ route }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("MeetingsScreen")}
+        onPress={() =>
+          navigation.navigate("MeetingsScreen", {
+            workerData: worker,
+            selectedDate,
+            selectedTime,
+          })
+        }
       >
         <Text style={styles.buttonText}>Appointments</Text>
       </TouchableOpacity>

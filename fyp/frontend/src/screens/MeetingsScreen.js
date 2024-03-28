@@ -79,21 +79,26 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Context as AuthContext } from "../context/authContext";
 import { Context as AppointmentContext } from "../context/appointmentContext";
 
-const MeetingBox = ({ appointment, userId, onRemove }) => (
+const MeetingBox = ({ name, date, time, userId, onRemove }) => (
   <View style={styles.meetingBox}>
-    <Text style={{ color: "red" }}>Meetings {appointment.userId} </Text>
+    <View>
+      <Text style={styles.heading}>Meeting</Text>
+      <Text style={styles.text}>Name: {name}</Text>
+      <Text style={styles.text}>Date: {date}</Text>
+      <Text style={styles.text}>Time: {time}</Text>
+    </View>
     <TouchableOpacity onPress={onRemove}>
       <Text style={{ color: "blue" }}>Close</Text>
     </TouchableOpacity>
   </View>
 );
 
-const MeetingsScreen = () => {
+const MeetingsScreen = ({ route }) => {
   const { state, getAppointments } = useContext(AppointmentContext);
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
   const [displayedAppointments, setDisplayedAppointments] = useState([]);
-
+  const { workerData, selectedDate, selectedTime } = route.params;
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -130,7 +135,9 @@ const MeetingsScreen = () => {
         displayedAppointments.map((appointment) => (
           <MeetingBox
             key={appointment._id}
-            appointment={appointment}
+            name={workerData.username}
+            date={selectedDate}
+            time={selectedTime}
             onRemove={() => removeAppointment(appointment._id)}
           />
         ))}
@@ -146,12 +153,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
+    borderRadius: 8, // Add border radius for card-like container
   },
   projectName: {
     fontSize: 36,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 20,
     color: "#00716F", // Dark green text color
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333", // Dark gray heading color
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: "#666", // Dark gray text color
   },
 });
 

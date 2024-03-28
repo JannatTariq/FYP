@@ -11,10 +11,12 @@ const WorkerAppointmentScreen = ({ route }) => {
 
   const { getUserId, workerProfile } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
+
   const { worker } = route.params;
   const [workerProfileData, setWorkerProfileData] = useState(null);
   // console.log(worker);
 
+  // console.log(state.appointemnt[0].appointments);
   useEffect(() => {
     const fetchUserId = async () => {
       try {
@@ -75,6 +77,34 @@ const WorkerAppointmentScreen = ({ route }) => {
                         Reject Appointment
                       </Text>
                     </TouchableOpacity>
+                    {/* <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                          style={[styles.button, styles.acceptButton]}
+                          onPress={() =>
+                            submitBid(
+                              "accept",
+                              proposal._id,
+                              bid._id,
+                              bid.price
+                            )
+                          }
+                        >
+                          <Text style={styles.buttonText}>Accept</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[styles.button, styles.rejectButton]}
+                          onPress={() =>
+                            submitBid(
+                              "reject",
+                              proposal._id,
+                              bid._id,
+                              bid.price
+                            )
+                          }
+                        >
+                          <Text style={styles.buttonText}>Reject</Text>
+                        </TouchableOpacity>
+                      </View> */}
                   </View>
                 )
             )
