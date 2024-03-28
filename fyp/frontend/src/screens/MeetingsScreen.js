@@ -110,16 +110,14 @@ const MeetingsScreen = () => {
   }, []);
 
   const removeAppointment = (appointmentId) => {
-    console.log(appointmentId);
-    // Hide the appointment with the given appointmentId
-    setDisplayedAppointments((prevAppointment) => ({
-      ...prevAppointment,
-      hidden: true,
-    }));
+    setDisplayedAppointments((prevAppointments) =>
+      prevAppointments.filter(
+        (appointment) => appointment._id !== appointmentId
+      )
+    );
   };
 
   useEffect(() => {
-    // Update displayedAppointments when state.appointment changes
     if (state.appointemnt) {
       setDisplayedAppointments(state.appointemnt);
     }
@@ -128,8 +126,8 @@ const MeetingsScreen = () => {
   return (
     <View style={{ flex: 1, marginTop: 100 }}>
       <Text style={styles.projectName}>Meetings</Text>
-      {state.appointemnt &&
-        state.appointemnt.map((appointment) => (
+      {displayedAppointments &&
+        displayedAppointments.map((appointment) => (
           <MeetingBox
             key={appointment._id}
             appointment={appointment}
