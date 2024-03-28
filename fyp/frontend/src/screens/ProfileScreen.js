@@ -1,53 +1,35 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
   Image,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
-  FlatList,
+  Dimensions,
+  ActivityIndicator,
 } from "react-native";
-import BackButton from "../Components/BackButton";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { Context as AuthContext } from "../context/authContext";
+
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = width - 20;
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const { state, signOut, userProfile } = useContext(AuthContext);
-  // console.log(state.email);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
   const userProjects = [
-    {
-      id: 1,
-      projectName: "Project 1",
-      projectDetails: [
-        {
-          heading: "Description",
-          value: "Project in Lahore.",
-        },
-        { heading: "Area", value: "200 sq. ft." },
-        { heading: "Expected Price", value: "Rs.5,00,000" },
-        { heading: "No. of Bedrooms", value: "3" },
-        { heading: "No. of Bathrooms", value: "2" },
-      ],
-    },
-    {
-      id: 2,
-      projectName: "Project 2",
-      projectDetails: [
-        {
-          heading: "Description",
-          value: "Project in Wapda Town",
-        },
-        { heading: "Area", value: "150 sq. ft." },
-        { heading: "Expected Price", value: "Rs.4,00,000" },
-        { heading: "No. of Bedrooms", value: "2" },
-        { heading: "No. of Bathrooms", value: "1" },
-      ],
-    },
-    // Add more projects as needed
+    // Define userProjects array as per your requirements
   ];
 
   const userInfo = {
@@ -57,9 +39,11 @@ const ProfileScreen = () => {
     location: state.address,
     bio: "I am Client.",
   };
+
   const handlePress = () => {
     navigation.goBack();
   };
+
   const handleLogOut = () => {
     navigation.navigate("SignIn");
   };
@@ -67,132 +51,95 @@ const ProfileScreen = () => {
   useEffect(() => {
     userProfile();
   }, []);
-  //   return (
-  //     <ScrollView contentContainerStyle={styles.container}>
-  //       <View style={styles.navbar}>
-  //         <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
-  //           <Ionicons name="arrow-back-outline" size={24} color="#004d40" />
-  //         </TouchableOpacity>
-  //       </View>
-  //       <View style={styles.avatarContainer}>
-  //         <Image source={{ uri: userInfo.avatarUri }} style={styles.avatar} />
-  //         <Text style={styles.name}>{userInfo.name}</Text>
-  //       </View>
-  //       <View style={styles.infoContainer}>
-  //         <Text style={styles.infoLabel}>Email:</Text>
-  //         <Text style={styles.infoValue}>{userInfo.email}</Text>
-  //       </View>
-  //       <View style={styles.infoContainer}>
-  //         <Text style={styles.infoLabel}>Location:</Text>
-  //         <Text style={styles.infoValue}>{userInfo.location}</Text>
-  //       </View>
-  //       <View style={styles.infoContainer}>
-  //         <Text style={styles.infoLabel}>Bio:</Text>
-  //         <Text style={styles.infoValue}>{userInfo.bio}</Text>
-  //       </View>
 
-  //       <View style={styles.projectsContainer}>
-  //         <Text style={styles.projectsHeading}>My Projects</Text>
-  //         <FlatList
-  //           data={userProjects}
-  //           keyExtractor={(item) => item.id.toString()}
-  //           renderItem={({ item }) => (
-  //             <View style={styles.projectCard}>
-  //               <Text style={styles.projectName}>{item.projectName}</Text>
-  //               <FlatList
-  //                 data={item.projectDetails}
-  //                 keyExtractor={(detail) => detail.heading}
-  //                 renderItem={({ item: detail }) => (
-  //                   <View style={styles.projectDetail}>
-  //                     <Text style={styles.detailHeading}>{detail.heading}:</Text>
-  //                     <Text style={styles.detailValue}>{detail.value}</Text>
-  //                   </View>
-  //                 )}
-  //               />
-  //             </View>
-  //           )}
-  //         />
-  //       </View>
-  //     </ScrollView>
-  //   );
-  // };
+  const renderProjectItem = ({ item }) => {
+    return (
+      <View style={styles.projectCard}>
+        <Text style={styles.projectName}>{item.projectName}</Text>
+        {item.projectDetails.map((detail, index) => (
+          <View key={index} style={styles.projectDetail}>
+            <Text style={styles.detailHeading}>{detail.heading}:</Text>
+            <Text style={styles.detailValue}>{detail.value}</Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
 
   return (
-    <FlatList
-      contentContainerStyle={styles.container}
-      data={[{ key: "profile" }]}
-      renderItem={({ item }) => (
-        <View key={item.key}>
-          <View style={styles.navbar}>
-            <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
-              <Ionicons name="arrow-back-outline" size={24} color="#004d40" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.avatarContainer}>
-            <Image source={{ uri: userInfo.avatarUri }} style={styles.avatar} />
-            <Text style={styles.name}>{userInfo.name}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{userInfo.email}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Location:</Text>
-            <Text style={styles.infoValue}>{userInfo.location}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Bio:</Text>
-            <Text style={styles.infoValue}>{userInfo.bio}</Text>
-          </View>
-
-          <View style={styles.projectsContainer}>
-            <Text style={styles.projectsHeading}>My Projects</Text>
-            <FlatList
-              data={userProjects}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.projectCard}>
-                  <Text style={styles.projectName}>{item.projectName}</Text>
-                  <FlatList
-                    data={item.projectDetails}
-                    keyExtractor={(detail) => detail.heading}
-                    renderItem={({ item: detail }) => (
-                      <View style={styles.projectDetail}>
-                        <Text style={styles.detailHeading}>
-                          {detail.heading}:
-                        </Text>
-                        <Text style={styles.detailValue}>{detail.value}</Text>
-                      </View>
-                    )}
-                  />
-                </View>
-              )}
-            />
-          </View>
-          <View style={styles.navbarLogOut}>
-            <TouchableOpacity
-              onPress={signOut}
-              style={styles.barContainerLogOut}
-            >
-              <AntDesign name="logout" size={24} color="black" />
-              <Text style={styles.barText}>Log Out</Text>
-            </TouchableOpacity>
-          </View>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={handlePress} style={styles.navbar}>
+        <AntDesign name="arrowleft" size={24} color="#004d40" />
+      </TouchableOpacity>
+      <View style={styles.card}>
+        <View style={styles.avatarContainer}>
+          <Image
+            source={require("../../assets/user.png")}
+            style={styles.avatar}
+          />
+          <Text style={styles.name}>{userInfo.name}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Email:</Text>
+          <Text style={styles.infoValue}>{userInfo.email}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Location:</Text>
+          <Text style={styles.infoValue}>{userInfo.location}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Bio:</Text>
+          <Text style={styles.infoValue}>{userInfo.bio}</Text>
+        </View>
+      </View>
+      <TouchableOpacity onPress={handleLogOut} style={styles.navbarLogOut}>
+        <AntDesign name="logout" size={24} color="black" />
+        <Text style={styles.barText}>Log Out</Text>
+      </TouchableOpacity>
+      {isLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color={activityIndicatorColor} />
         </View>
       )}
-    />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor: "#f0f8ff", // Green texture background color
-    padding: 20,
-  },
-  barContainer: {
     flex: 1,
-    // backgroundColor: "#004d40",
+    backgroundColor: "#f0f8ff",
+    justifyContent: "center",
+  },
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    width: CARD_WIDTH,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginTop: 50,
+    marginLeft: 10,
+  },
+  avatarContainer: {
+    alignItems: "center",
+  },
+  navbarLogOut: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingRight: 10,
+    marginTop: 50,
+    paddingBottom: 50,
+  },
+  barText: {
+    marginLeft: 5,
   },
   navbar: {
     height: 50,
@@ -201,25 +148,8 @@ const styles = StyleSheet.create({
     padding: 10,
     zIndex: 1,
   },
-  navbarLogOut: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingRight: 10,
-    paddingTop: 10,
-  },
-  barContainerLogOut: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  barText: {
-    marginLeft: 5,
-  },
-  avatarContainer: {
-    alignItems: "center",
-    marginTop: 20,
-  },
   avatar: {
+    marginTop: 25,
     width: 150,
     height: 150,
     borderRadius: 75,
@@ -227,8 +157,8 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 20,
     fontWeight: "bold",
-    marginTop: 10,
     color: "#00716F",
+    marginTop: 10,
   },
   infoContainer: {
     marginTop: 20,
@@ -236,9 +166,11 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontWeight: "bold",
     color: "#00716F",
+    textDecorationLine: "underline",
   },
   infoValue: {
     marginTop: 5,
+    color: "black",
   },
   projectsContainer: {
     marginTop: 20,
@@ -246,8 +178,8 @@ const styles = StyleSheet.create({
   projectsHeading: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
     color: "#00716F",
+    marginBottom: 10,
   },
   projectCard: {
     width: "100%",

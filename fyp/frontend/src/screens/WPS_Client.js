@@ -7,11 +7,16 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Context as AuthContext } from "../context/authContext";
 import { AntDesign } from "@expo/vector-icons";
+import WorkerProjectsScreen from "./WorkerProjects";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+
+const Drawer = createDrawerNavigator();
 
 const WPS_Client = ({ route }) => {
   const navigation = useNavigation();
@@ -24,11 +29,40 @@ const WPS_Client = ({ route }) => {
     getUserId,
   } = useContext(AuthContext);
   // console.log("State", state.reviews.rating);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
   const { worker } = route.params;
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
+  const [showOptions, setShowOptions] = useState(false);
 
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+  };
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleProjects = () => {
+    navigation.navigate("WorkerProjectsScreen", { workerId: worker._id });
+  };
+
+  const handleAppointment = () => {
+    navigation.navigate("Appointment", { worker: worker._id });
+  };
+
+  // console.log(worker);
   // console.log(worker);
 
   const workerProjects = [
@@ -61,6 +95,7 @@ const WPS_Client = ({ route }) => {
       ],
     },
     // Add more projects as needed
+    // console.log(worker),
   ];
 
   const workerInfo = {
@@ -73,9 +108,9 @@ const WPS_Client = ({ route }) => {
   const handlePress = () => {
     navigation.goBack();
   };
-  const handleAppointment = () => {
-    navigation.navigate("Appointment");
-  };
+  // const handleAppointment = () => {
+  //   navigation.navigate("Appointment");
+  // };
 
   useEffect(() => {
     userProfile();
@@ -112,29 +147,94 @@ const WPS_Client = ({ route }) => {
         <View key={item.key} style={styles.container}>
           <View style={styles.navbar}>
             <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
-              <Ionicons name="arrow-back-outline" size={24} color="#004d40" />
+              <Ionicons
+                name="arrow-back-outline"
+                size={24}
+                marginTop={10}
+                color="#004d40"
+              />
             </TouchableOpacity>
           </View>
+          <View style={styles.sidebar}>
+            <TouchableOpacity
+              onPress={toggleSidebar}
+              style={styles.sidebarToggle}
+            >
+              <AntDesign name="bars" size={24} color="#004d40" />
+            </TouchableOpacity>
+            {isSidebarOpen && (
+              <View style={styles.sidebarContent}>
+                <View style={styles.sidebarCard}>
+                  <TouchableOpacity
+                    style={styles.sidebarOption}
+                    onPress={handleProjects}
+                  >
+                    <Text style={styles.sidebarOptionText}>Projects</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.sidebarOption}
+                    onPress={handleAppointment}
+                  >
+                    <Text
+                      style={[styles.sidebarOptionText, styles.verticalText]}
+                    >
+                      Appointment
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </View>
+
+          {/* <TouchableOpacity
+            onPress={toggleOptions}
+            style={styles.threeContainer}
+          >
+            <AntDesign name="bars" size={24} color="#004d40" />
+          </TouchableOpacity>
+          {showOptions && (
+            <View>
+              <TouchableOpacity
+                style={styles.bidButton}
+                onPress={() =>
+                  navigation.navigate("WorkerProjectsScreen", {
+                    workerId: worker._id,
+                  })
+                }
+              >
+                <Text style={styles.bidButtonText}>Projects</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.bidButton}
+                onPress={() =>
+                  navigation.navigate("Appointment", { worker: worker._id })
+                }
+              >
+                <Text style={styles.bidButtonText}>Schedule Appointment</Text>
+              </TouchableOpacity>
+            </View>
+          )} */}
           <View style={styles.avatarContainer}>
             <Image
-              source={{ uri: workerInfo.avatarUri }}
+              source={require("../../assets/user.png")}
               style={styles.avatar}
             />
-            <Text style={styles.name}>{workerInfo.name}</Text>
+            <Text style={styles.name}>{worker.username}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{workerInfo.email}</Text>
+            <Text style={styles.infoValue}>{worker.email}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Location:</Text>
-            <Text style={styles.infoValue}>{workerInfo.location}</Text>
+            <Text style={styles.infoValue}>{worker.address}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Bio:</Text>
             <Text style={styles.infoValue}>{workerInfo.bio}</Text>
           </View>
-
+          {/*
           <View style={styles.projectsContainer}>
             <Text style={styles.projectsHeading}>Projects</Text>
             <FlatList
@@ -158,15 +258,8 @@ const WPS_Client = ({ route }) => {
                 </View>
               )}
             />
-          </View>
-          <TouchableOpacity
-            style={styles.bidButton}
-            onPress={() =>
-              navigation.navigate("Appointment", { worker: worker._id })
-            }
-          >
-            <Text style={styles.bidButtonText}>Schedule Appointment</Text>
-          </TouchableOpacity>
+          </View> */}
+
           <View style={styles.reviewsContainer}>
             <Text style={styles.reviewsHeading}>Reviews</Text>
             {state.reviews?.reviews.map((review, index) => (
@@ -238,6 +331,11 @@ const WPS_Client = ({ route }) => {
           >
             <Text style={styles.submitButtonText}>Submit Rating</Text>
           </TouchableOpacity>
+          {isLoading && (
+            <View style={styles.activityIndicatorContainer}>
+              <ActivityIndicator size="large" color={activityIndicatorColor} />
+            </View>
+          )}
         </View>
       )}
     />
@@ -249,6 +347,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "#f0f8ff", // Green texture background color
     padding: 20,
+    // position: "relative",
   },
   scrollContainer: {
     flex: 1,
@@ -276,16 +375,71 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   barContainer: {
-    flex: 1,
+    flexDirection: "row",
+
     // backgroundColor: "#004d40",
   },
-  navbar: {
-    height: 50,
-    top: 20,
-    left: 10,
-    padding: 10,
-    zIndex: 1,
+  verticalText: {
+    writingDirection: "rtl", // Text direction right-to-left
+    // transform: [{ rotate: "270deg" }], // Rotate text vertically
   },
+  // sidebar: {
+  //   backgroundColor: "#f0f8ff",
+  //   width: "65%", // Adjust width as needed
+  //   height: "100%",
+  //   justifyContent: "flex-start",
+  //   position: "absolute",
+
+  //   right: 0,
+  //   top: 0, // Position at the top
+  // },
+  sidebarContent: {
+    marginTop: -50, // Adjust top margin as needed
+    marginLeft: 30,
+    alignItems: "center",
+  },
+  sidebarOption: {
+    paddingVertical: 10,
+  },
+  sidebar: {
+    backgroundColor: "#f0f8ff",
+    //   width: "65%", // Adjust width as needed
+    //   height: "100%",
+    // justifyContent: "flex-start",
+    position: "absolute",
+
+    right: 0,
+    top: 0, // Adjust top position as needed
+  },
+  sidebarCard: {
+    backgroundColor: "#fff",
+    // borderRadius: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: 100,
+    height: 100,
+    padding: 3,
+    // marginRight: 10,
+    // alignItems: "flex-end",
+    alignItems: "center",
+  },
+  sidebarOptionText: {
+    fontSize: 16,
+    color: "#004d40",
+  },
+  sidebarToggle: {
+    alignItems: "center",
+    paddingVertical: 60,
+    paddingLeft: 80,
+    paddingRight: 25,
+  },
+
   avatar: {
     width: 150,
     height: 150,
@@ -317,7 +471,7 @@ const styles = StyleSheet.create({
     top: 20,
     left: 10,
     padding: 10,
-    zIndex: 1,
+    // zIndex: 1,
   },
   projectsContainer: {
     marginTop: 20,
