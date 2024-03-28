@@ -4,19 +4,26 @@ import { Context as AuthContext } from "../context/authContext";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import BackButton from "../Components/BackButton";
 
-const WorkerAppointmentScreen = () => {
+const WorkerAppointmentScreen = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const { state, acceptAppointment, getAppointments, rejectAppointment } =
     useContext(AppointmentContext);
 
   const { getUserId, workerProfile } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
+
+  const { worker } = route.params;
+  const [workerProfileData, setWorkerProfileData] = useState(null);
+  // console.log(worker);
+
   // console.log(state.appointemnt[0].appointments);
   useEffect(() => {
     const fetchUserId = async () => {
       try {
         const id = await getUserId();
         setUserId(id);
+        const workerProfileData = workerProfile({ id: worker });
+        setWorkerProfileData(workerProfileData);
       } catch (error) {
         console.error("Error fetching user ID:", error);
       }
@@ -24,6 +31,7 @@ const WorkerAppointmentScreen = () => {
     fetchUserId();
   }, []);
 
+  // console.log(workerProfileData?._j?.username);
   useEffect(() => {
     const fetchAppointments = async () => {
       await getAppointments();

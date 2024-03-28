@@ -21,7 +21,7 @@ const WorkerHomeScreen = () => {
   const { state, fetchWorkerProposals } = useContext(ProposalContext);
   const { state: authState, getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
-  // console.log(state);
+  // console.log(userId);
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -190,7 +190,9 @@ const WorkerHomeScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.bottomBarItem}
-          onPress={() => navigation.navigate("WorkerAppointment")}
+          onPress={() =>
+            navigation.navigate("WorkerAppointment", { worker: userId })
+          }
         >
           {/* <Ionicons name="notifications-outline" size={30} color="#00716F" />
            */}
