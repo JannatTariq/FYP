@@ -60,7 +60,7 @@ const WPS_Client = ({ route }) => {
   };
 
   const handleAppointment = () => {
-    navigation.navigate("Appointment", { worker: worker._id });
+    navigation.navigate("Appointment", { worker: worker });
   };
 
   // console.log(worker);
