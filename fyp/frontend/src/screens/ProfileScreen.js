@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -17,7 +18,16 @@ const CARD_WIDTH = width - 20;
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const { state, signOut, userProfile } = useContext(AuthContext);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
   const userProjects = [
     // Define userProjects array as per your requirements
   ];
@@ -86,6 +96,11 @@ const ProfileScreen = () => {
         <AntDesign name="logout" size={24} color="black" />
         <Text style={styles.barText}>Log Out</Text>
       </TouchableOpacity>
+      {isLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color={activityIndicatorColor} />
+        </View>
+      )}
     </View>
   );
 };

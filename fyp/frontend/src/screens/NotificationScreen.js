@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
@@ -18,6 +19,16 @@ const NotificationsScreen = () => {
     useContext(ProposalContext);
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,6 +142,11 @@ const NotificationsScreen = () => {
                   )
               )
           )}
+        {isLoading && (
+          <View style={styles.activityIndicatorContainer}>
+            <ActivityIndicator size="large" color={activityIndicatorColor} />
+          </View>
+        )}
       </ScrollView>
     </View>
   );
