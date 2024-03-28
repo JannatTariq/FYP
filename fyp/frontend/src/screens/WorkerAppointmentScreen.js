@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context as AppointmentContext } from "../context/appointmentContext";
 import { Context as AuthContext } from "../context/authContext";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import BackButton from "../Components/BackButton";
 
 const WorkerAppointmentScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -32,40 +33,45 @@ const WorkerAppointmentScreen = () => {
   }, [getAppointments]);
 
   const handleAccept = async (appointmentId) => {
+    // console.log(appointmentId);
     await acceptAppointment({ appointmentId });
   };
 
   const handleReject = async (appointmentId) => {
     await rejectAppointment({ appointmentId });
   };
+  // console.log(state.appointemnt[0].userId, userId);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Your Appointments</Text>
-      {state.appointment &&
-        state.appointment.map((appointment) =>
-          appointment.userId === userId &&
-          appointment.appointments.map((appointment) =>
-            appointment.status !== "accepted" && (
-              <View key={appointment._id} style={styles.appointmentItem}>
-                <Text style={styles.appointmentId}>{appointment._id}</Text>
-                <View style={styles.buttonsContainer}>
-                  <TouchableOpacity
-                    style={styles.acceptButton}
-                    onPress={() => handleAccept(appointment._id)}
-                  >
-                    <Text style={styles.buttonText}>Accept</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.rejectButton}
-                    onPress={() => handleReject(appointment._id)}
-                  >
-                    <Text style={styles.buttonText}>Reject</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+      <BackButton />
+      <Text style={styles.heading}>Appointments</Text>
+      {state.appointemnt &&
+        state.appointemnt?.map(
+          (appointemnt) =>
+            appointemnt.userId === userId &&
+            appointemnt.appointments?.map(
+              (appointments) =>
+                appointments.status !== "accepted" && (
+                  <View key={appointemnt._id}>
+                    <Text style={{ color: "red" }}>{appointments._id}</Text>
+                    <TouchableOpacity
+                      onPress={() => handleAccept(appointments._id)}
+                    >
+                      <Text style={styles.acceptButton}>
+                        Accept Appointment
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleReject(appointments._id)}
+                    >
+                      <Text style={styles.rejectButton}>
+                        Reject Appointment
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )
             )
-          )
         )}
     </View>
   );
@@ -75,44 +81,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
   },
   heading: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
   },
-  appointmentItem: {
+  notificationItem: {
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-  },
-  appointmentId: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
+    color: "red",
   },
   acceptButton: {
-    backgroundColor: "green",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    color: "green",
+    fontWeight: "bold",
   },
   rejectButton: {
-    backgroundColor: "red",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  buttonText: {
-    color: "#fff",
+    color: "red",
     fontWeight: "bold",
   },
 });

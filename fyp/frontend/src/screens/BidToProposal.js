@@ -7,11 +7,15 @@ import {
   TextInput,
   Alert,
   Image,
+  Dimensions,
 } from "react-native";
 import BackButton from "../Components/BackButton";
 import Modal from "react-native-modal";
 import { Context as ProposalContext } from "../context/proposalContext";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
+
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = width - 20;
 
 const BidToProposal = ({ route }) => {
   const { state, submitBid: bidSubmit } = useContext(ProposalContext);
@@ -19,7 +23,7 @@ const BidToProposal = ({ route }) => {
   const [bidPrice, setBidPrice] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
   const [isBidButtonPressed, setBidButtonPressed] = useState(false);
-  const navigation=useNavigation();
+  const navigation = useNavigation();
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -46,12 +50,12 @@ const BidToProposal = ({ route }) => {
         ...proposal,
         bidAmount: bidPrice,
       };
-      
+
       // Perform the action (accept or reject) based on the provided action parameter
-      if (action === 'accept') {
+      if (action === "accept") {
         acceptBid({ proposalId, bidId });
         Alert.alert("Bid Accepted", `Bid Price: ${bidPrice}`);
-      } else if (action === 'reject') {
+      } else if (action === "reject") {
         rejectBid({ proposalId, bidId });
         Alert.alert("Bid Rejected", `Bid Price: ${bidPrice}`);
       }
@@ -60,20 +64,16 @@ const BidToProposal = ({ route }) => {
     }
     toggleModal();
   };
-  
 
   return (
     <View style={styles.container}>
-      <BackButton style={styles.backButton}/>
+      <BackButton />
       <View style={styles.card}>
         <Text style={styles.mainHeading}>{`Project`}</Text>
         <Text style={styles.clientName}>
           {capitalizeFirstLetter(proposal.username)}
         </Text>
-        <Image
-          source={{ uri: proposal?.image }}
-          style={styles.image}
-        />
+        <Image source={{ uri: proposal?.image }} style={styles.image} />
         <View style={styles.line}></View>
         <Text style={styles.detailsText}>
           <Text style={styles.highlight}>Area:</Text> {proposal.area}
@@ -84,17 +84,15 @@ const BidToProposal = ({ route }) => {
         <Text style={styles.detailsText}>
           <Text style={styles.highlight}>Expected Price: </Text>
           {proposal.price}
-          </Text>
+        </Text>
         <Text style={styles.detailsText}>
           <Text style={styles.highlight}>Bedrooms: </Text>
           {proposal.bedroom}
-          </Text>
+        </Text>
         <Text style={styles.detailsText}>
-            <Text style={styles.highlight}>
-              Bathrooms: 
-            </Text>
-            {proposal.bathroom}
-          </Text>
+          <Text style={styles.highlight}>Bathrooms:</Text>
+          {proposal.bathroom}
+        </Text>
         <TouchableOpacity
           style={[
             styles.bidButton,
@@ -137,12 +135,13 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
     justifyContent: "flex-start", // Align content at the top
-    marginTop: 50,
-    position: 'relative', // Add relative positioning
+    // marginTop: 50,
+    position: "relative", // Add relative positioning
   },
   card: {
     backgroundColor: "#fff",
     padding: 20,
+    marginTop: 100,
     borderRadius: 10,
     marginBottom: 20,
     shadowColor: "#000",
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
-    width: 200,
+    width: CARD_WIDTH - 50,
     height: 200,
     alignSelf: "center",
     marginBottom: 10,
@@ -186,8 +185,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#00716F",
   },
-  backButton:{
-    position: 'absolute', // Use absolute positioning
+  backButton: {
+    position: "absolute", // Use absolute positioning
     top: 20, // Adjust top position as needed
     left: 20, // Adjust left position as needed
     zIndex: 1,
@@ -209,18 +208,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
     borderRadius: 10,
+    height: CARD_WIDTH - 80,
+    width: CARD_WIDTH - 50,
+    alignSelf: "center",
   },
   modalHeading: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 50,
     textAlign: "center",
+    // flex: 1,
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 10,
+    borderColor: "#00716F",
+    borderWidth: 2,
+    borderBottomWidth: 1,
     padding: 10,
     borderRadius: 5,
   },
@@ -229,10 +235,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginTop: 30,
   },
   submitButtonText: {
     color: "#fff",
     fontSize: 16,
+    alignSelf: "center",
     fontWeight: "bold",
   },
 });

@@ -6,15 +6,20 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  ScrollView,
+  Dimensions,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Context as AuthContext } from "../context/authContext";
+import BackButton from "../Components/BackButton";
+
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = width - 20;
 
 const WorkerProfileScreen = () => {
   const navigation = useNavigation();
   const { state, userProfile } = useContext(AuthContext);
+  // console.log(state);
   const workerProjects = [
     // Define workerProjects array as per your requirements
   ];
@@ -23,7 +28,8 @@ const WorkerProfileScreen = () => {
     avatarUri: "https://www.bootdey.com/img/Content/avatar/avatar6.png",
     name: state.username, // Use real name from AuthContext state
     email: state.email, // Use real email from AuthContext state
-    location: "City, Country", // Use real location from AuthContext state
+    location: state.address,
+
     bio: "I am passionate about turning your construction dreams into reality. Whether you're envisioning a new home, a commercial space, or a transformative renovation, I have the expertise and dedication to make it happen. Let's collaborate to build something extraordinary.",
   };
 
@@ -55,39 +61,40 @@ const WorkerProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <TouchableOpacity onPress={handlePress} style={styles.navbar}>
-          <AntDesign name="arrowleft" size={24} color="#004d40" />
-        </TouchableOpacity>
-
-        <View style={styles.card}>
-          <View style={styles.avatarContainer}>
-            <Image source={{ uri: workerInfo.avatarUri }} style={styles.avatar} />
-            <Text style={styles.name}>{workerInfo.name}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{workerInfo.email}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Location:</Text>
-            <Text style={styles.infoValue}>{workerInfo.location}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Bio:</Text>
-            <Text style={styles.infoValue}>{workerInfo.bio}</Text>
-          </View>
-
-          <View style={styles.projectsContainer}>
-            <Text style={styles.projectsHeading}>Projects</Text>
-            <FlatList
-              data={workerProjects}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderProjectItem}
-            />
-          </View>
+      <TouchableOpacity onPress={handlePress} style={styles.navbar}>
+        <AntDesign name="arrowleft" size={24} color="#004d40" />
+      </TouchableOpacity>
+      <View style={styles.card}>
+        <View style={styles.avatarContainer}>
+          {/* <Image source={{ uri: workerInfo.avatarUri }} style={styles.avatar} /> */}
+          <Image
+            source={require("../../assets/user.png")}
+            style={styles.avatar}
+          />
+          <Text style={styles.name}>{workerInfo.name}</Text>
         </View>
-      </ScrollView>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Email:</Text>
+          <Text style={styles.infoValue}>{workerInfo.email}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Location:</Text>
+          <Text style={styles.infoValue}>{workerInfo.location}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Bio:</Text>
+          <Text style={styles.infoValue}>{workerInfo.bio}</Text>
+        </View>
+
+        {/* <View style={styles.projectsContainer}>
+          <Text style={styles.projectsHeading}>Projects</Text>
+          <FlatList
+            data={workerProjects}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderProjectItem}
+          />
+        </View> */}
+      </View>
 
       <TouchableOpacity onPress={handleLogOut} style={styles.navbarLogOut}>
         <AntDesign name="logout" size={24} color="black" />
@@ -101,6 +108,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f0f8ff", // Green texture background color
+    // alignContent: "center",
+    justifyContent: "center",
   },
   card: {
     backgroundColor: "#FFFFFF",
@@ -112,9 +121,13 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+    width: CARD_WIDTH,
+    height: CARD_WIDTH + 250,
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    marginTop: 50,
+    marginLeft: 10,
   },
   avatarContainer: {
     alignItems: "center",
@@ -122,9 +135,9 @@ const styles = StyleSheet.create({
   navbarLogOut: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    alignItems: "center",
+    // alignItems: "center",
     paddingRight: 10,
-    paddingTop: 10,
+    marginTop: 20,
     paddingBottom: 20, // Add paddingBottom to create space for the logout button
   },
   barContainerLogOut: {
@@ -142,6 +155,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   avatar: {
+    marginTop: 25,
     width: 150,
     height: 150,
     borderRadius: 75,
