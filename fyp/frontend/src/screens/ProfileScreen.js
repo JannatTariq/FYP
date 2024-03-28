@@ -113,6 +113,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#00716F",
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,

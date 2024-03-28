@@ -42,7 +42,7 @@ const submitAppointment =
         }
       );
       // console.log(selectedDate, selectedTime);
-      navigate("MeetingsScreen");
+      navigate("HomeScreen");
       dispatch({
         type: "submit_appointment",
         payload: response.data,
@@ -74,6 +74,7 @@ const acceptAppointment =
         type: "accept_appointment",
         payload: response.data,
       });
+      navigate("WorkerHomeScreen");
     } catch (error) {
       dispatch({
         type: "add_error",
@@ -101,6 +102,7 @@ const rejectAppointment =
         type: "submit_appointment",
         payload: response.data,
       });
+      navigate("WorkerHomeScreen");
     } catch (error) {
       dispatch({
         type: "add_error",

@@ -12,6 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Context as AuthContext } from "../context/authContext";
 import BackButton from "../Components/BackButton";
+import { ScrollView } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width - 20;
@@ -61,32 +62,33 @@ const WorkerProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handlePress} style={styles.navbar}>
-        <AntDesign name="arrowleft" size={24} color="#004d40" />
-      </TouchableOpacity>
-      <View style={styles.card}>
-        <View style={styles.avatarContainer}>
-          {/* <Image source={{ uri: workerInfo.avatarUri }} style={styles.avatar} /> */}
-          <Image
-            source={require("../../assets/user.png")}
-            style={styles.avatar}
-          />
-          <Text style={styles.name}>{workerInfo.name}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoLabel}>Email:</Text>
-          <Text style={styles.infoValue}>{workerInfo.email}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoLabel}>Location:</Text>
-          <Text style={styles.infoValue}>{workerInfo.location}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoLabel}>Bio:</Text>
-          <Text style={styles.infoValue}>{workerInfo.bio}</Text>
-        </View>
+      <ScrollView>
+        <TouchableOpacity onPress={handlePress} style={styles.navbar}>
+          <AntDesign name="arrowleft" size={24} color="#004d40" />
+        </TouchableOpacity>
+        <View style={styles.card}>
+          <View style={styles.avatarContainer}>
+            {/* <Image source={{ uri: workerInfo.avatarUri }} style={styles.avatar} /> */}
+            <Image
+              source={require("../../assets/user.png")}
+              style={styles.avatar}
+            />
+            <Text style={styles.name}>{workerInfo.name}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Email:</Text>
+            <Text style={styles.infoValue}>{workerInfo.email}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Location:</Text>
+            <Text style={styles.infoValue}>{workerInfo.location}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Bio:</Text>
+            <Text style={styles.infoValue}>{workerInfo.bio}</Text>
+          </View>
 
-        {/* <View style={styles.projectsContainer}>
+          {/* <View style={styles.projectsContainer}>
           <Text style={styles.projectsHeading}>Projects</Text>
           <FlatList
             data={workerProjects}
@@ -94,12 +96,13 @@ const WorkerProfileScreen = () => {
             renderItem={renderProjectItem}
           />
         </View> */}
-      </View>
+        </View>
 
-      <TouchableOpacity onPress={handleLogOut} style={styles.navbarLogOut}>
-        <AntDesign name="logout" size={24} color="black" />
-        <Text style={styles.barText}>Log Out</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleLogOut} style={styles.navbarLogOut}>
+          <AntDesign name="logout" size={24} color="black" />
+          <Text style={styles.barText}>Log Out</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -114,6 +117,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#00716F",
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,
