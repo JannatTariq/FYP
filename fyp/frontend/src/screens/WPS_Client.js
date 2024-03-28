@@ -44,6 +44,7 @@ const WPS_Client = ({ route }) => {
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
   const [showOptions, setShowOptions] = useState(false);
+  const [reviewsData, setReviewsData] = useState([]);
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
@@ -114,9 +115,10 @@ const WPS_Client = ({ route }) => {
 
   useEffect(() => {
     userProfile();
-    getReviews({ workerId: worker._id });
+    const reviewsData = getReviews({ workerId: worker._id });
+    setReviewsData(reviewsData);
   }, []);
-  // console.log(state);
+  // console.log(reviewsData);
 
   useEffect(() => {
     const loadData = async () => {
@@ -262,7 +264,7 @@ const WPS_Client = ({ route }) => {
 
           <View style={styles.reviewsContainer}>
             <Text style={styles.reviewsHeading}>Reviews</Text>
-            {state.reviews?.reviews.map((review, index) => (
+            {reviewsData?._j?.reviews.map((review, index) => (
               <View key={index} style={styles.review}>
                 <Text style={styles.name}>Name: {review.name}</Text>
                 <Text style={styles.reviewRating}>Rating: {review.rating}</Text>

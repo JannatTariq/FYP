@@ -10,6 +10,7 @@ import {
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
 import BackButton from "../Components/BackButton";
+import { ScrollView } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width - 20;
@@ -51,43 +52,47 @@ const WorkerProjectsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Projects</Text>
-      <View style={styles.line}></View>
       <BackButton />
-      {state.proposal &&
-        state.proposal.map(
-          (proposal, index) =>
-            proposal.bids &&
-            proposal.bids.map(
-              (bid) =>
-                // bid.userId === userId ||
-                workerId === bid.userId &&
-                bid.status === "accepted" && (
-                  <View key={bid._id} style={styles.card}>
-                    <Text style={styles.projectName}>
-                      {capitalizeFirstLetter(proposal.username)}
-                    </Text>
-                    <Image
-                      source={{ uri: proposal?.image }}
-                      style={styles.image}
-                    />
-                    <View style={styles.cardContent}>
-                      <Text style={styles.price}>Rs. {proposal?.price}</Text>
-                      <Text style={styles.address}>{proposal?.address}</Text>
-                      <Text style={styles.squareMeters}>
-                        {proposal?.area} sq.ft.
+      <ScrollView>
+        <Text style={styles.title}>Your Projects</Text>
+        <View style={styles.line}></View>
+        {state.proposal &&
+          state.proposal.map(
+            (proposal, index) =>
+              proposal.bids &&
+              proposal.bids.map(
+                (bid) =>
+                  // bid.userId === userId ||
+                  workerId === bid.userId &&
+                  bid.status === "accepted" && (
+                    <View key={bid._id} style={styles.card}>
+                      <Text style={styles.projectName}>
+                        {capitalizeFirstLetter(proposal.username)}
                       </Text>
+                      <Image
+                        source={{ uri: proposal?.image }}
+                        style={styles.image}
+                      />
+                      <View style={styles.cardContent}>
+                        <Text style={styles.price}>Rs. {proposal?.price}</Text>
+                        <Text style={styles.address}>{proposal?.address}</Text>
+                        <Text style={styles.squareMeters}>
+                          {proposal?.area} sq.ft.
+                        </Text>
+                      </View>
+                      <View style={styles.cardFooter}>
+                        <Text style={styles.beds}>
+                          {proposal?.bedroom} beds
+                        </Text>
+                        <Text style={styles.baths}>
+                          {proposal?.bathroom} baths
+                        </Text>
+                      </View>
                     </View>
-                    <View style={styles.cardFooter}>
-                      <Text style={styles.beds}>{proposal?.bedroom} beds</Text>
-                      <Text style={styles.baths}>
-                        {proposal?.bathroom} baths
-                      </Text>
-                    </View>
-                  </View>
-                )
-            )
-        )}
+                  )
+              )
+          )}
+      </ScrollView>
     </View>
   );
 };
