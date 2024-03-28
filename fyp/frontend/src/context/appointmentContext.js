@@ -41,8 +41,8 @@ const submitAppointment =
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
-      //   console.log(response);
-      navigate("Transaction");
+      // console.log(selectedDate, selectedTime);
+      navigate("MeetingsScreen");
       dispatch({
         type: "submit_appointment",
         payload: response.data,

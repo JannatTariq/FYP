@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -30,6 +31,16 @@ const WorkerDetail = ({ route }) => {
   const [userId, setUserId] = useState(null);
   const [workerProfileData, setWorkerProfileData] = useState(null);
   const [reviewsData, setReviewsData] = useState([]);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   //   console.log(worker, review);
 
@@ -173,6 +184,11 @@ const WorkerDetail = ({ route }) => {
               </View>
             ))}
           </View>
+          {isLoading && (
+            <View style={styles.activityIndicatorContainer}>
+              <ActivityIndicator size="large" color={activityIndicatorColor} />
+            </View>
+          )}
         </View>
       )}
     />
