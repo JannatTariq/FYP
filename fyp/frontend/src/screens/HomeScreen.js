@@ -165,8 +165,9 @@ const HomeScreen = () => {
             state.worker[role].length > 0 && (
               <>
                 <Text style={styles.subHeading}>
-                  {`${capitalFirstLetter(role)}s:`}
+                  {capitalFirstLetter(`${role}s:`)}
                 </Text>
+
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -183,13 +184,12 @@ const HomeScreen = () => {
                         style={styles.recommendationImage}
                       />
                       <Text style={styles.recommendationTitle}>
-                        {capitalFirstLetter(worker.username)}
+                        {worker.username}
                       </Text>
                       <Text style={styles.recommendationDescription}>
                         {worker.role}
                       </Text>
                       <View style={{ alignItems: "center" }}>
-                        {/* <Text>{console.log(worker)}</Text> */}
                         <StarRating rating={worker.ratings} />
                       </View>
                     </TouchableOpacity>
@@ -203,34 +203,22 @@ const HomeScreen = () => {
   };
 
   const handleBidding = () => {
-    // navigation.navigate("Bidding", { data: state.proposal });
     navigation.navigate("Bidding");
   };
-  return (
-    <ScrollView style={styles.mainContainer}>
-      <View style={styles.container}>
-        <Text style={styles.heading}>Welcome to Your Home Page!</Text>
 
+  return (
+    <View style={styles.container}>
+      <ScrollView>
+        <Text style={styles.heading}>Welcome to Your Home Page!</Text>
         <View style={styles.tipsContainer}>
           <Text style={styles.tipsHeading}>Tips of the Week</Text>
           <View style={styles.tipCard}>
             <Text style={styles.tipTitle}>{currentTip.title}</Text>
             <Text style={styles.tipDescription}>{currentTip.description}</Text>
-            <Text></Text>
           </View>
         </View>
-
-        <Text style={styles.subHeading}></Text>
         {renderWorkerList()}
-
-        {/* <Text style={styles.subHeading}>Recommended Architects:</Text>
-        {renderWorkerList("Architect")}
-
-        <Text style={styles.subHeading}>Recommended Interior Designers:</Text>
-        {renderWorkerList("Interior Designer")} */}
-      </View>
-
-      {/* Bottom Navigation Bar */}
+      </ScrollView>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomBarItem} onPress={handleBidding}>
           <Ionicons name="search" size={30} color="#00716F" />
@@ -258,19 +246,21 @@ const HomeScreen = () => {
           <Text>Notification</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: "#f0f8ff",
     marginTop: 10,
     textAlign: "center",
   },
   container: {
     padding: 20,
     backgroundColor: "#f0f8ff",
+    paddingBottom: 80, // Adjust paddingBottom to accommodate the bottom navigation bar
   },
 
   heading: {
@@ -319,10 +309,18 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#ecf0f1",
+    backgroundColor: "#FFF",
     paddingVertical: 10,
+    paddingHorizontal: 20,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+    zIndex: 1,
   },
   bottomBarItem: {
     alignItems: "center",
