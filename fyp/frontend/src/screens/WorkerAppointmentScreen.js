@@ -1,7 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Context as AppointmentContext } from "../context/appointmentContext";
 import { Context as AuthContext } from "../context/authContext";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import BackButton from "../Components/BackButton";
 
 const WorkerAppointmentScreen = ({ route }) => {
@@ -13,10 +19,20 @@ const WorkerAppointmentScreen = ({ route }) => {
   const [userId, setUserId] = useState(null);
 
   const { worker } = route.params;
-  const [workerProfileData, setWorkerProfileData] = useState(null);
-  // console.log(worker);
 
-  // console.log(state.appointemnt[0].appointments);
+  const [workerProfileData, setWorkerProfileData] = useState(null);
+
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   useEffect(() => {
     const fetchUserId = async () => {
       try {
@@ -31,7 +47,6 @@ const WorkerAppointmentScreen = ({ route }) => {
     fetchUserId();
   }, []);
 
-  // console.log(workerProfileData?._j?.username);
   useEffect(() => {
     const fetchAppointments = async () => {
       await getAppointments();
@@ -39,16 +54,28 @@ const WorkerAppointmentScreen = ({ route }) => {
 
     fetchAppointments();
   }, [getAppointments]);
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
+  const formatTime = (timeString) => {
+    const time = new Date(timeString);
+    const hours = String(time.getHours()).padStart(2, "0");
+    const minutes = String(time.getMinutes()).padStart(2, "0");
+    const seconds = String(time.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
   const handleAccept = async (appointmentId) => {
-    // console.log(appointmentId);
     await acceptAppointment({ appointmentId });
   };
 
   const handleReject = async (appointmentId) => {
     await rejectAppointment({ appointmentId });
   };
-  // console.log(state.appointemnt[0].userId, userId);
 
   return (
     <View style={styles.container}>
@@ -61,54 +88,39 @@ const WorkerAppointmentScreen = ({ route }) => {
             appointemnt.appointments?.map(
               (appointments) =>
                 appointments.status !== "accepted" && (
-                  <View key={appointemnt._id}>
-                    <Text style={{ color: "red" }}>{appointments._id}</Text>
-                    <TouchableOpacity
-                      onPress={() => handleAccept(appointments._id)}
-                    >
-                      <Text style={styles.acceptButton}>
-                        Accept Appointment
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => handleReject(appointments._id)}
-                    >
-                      <Text style={styles.rejectButton}>
-                        Reject Appointment
-                      </Text>
-                    </TouchableOpacity>
-                    {/* <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                          style={[styles.button, styles.acceptButton]}
-                          onPress={() =>
-                            submitBid(
-                              "accept",
-                              proposal._id,
-                              bid._id,
-                              bid.price
-                            )
-                          }
-                        >
-                          <Text style={styles.buttonText}>Accept</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={[styles.button, styles.rejectButton]}
-                          onPress={() =>
-                            submitBid(
-                              "reject",
-                              proposal._id,
-                              bid._id,
-                              bid.price
-                            )
-                          }
-                        >
-                          <Text style={styles.buttonText}>Reject</Text>
-                        </TouchableOpacity>
-                      </View> */}
+                  <View key={appointemnt._id} style={styles.card}>
+                    <Text style={styles.name}>
+                      {workerProfileData?._j?.username}
+                    </Text>
+                    <Text style={styles.dateTime}>
+                      Date: {formatDate(appointments.date)}
+                    </Text>
+                    <Text style={styles.dateTime}>
+                      Time: {formatTime(appointments.time)}
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={[styles.button, styles.acceptButton]}
+                        onPress={() => handleAccept(appointments._id)}
+                      >
+                        <Text style={styles.buttonText}>Accept</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.button, styles.rejectButton]}
+                        onPress={() => handleReject(appointments._id)}
+                      >
+                        <Text style={styles.buttonText}>Reject</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 )
             )
         )}
+      {isLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color={activityIndicatorColor} />
+        </View>
+      )}
     </View>
   );
 };
@@ -117,22 +129,53 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#f0f8ff",
   },
   heading: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    marginTop: 60,
+    color: "#00716F",
   },
-  notificationItem: {
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
     marginBottom: 20,
-    color: "red",
+    elevation: 2,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  dateTime: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 5,
   },
   acceptButton: {
-    color: "green",
-    fontWeight: "bold",
+    backgroundColor: "green",
+    marginRight: 5,
   },
   rejectButton: {
-    color: "red",
+    backgroundColor: "red",
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: "white",
     fontWeight: "bold",
   },
 });
