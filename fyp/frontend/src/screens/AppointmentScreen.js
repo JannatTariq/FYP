@@ -145,7 +145,7 @@ const AppointmentScreen = ({ route }) => {
             style={styles.profilePhoto}
             source={require("../../assets/user.png")}
           />
-          <Text style={styles.nameText}>Worker Name</Text>
+          <Text style={styles.nameText}>{worker.username}</Text>
         </View>
       </View>
       <View style={styles.lowerHalf} />
@@ -203,7 +203,13 @@ const AppointmentScreen = ({ route }) => {
           })
         }
       >
-        <Text style={styles.buttonText}>Transaction</Text>
+        {/* <Text style={styles.buttonText}>Transaction</Text> */}
+        <TouchableOpacity
+          style={styles.buttonText}
+          onPress={() => navigation.navigate("Transaction")}
+        >
+          <Text style={styles.buttonText}>Transaction</Text>
+        </TouchableOpacity>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
@@ -293,6 +299,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginTop: 10,
+
     color: "#00716F",
   },
   heading: {
@@ -311,7 +318,7 @@ const styles = StyleSheet.create({
     color: "#00716F",
     // fontStyle: "italic",
     // padding: 20,
-    marginTop: 80,
+    marginTop: 100,
   },
   buttonContainer: {
     flex: 2,

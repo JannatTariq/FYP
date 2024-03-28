@@ -274,7 +274,10 @@ const WPS_Client = ({ route }) => {
                 {/* <Text>{console.log(userId, review.user)}</Text> */}
                 {userId === review.user && (
                   <TouchableOpacity
-                    style={styles.deleteButton}
+                    style={[
+                      styles.deleteButton,
+                      { marginTop: -30, alignSelf: "flex-end" },
+                    ]}
                     onPress={() => handleDeleteReview(review._id)}
                   >
                     {/* <Text>{console.log(review._id)}</Text> */}
@@ -350,6 +353,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f8ff", // Green texture background color
     padding: 20,
     // position: "relative",
+  },
+  deleteButton: {
+    flexDirection: "row-reverse",
   },
   scrollContainer: {
     flex: 1,
