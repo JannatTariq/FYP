@@ -28,7 +28,7 @@ const submitAppointment =
         "hours"
       );
 
-      //   console.log(formattedDate, formattedTime);
+      // console.log(formattedDate, formattedTime);
       const authToken = await AsyncStorage.getItem("token");
       const response = await api.post(
         "/submitAppointment",
