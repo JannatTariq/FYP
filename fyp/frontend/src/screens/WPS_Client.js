@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,6 +29,16 @@ const WPS_Client = ({ route }) => {
     getUserId,
   } = useContext(AuthContext);
   // console.log("State", state.reviews.rating);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
   const { worker } = route.params;
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -320,6 +331,11 @@ const WPS_Client = ({ route }) => {
           >
             <Text style={styles.submitButtonText}>Submit Rating</Text>
           </TouchableOpacity>
+          {isLoading && (
+            <View style={styles.activityIndicatorContainer}>
+              <ActivityIndicator size="large" color={activityIndicatorColor} />
+            </View>
+          )}
         </View>
       )}
     />

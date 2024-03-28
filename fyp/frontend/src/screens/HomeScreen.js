@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
@@ -23,6 +24,16 @@ const HomeScreen = () => {
   // const { state } = useContext(ProposalContext);
   const { state, fetchWorkers, getReviews } = useContext(AuthContext);
   const [id, setId] = useState(false);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -246,6 +257,11 @@ const HomeScreen = () => {
           <Text>Notification</Text>
         </TouchableOpacity>
       </View>
+      {isLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color={activityIndicatorColor} />
+        </View>
+      )}
     </View>
   );
 };
