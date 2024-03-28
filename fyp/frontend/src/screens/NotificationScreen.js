@@ -6,10 +6,12 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
 import { useNavigation } from "@react-navigation/native";
+import BackButton from "../Components/BackButton";
 
 const NotificationsScreen = () => {
   const navigation = useNavigation();
@@ -17,6 +19,16 @@ const NotificationsScreen = () => {
     useContext(ProposalContext);
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +82,7 @@ const NotificationsScreen = () => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <Text style={styles.heading}>Notifications</Text>
 
       <ScrollView>
@@ -129,6 +142,11 @@ const NotificationsScreen = () => {
                   )
               )
           )}
+        {isLoading && (
+          <View style={styles.activityIndicatorContainer}>
+            <ActivityIndicator size="large" color={activityIndicatorColor} />
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -138,11 +156,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#f0f8ff",
   },
   heading: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    marginTop: 60,
+    color: "#00716F",
   },
   notificationItem: {
     marginBottom: 20,
@@ -150,7 +171,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     borderColor: "#ddd",
-    backgroundColor: "#fff",
+    backgroundColor: "#FFF",
   },
   bidderName: {
     fontWeight: "bold",

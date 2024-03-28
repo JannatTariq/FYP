@@ -33,37 +33,7 @@ const WorkerDetail = ({ route }) => {
 
   //   console.log(worker, review);
 
-  const workerProjects = [
-    {
-      id: 1,
-      projectName: "Project 1",
-      projectDetails: [
-        {
-          heading: "Description",
-          value: "Property in Wapda Town.",
-        },
-        { heading: "Area", value: "200 sq. ft." },
-        { heading: "Expected Price", value: "Rs.5,00,0000" },
-        { heading: "No. of Bedrooms", value: "3" },
-        { heading: "No. of Bathrooms", value: "2" },
-      ],
-    },
-    {
-      id: 2,
-      projectName: "Project 2",
-      projectDetails: [
-        {
-          heading: "Description",
-          value: "Property in Lahore",
-        },
-        { heading: "Area", value: "150 sq. ft." },
-        { heading: "Expected Price", value: "Rs.5,00,000" },
-        { heading: "No. of Bedrooms", value: "2" },
-        { heading: "No. of Bathrooms", value: "1" },
-      ],
-    },
-    // Add more projects as needed
-  ];
+  // Add more projects as needed
 
   const workerInfo = {
     avatarUri: "https://www.bootdey.com/img/Content/avatar/avatar6.png",
@@ -72,12 +42,28 @@ const WorkerDetail = ({ route }) => {
     location: workerProfileData?._j?.address,
     bio: "I am passionate about turning your construction dreams into reality. Whether you're envisioning a new home, a commercial space, or a transformative renovation, I have the expertise and dedication to make it happen. Let's collaborate to build something extraordinary. ",
   };
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+  };
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   //   console.log(workerInfo.name);
   const handlePress = () => {
     navigation.goBack();
   };
+  const handleProjects = () => {
+    navigation.navigate("WorkerProjectsScreen", {
+      workerId: workerProfileData?._j?._id,
+    });
+    // console.log(workerProfileData?._j?._id);
+  };
+
   const handleAppointment = () => {
-    navigation.navigate("Appointment");
+    navigation.navigate("Appointment", { worker: worker._id });
   };
 
   //   console.log(state.reviews);
@@ -117,12 +103,47 @@ const WorkerDetail = ({ route }) => {
         <View key={item.key} style={styles.container}>
           <View style={styles.navbar}>
             <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
-              <Ionicons name="arrow-back-outline" size={24} color="#004d40" />
+              <Ionicons
+                name="arrow-back-outline"
+                size={24}
+                marginTop={10}
+                color="#004d40"
+              />
             </TouchableOpacity>
+          </View>
+          <View style={styles.sidebar}>
+            <TouchableOpacity
+              onPress={toggleSidebar}
+              style={styles.sidebarToggle}
+            >
+              <AntDesign name="bars" size={24} color="#004d40" />
+            </TouchableOpacity>
+            {isSidebarOpen && (
+              <View style={styles.sidebarContent}>
+                <View style={styles.sidebarCard}>
+                  <TouchableOpacity
+                    style={styles.sidebarOption}
+                    onPress={handleProjects}
+                  >
+                    <Text style={styles.sidebarOptionText}>Projects</Text>
+                  </TouchableOpacity>
+                  {/* <TouchableOpacity
+                    style={styles.sidebarOption}
+                    onPress={handleAppointment}
+                  >
+                    <Text
+                      style={[styles.sidebarOptionText, styles.verticalText]}
+                    >
+                      Appointment
+                    </Text>
+                  </TouchableOpacity> */}
+                </View>
+              </View>
+            )}
           </View>
           <View style={styles.avatarContainer}>
             <Image
-              source={{ uri: workerInfo.avatarUri }}
+              source={require("../../assets/user.png")}
               style={styles.avatar}
             />
             <Text style={styles.name}>{workerInfo.name}</Text>
@@ -140,38 +161,6 @@ const WorkerDetail = ({ route }) => {
             <Text style={styles.infoValue}>{workerInfo.bio}</Text>
           </View>
 
-          <View style={styles.projectsContainer}>
-            <Text style={styles.projectsHeading}>Projects</Text>
-            <FlatList
-              data={workerProjects}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.projectCard}>
-                  <Text style={styles.projectName}>{item.projectName}</Text>
-                  <FlatList
-                    data={item.projectDetails}
-                    keyExtractor={(detail) => detail.heading}
-                    renderItem={({ item: detail }) => (
-                      <View style={styles.projectDetail}>
-                        <Text style={styles.detailHeading}>
-                          {detail.heading}:
-                        </Text>
-                        <Text style={styles.detailValue}>{detail.value}</Text>
-                      </View>
-                    )}
-                  />
-                </View>
-              )}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.bidButton}
-            onPress={() =>
-              navigation.navigate("Appointment", { worker: worker })
-            }
-          >
-            <Text style={styles.bidButtonText}>Schedule Appointment</Text>
-          </TouchableOpacity>
           <View style={styles.reviewsContainer}>
             <Text style={styles.reviewsHeading}>Reviews</Text>
             {state.reviews?.reviews?.map((review, index) => (
@@ -181,68 +170,9 @@ const WorkerDetail = ({ route }) => {
                 <Text style={styles.reviewComment}>
                   Comment: {review.comment}
                 </Text>
-                {/* <Text>{console.log(userId, review.user)}</Text> */}
-                {userId === review.user && (
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => handleDeleteReview(review._id)}
-                  >
-                    {/* <Text>{console.log(review._id)}</Text> */}
-                    <AntDesign name="delete" size={24} color="orange" />
-                  </TouchableOpacity>
-                )}
               </View>
             ))}
           </View>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingLabel}>Rate this worker:</Text>
-            {/* Display stars for rating */}
-            <Ionicons
-              name="star"
-              size={24}
-              color={rating >= 1 ? "orange" : "gray"}
-              onPress={() => setRating(1)}
-            />
-            <Ionicons
-              name="star"
-              size={24}
-              color={rating >= 2 ? "orange" : "gray"}
-              onPress={() => setRating(2)}
-            />
-            <Ionicons
-              name="star"
-              size={24}
-              color={rating >= 3 ? "orange" : "gray"}
-              onPress={() => setRating(3)}
-            />
-            <Ionicons
-              name="star"
-              size={24}
-              color={rating >= 4 ? "orange" : "gray"}
-              onPress={() => setRating(4)}
-            />
-            <Ionicons
-              name="star"
-              size={24}
-              color={rating >= 5 ? "orange" : "gray"}
-              onPress={() => setRating(5)}
-            />
-          </View>
-
-          <TextInput
-            style={styles.commentInput}
-            placeholder="Add a comment (optional)"
-            value={comment}
-            onChangeText={setComment}
-            multiline
-          />
-
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={handleRatingSubmit}
-          >
-            <Text style={styles.submitButtonText}>Submit Rating</Text>
-          </TouchableOpacity>
         </View>
       )}
     />
@@ -251,7 +181,7 @@ const WorkerDetail = ({ route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: "#f0f8ff", // Green texture background color
     padding: 20,
   },
@@ -284,12 +214,59 @@ const styles = StyleSheet.create({
     flex: 1,
     // backgroundColor: "#004d40",
   },
+  sidebarContent: {
+    marginTop: -50, // Adjust top margin as needed
+    marginLeft: 30,
+    alignItems: "center",
+  },
+  sidebarOption: {
+    paddingVertical: 10,
+  },
+  sidebar: {
+    backgroundColor: "#f0f8ff",
+    //   width: "65%", // Adjust width as needed
+    //   height: "100%",
+    // justifyContent: "flex-start",
+    position: "absolute",
+
+    right: 0,
+    top: 0, // Adjust top position as needed
+  },
+  sidebarCard: {
+    backgroundColor: "#fff",
+    // borderRadius: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: 100,
+    height: 50,
+    padding: 3,
+    // marginRight: 10,
+    // alignItems: "flex-end",
+    alignItems: "center",
+  },
+  sidebarOptionText: {
+    fontSize: 16,
+    color: "#004d40",
+  },
+  sidebarToggle: {
+    alignItems: "center",
+    paddingVertical: 60,
+    paddingLeft: 80,
+    paddingRight: 25,
+  },
+
   navbar: {
     height: 50,
     top: 20,
     left: 10,
     padding: 10,
-    zIndex: 1,
+    // zIndex: 1,
   },
   avatar: {
     width: 150,
@@ -317,13 +294,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // backgroundColor: "#004d40",
   },
-  navbar: {
-    height: 50,
-    top: 20,
-    left: 10,
-    padding: 10,
-    zIndex: 1,
-  },
+
   projectsContainer: {
     marginTop: 20,
   },
