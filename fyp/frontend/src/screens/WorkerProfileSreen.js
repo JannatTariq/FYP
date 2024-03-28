@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f8ff", // Green texture background color
     // alignContent: "center",
     justifyContent: "center",
+    paddingTop: 35,
   },
   card: {
     backgroundColor: "#FFFFFF",
