@@ -16,6 +16,8 @@ import BackButton from "../Components/BackButton";
 import { useNavigation } from "@react-navigation/native";
 import { Context as AppointmentContext } from "../context/appointmentContext";
 import { Context as AuthContext } from "../context/authContext";
+import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
 const AppointmentScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -31,6 +33,7 @@ const AppointmentScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -114,7 +117,23 @@ const AppointmentScreen = ({ route }) => {
       return () => clearTimeout(timeoutId);
     }
   }, [notification]);
+  const handleTransaction = () => {
+    navigation.navigate("Transaction");
+  };
 
+  const handleViewMeetings = () => {
+    navigation.navigate("MeetingsScreen", {
+      workerData: worker,
+      selectedDate,
+      selectedTime,
+    });
+  };
+  const handlePress = () => {
+    navigation.goBack();
+  };
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
   // const sendNotification = async () => {
   //   // console.log("pressed");
   //   navigation.navigate("Transaction");
@@ -137,9 +156,44 @@ const AppointmentScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <BackButton />
       <View style={styles.upperHalf}>
-        <Text style={styles.heading}>Schedule Appointment</Text>
+        <View style={styles.navbar}>
+          <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
+            <Ionicons
+              name="arrow-back-outline"
+              size={24}
+              marginTop={10}
+              color="black"
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.sidebar}>
+          <TouchableOpacity
+            onPress={toggleSidebar}
+            style={styles.sidebarToggle}
+          >
+            <AntDesign name="bars" size={24} color="black" />
+          </TouchableOpacity>
+          {isSidebarOpen && (
+            <View style={styles.sidebarContent}>
+              <View style={styles.sidebarCard}>
+                <TouchableOpacity
+                  style={styles.sidebarOption}
+                  onPress={handleTransaction}
+                >
+                  <Text style={styles.sidebarOptionText}>Transaction</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.sidebarOption}
+                  onPress={handleViewMeetings}
+                >
+                  <Text style={styles.sidebarOptionText}>View Meetings</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </View>
+        <Text style={styles.heading}>Schedule {`\n`}Appointment</Text>
         <View style={styles.profileContainer}>
           <Image
             style={styles.profilePhoto}
@@ -194,7 +248,7 @@ const AppointmentScreen = ({ route }) => {
       </View>
 
       <TouchableOpacity
-        style={styles.button}
+        style={styles.submitButton}
         onPress={() =>
           submitAppointment({
             workerId: worker._id,
@@ -203,26 +257,9 @@ const AppointmentScreen = ({ route }) => {
           })
         }
       >
-        {/* <Text style={styles.buttonText}>Transaction</Text> */}
-        <TouchableOpacity
-          style={styles.buttonText}
-          onPress={() => navigation.navigate("Transaction")}
-        >
-          <Text style={styles.buttonText}>Transaction</Text>
-        </TouchableOpacity>
+        <Text style={styles.submitButtonText}>Submit Appointment</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() =>
-          navigation.navigate("MeetingsScreen", {
-            workerData: worker,
-            selectedDate,
-            selectedTime,
-          })
-        }
-      >
-        <Text style={styles.buttonText}>Appointments</Text>
-      </TouchableOpacity>
+
       {notification && (
         <NotificationAlert
           message={notification}
@@ -245,7 +282,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   upperHalf: {
-    flex: 1.3,
+    flex: 2.6,
     backgroundColor: "#00716F",
     width: "100%",
   },
@@ -299,7 +336,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginTop: 10,
-
     color: "#00716F",
   },
   heading: {
@@ -308,7 +344,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     color: "white",
-    marginTop: 110,
+    marginTop: 130,
     marginBottom: 25,
     // fontStyle: "italic",
   },
@@ -342,6 +378,71 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 15,
     fontWeight: "bold",
+  },
+  sidebarContent: {
+    marginTop: -50, // Adjust top margin as needed
+    marginLeft: 30,
+    alignItems: "center",
+  },
+  sidebarOption: {
+    paddingVertical: 10,
+  },
+  sidebar: {
+    backgroundColor: "#00716F",
+    //   width: "65%", // Adjust width as needed
+    //   height: "100%",
+    // justifyContent: "flex-start",
+    position: "absolute",
+
+    right: 0,
+    top: 0, // Adjust top position as needed
+  },
+  sidebarCard: {
+    backgroundColor: "#fff",
+    // borderRadius: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: 100,
+    height: 100,
+    padding: 3,
+    // marginRight: 10,
+    // alignItems: "flex-end",
+    alignItems: "center",
+  },
+  sidebarOptionText: {
+    fontSize: 16,
+    color: "#004d40",
+  },
+  sidebarToggle: {
+    alignItems: "center",
+    paddingVertical: 60,
+    paddingLeft: 80,
+    paddingRight: 25,
+  },
+  navbar: {
+    height: 50,
+    top: 40,
+    left: 10,
+    padding: 10,
+    // zIndex: 1,
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  submitButton: {
+    backgroundColor: "#00716F",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
   },
 });
 

@@ -139,7 +139,15 @@ const WPS_Client = ({ route }) => {
   };
   const handleDeleteReview = async (reviewId) => {
     await deleteReview({ reviewId });
+    {
+      isLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color={activityIndicatorColor} />
+        </View>
+      );
+    }
     getReviews({ workerId: worker._id });
+    navigation.navigate("HomeScreen");
   };
 
   return (
@@ -465,6 +473,7 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontWeight: "bold",
     color: "#00716F",
+    textDecorationLine: "underline",
   },
   infoValue: {
     marginTop: 5,
@@ -572,6 +581,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   reviewsHeading: {
+    textDecorationLine: "underline",
     fontSize: 18,
     fontWeight: "bold",
     color: "#00716F",
