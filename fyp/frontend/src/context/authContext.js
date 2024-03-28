@@ -348,6 +348,7 @@ const getReviews =
         type: "get_reviews",
         payload: response.data,
       });
+      return response.data;
     } catch (error) {
       dispatch({
         type: "add_error",
