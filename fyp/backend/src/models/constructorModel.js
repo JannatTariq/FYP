@@ -51,6 +51,11 @@ const constructorSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  status: {
+    type: String,
+    enum: ["pending", "blocked", "unblocked"],
+    default: "pending",
+  },
   reviews: [
     {
       user: {

@@ -64,7 +64,6 @@ function isPDF(fileName) {
 
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-  // console.log(req.body);
 
   if (!email || !password) {
     return res.status(422).send({ error: "Must provide email and password" });
@@ -74,7 +73,6 @@ router.post("/signin", async (req, res) => {
     const cleanedEmail = email.trim();
     const user = await User.findOne({ email: cleanedEmail });
     const constructor = await Constructor.findOne({ email: cleanedEmail });
-    // console.log(user);
 
     if (!user && !constructor) {
       return res.status(422).send({
@@ -82,17 +80,21 @@ router.post("/signin", async (req, res) => {
       });
     }
 
+    let foundWorker;
     if (user != null) {
-      await user.comparePassword(password);
-      const token = jwt.sign({ userId: user._id }, "MY_SECRET_KEY");
-
-      res.send({ token });
+      foundWorker = user;
     } else if (constructor != null) {
-      await constructor.comparePassword(password);
-      const token = jwt.sign({ userId: constructor._id }, "MY_SECRET_KEY");
-
-      res.send({ token });
+      foundWorker = constructor;
     }
+
+    if (foundWorker.status === "blocked") {
+      return res.status(403).send("Worker is blocked");
+    }
+
+    await foundWorker.comparePassword(password);
+    const token = jwt.sign({ userId: foundWorker._id }, "MY_SECRET_KEY");
+
+    res.send({ token });
   } catch (error) {
     res
       .status(400)
@@ -200,7 +202,7 @@ router.get("/checkConstructor", async (req, res) => {
     // console.log(constructor);
 
     if (constructor) {
-      res.send(true);
+      res.send({ success: true, constructor });
     } else {
       res.send(false);
     }
@@ -372,6 +374,49 @@ router.get("/userProfile/:userId", requireAuth, async (req, res) => {
     // console.log(user);
   } catch (error) {
     console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//admin
+router.put("/contractors/:id/block", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const contractor = await Constructor.findById(id);
+
+    if (!contractor) {
+      return res.status(404).json({ error: "Contractor not found" });
+    }
+
+    contractor.status = "blocked";
+
+    await contractor.save();
+
+    res.json({ message: "Contractor blocked successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/contractors/:id/unblock", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const contractor = await Constructor.findById(id);
+
+    if (!contractor) {
+      return res.status(404).json({ error: "Contractor not found" });
+    }
+
+    contractor.status = "unblocked";
+
+    await contractor.save();
+
+    res.json({ message: "Contractor unblocked successfully" });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

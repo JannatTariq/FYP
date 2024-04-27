@@ -18,6 +18,7 @@ const WorkerAppointmentScreen = ({ route }) => {
   const { getUserId, workerProfile, userProfile } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
   const { worker } = route.params;
+  console.log(worker);
 
   const [clientNames, setClientNames] = useState({});
 
@@ -37,6 +38,9 @@ const WorkerAppointmentScreen = ({ route }) => {
       try {
         const id = await getUserId();
         setUserId(id);
+
+        // const workerProfileData = workerProfile({ id: worker });
+        // setWorkerProfileData(workerProfileData);
       } catch (error) {
         console.error("Error fetching user ID:", error);
       }
@@ -107,6 +111,18 @@ const WorkerAppointmentScreen = ({ route }) => {
       <BackButton />
       <Text style={styles.heading}>Appointments</Text>
       {state.appointemnt &&
+
+        state.appointemnt?.map(
+          (appointemnt) =>
+            appointemnt.userId === userId &&
+            appointemnt.appointments?.map(
+              (appointments) =>
+                appointments.status !== "accepted" && (
+                  <View key={appointemnt._id} style={styles.card}>
+                    {/* <Text style={styles.name}>
+                      {workerProfileData?._j?.username}
+                    </Text> */}
+
         state.appointemnt.map(
           (appointment) =>
             appointment.userId === userId &&
@@ -121,6 +137,7 @@ const WorkerAppointmentScreen = ({ route }) => {
                     <Text style={styles.dateTime}>
                       {clientNames[appointmentItem._id]}
                     </Text>
+
                     <Text style={styles.dateTime}>
                       Date: {formatDate(appointmentItem.date)}
                     </Text>

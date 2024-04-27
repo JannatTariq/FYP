@@ -32,6 +32,9 @@ import { Provider as AppointmentProvider } from "./src/context/appointmentContex
 import WorkerAppointmentScreen from "./src/screens/WorkerAppointmentScreen.js";
 import MeetingsScreen from "./src/screens/MeetingsScreen.js";
 import WorkerDetail from "./src/screens/WorkerDetailScreen.js";
+import AdminHomeScreen from "./src/screens/AdminHomeScreen.js";
+import UnBlockWorkerScreen from "./src/screens/unBlockWorkerScreen.js";
+import MonthlyReportScreen from "./src/screens/MothlyReportScreen.js";
 
 const Stack = createStackNavigator();
 
@@ -113,6 +116,18 @@ export default function App() {
                   name="WorkerDetailScreen"
                   component={WorkerDetail}
                 />
+                <Stack.Screen
+                  name="AdminHomeScreen"
+                  component={AdminHomeScreen}
+                />
+                <Stack.Screen
+                  name="UnBlockWorkerScreen"
+                  component={UnBlockWorkerScreen}
+                />
+                {/* <Stack.Screen
+                  name="MonthlyReportScreen"
+                  component={MonthlyReportScreen}
+                /> */}
               </Stack.Navigator>
             </NavigationContainer>
           </AuthProvider>

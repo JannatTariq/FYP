@@ -2,6 +2,7 @@ import createDataContext from "./createDataContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { navigate } from "../navigationRef";
 import api from "../api/api";
+import { Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 // import { decode } from "base-64";
 // import * as FileSystem from "expo-file-system";
@@ -28,6 +29,8 @@ const authReducer = (state, action) => {
       return {
         ...state,
       };
+    case "block_worker_success":
+      return { ...state };
     default:
       return state;
   }
@@ -51,7 +54,9 @@ const checkConstructor = async () => {
       const isConstructor = response.data;
 
       if (isConstructor) {
-        navigate("WorkerHomeScreen");
+        if (response.data.constructor.role === "Admin")
+          navigate("AdminHomeScreen");
+        else navigate("WorkerHomeScreen");
       } else {
         navigate("HomeScreen");
       }
@@ -65,7 +70,7 @@ const checkConstructor = async () => {
 
 const signIn =
   (dispatch) =>
-  async ({ email, password }) => {
+  async ({ email, password, setEmail, setPassword, emailInputRef }) => {
     try {
       const response = await api.post("/signin", { email, password });
       await AsyncStorage.setItem("token", response.data.token);
@@ -74,11 +79,33 @@ const signIn =
         payload: response.data.token,
       });
       await checkConstructor();
-    } catch (err) {
-      dispatch({
-        type: "add_error",
-        payload: "Invalid Email or Password",
-      });
+    } catch (error) {
+      if (error.response) {
+        const { status, data } = error.response;
+
+        if (status === 403 && data === "Worker is blocked") {
+          Alert.alert(
+            "Blocked",
+            "You are blocked from signing in. Please contact the administrator for assistance.",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  // Clear email and password fields
+                  setEmail("");
+                  setPassword("");
+                  emailInputRef.current.focus();
+                },
+              },
+            ]
+          );
+        } else {
+          dispatch({
+            type: "add_error",
+            payload: "Invalid Email or Password",
+          });
+        }
+      }
     }
   };
 
@@ -379,6 +406,52 @@ const deleteReview =
       });
     }
   };
+
+const blockWorker =
+  (dispatch) =>
+  async ({ id }) => {
+    try {
+      // console.log( id);
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.put(`/contractors/${id}/block`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      // console.log(response.data);
+      // navigate("HomeScreen");
+      dispatch({
+        type: "block_worker_success",
+        payload: response.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "add_error",
+        payload: "Error getting user.",
+      });
+    }
+  };
+
+const unblockWorker =
+  (dispatch) =>
+  async ({ id }) => {
+    try {
+      // console.log( id);
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.put(`/contractors/${id}/unblock`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      // console.log(response.data);
+      // navigate("HomeScreen");
+      dispatch({
+        type: "block_worker_success",
+        payload: response.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "add_error",
+        payload: "Error getting user.",
+      });
+    }
+  };
 export const { Provider, Context } = createDataContext(
   authReducer,
   {
@@ -394,6 +467,8 @@ export const { Provider, Context } = createDataContext(
     getReviews,
     deleteReview,
     workerProfile,
+    blockWorker,
+    unblockWorker,
   },
   { token: null, errorMessage: "" }
 );
