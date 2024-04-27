@@ -269,4 +269,42 @@ router.get("/workerProposals/:id", async (req, res) => {
   }
 });
 
+router.post("/submit-report", async (req, res) => {
+  try {
+    // Extract userId, projectId, and monthly report text from request body
+    const { userId, projectId, monthlyReport } = req.body;
+
+    // Check if the proposal exists in the database
+    const proposal = await Proposal.findOne({
+      "bids.userId": userId,
+      _id: projectId,
+    });
+    if (!proposal) {
+      return res.status(404).send({ error: "Proposal not found" });
+    }
+
+    // Create a new monthly report object
+    const newReport = {
+      month: new Date().getMonth() + 1, // Get current month
+      // day: new Date().getDay() + 1,
+      year: new Date().getFullYear(), // Get current year
+      reportText: monthlyReport,
+      submittedAt: new Date(), // Current date and time
+    };
+
+    // Push the new report to the monthlyReports array
+    proposal.monthlyReports.push(newReport);
+
+    // Save the proposal
+    await proposal.save();
+
+    res
+      .status(200)
+      .send({ proposal, message: "Monthly report submitted successfully" });
+  } catch (error) {
+    console.error("Error submitting monthly report:", error);
+    res.status(500).send({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
