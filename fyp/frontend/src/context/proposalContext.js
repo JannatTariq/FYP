@@ -43,7 +43,12 @@ const proposalReducer = (state = initialState, action) => {
     case "clear_error_message":
       return { ...state, errorMessage: "" };
     case "submit_report_success":
-      return { ...state, proposal: action.payload };
+      return {
+        ...state,
+        proposal: [...(state.proposal ?? []), action.payload],
+      };
+    case "get_report_success":
+      return { ...state };
     default:
       return state;
   }
@@ -312,19 +317,45 @@ const proposalBids = (dispatch) => async () => {
 };
 
 const submitMonthlyReport =
-  (dispatch) => async (userId, projectId, monthlyReport) => {
+  (dispatch) =>
+  async ({ userId, projectId, monthlyReport, month }) => {
     try {
+      // console.log(userId, projectId, monthlyReport, month);c
       const authToken = await AsyncStorage.getItem("token");
       const response = await api.post(
         "/submit-report",
-        { userId, projectId, monthlyReport },
+        { userId, projectId, monthlyReport, month },
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      // console.log(response.data.proposal);
+      dispatch({
+        type: "submit_report_success",
+        payload: response.data.proposal,
+      });
+    } catch (error) {
+      dispatch({
+        type: "add_error",
+        payload: "An error occurred while fetching worker proposals.",
+      });
+    }
+  };
+
+const getMonthlyReport =
+  (dispatch) =>
+  async ({ userId, projectId }) => {
+    try {
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.get(
+        `/monthly-reports/${userId}/${projectId}`,
         {
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
       dispatch({
-        type: "submit_report_success",
-        payload: response.data.proposal,
+        type: "get_report_success",
+        payload: response.data.monthlyReports,
       });
     } catch (error) {
       dispatch({
@@ -346,6 +377,7 @@ export const { Provider, Context } = createDataContext(
     rejectBid,
     proposalBids,
     submitMonthlyReport,
+    getMonthlyReport,
   },
   []
 );

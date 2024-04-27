@@ -56,7 +56,7 @@ const WPS_Client = ({ route }) => {
   };
 
   const handleProjects = () => {
-    navigation.navigate("WorkerProjectsScreen", { workerId: worker._id });
+    navigation.navigate("ClientProjectsScreen", { workerId: worker._id });
   };
 
   const handleAppointment = () => {

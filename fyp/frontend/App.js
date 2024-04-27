@@ -35,6 +35,8 @@ import WorkerDetail from "./src/screens/WorkerDetailScreen.js";
 import AdminHomeScreen from "./src/screens/AdminHomeScreen.js";
 import UnBlockWorkerScreen from "./src/screens/unBlockWorkerScreen.js";
 import MonthlyReportScreen from "./src/screens/MothlyReportScreen.js";
+import ClientProjectsScreen from "./src/screens/ClientProjectScreen.js";
+import ClientMonthlyReportScreen from "./src/screens/ClientMonthlyReportScreen.js";
 
 const Stack = createStackNavigator();
 
@@ -124,10 +126,18 @@ export default function App() {
                   name="UnBlockWorkerScreen"
                   component={UnBlockWorkerScreen}
                 />
-                {/* <Stack.Screen
+                <Stack.Screen
                   name="MonthlyReportScreen"
                   component={MonthlyReportScreen}
-                /> */}
+                />
+                <Stack.Screen
+                  name="ClientProjectsScreen"
+                  component={ClientProjectsScreen}
+                />
+                <Stack.Screen
+                  name="ClientMonthlyReportScreen"
+                  component={ClientMonthlyReportScreen}
+                />
               </Stack.Navigator>
             </NavigationContainer>
           </AuthProvider>

@@ -19,7 +19,7 @@ const WorkerAppointmentScreen = ({ route }) => {
   const [userId, setUserId] = useState(null);
 
   const { worker } = route.params;
-  console.log(worker);
+  // console.log(worker);
 
   const [workerProfileData, setWorkerProfileData] = useState(null);
 
