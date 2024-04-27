@@ -112,7 +112,7 @@ const WorkerHomeScreen = () => {
               }
             >
               {/* <Text>{console.log(proposal)}</Text> */}
-              <Text style={styles.title}>Project {index + 1}</Text>
+              <Text style={styles.title}>Project </Text>
               <Text style={[styles.projectName, styles.bold]}>
                 {capitalizeFirstLetter(proposal.username)}
               </Text>
@@ -147,7 +147,7 @@ const WorkerHomeScreen = () => {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
-        <Text style={styles.heading}>Welcome Home {authState.username}!</Text>
+        <Text style={styles.heading}>Welcome Home!</Text>
 
         <View style={styles.tipContainer}>
           <Text style={styles.tipHeading}>Tip of the Day</Text>

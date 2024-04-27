@@ -197,6 +197,7 @@ const HomeScreen = () => {
                       <Text style={styles.recommendationTitle}>
                         {worker.username}
                       </Text>
+
                       <Text style={styles.recommendationDescription}>
                         {worker.role}
                       </Text>
@@ -223,8 +224,10 @@ const HomeScreen = () => {
         <Text style={styles.heading}>Welcome to Your Home Page!</Text>
         <View style={styles.tipsContainer}>
           <Text style={styles.tipsHeading}>Tips of the Week</Text>
+          <View style={styles.line}></View>
           <View style={styles.tipCard}>
             <Text style={styles.tipTitle}>{currentTip.title}</Text>
+
             <Text style={styles.tipDescription}>{currentTip.description}</Text>
           </View>
         </View>
@@ -244,17 +247,17 @@ const HomeScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.bottomBarItem}
-          onPress={() => navigation.navigate("ProfileScreen")}
-        >
-          <Ionicons name="person" size={30} color="#00716F" />
-          <Text>Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomBarItem}
           onPress={() => navigation.navigate("Notification")}
         >
           <Ionicons name="notifications-outline" size={30} color="#00716F" />
           <Text>Notification</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomBarItem}
+          onPress={() => navigation.navigate("ProfileScreen")}
+        >
+          <Ionicons name="person" size={30} color="#00716F" />
+          <Text>Profile</Text>
         </TouchableOpacity>
       </View>
       {isLoading && (
@@ -360,7 +363,7 @@ const styles = StyleSheet.create({
   tipTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 3,
   },
   tipDescription: {
     fontSize: 14,
@@ -369,6 +372,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#00716F",
     marginTop: 5,
+  },
+  line: {
+    height: 1,
+    backgroundColor: "black", // Color of the line
+    marginVertical: 10,
   },
 });
 

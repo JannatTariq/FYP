@@ -1,83 +1,15 @@
-// import React, { useContext, useEffect, useState } from "react";
-// import {
-//   View,
-//   Text,
-//   FlatList,
-//   StyleSheet,
-//   Image,
-//   TouchableOpacity,
-// } from "react-native";
-// import { Context as AuthContext } from "../context/authContext";
-// import { Context as AppointmentContext } from "../context/appointmentContext";
-
-// const MeetingsScreen = () => {
-//   const { state, getAppointments } = useContext(AppointmentContext);
-//   const { getUserId } = useContext(AuthContext);
-//   const [userId, setUserId] = useState(null);
-
-//   useEffect(() => {
-//     const loadData = async () => {
-//       try {
-//         const id = await getUserId();
-//         setUserId(id);
-
-//         await getAppointments();
-//       } catch (error) {
-//         console.error("Error fetching data:", error);
-//       }
-//     };
-
-//     loadData();
-//   }, []);
-
-//   //   console.log(state.appointemnt);
-//   return (
-//     <View style={{ flex: 1, marginTop: 100 }}>
-//       <Text style={styles.projectName}>Meetings</Text>
-//       {state.appointemnt &&
-//         state.appointemnt?.map(
-//           (appointemnt) =>
-//             appointemnt.appointments &&
-//             appointemnt.appointments?.map(
-//               (meetings) =>
-//                 meetings.clientId === userId &&
-//                 meetings.status === "accepted" && (
-//                   <View key={appointemnt._id}>
-//                     <Text style={{ color: "red" }}>
-//                       Meetings {appointemnt.userId} {meetings.time}{" "}
-//                     </Text>
-//                     <TouchableOpacity>
-//                       <Text style={{ color: "blue" }}>Close</Text>
-//                     </TouchableOpacity>
-//                   </View>
-//                 )
-//             )
-//         )}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   notificationItem: {
-//     marginBottom: 20,
-//   },
-//   projectName: {
-//     fontSize: 36,
-//     fontWeight: "bold",
-//     marginBottom: 5,
-//     color: "#00716F", // Dark green text color
-//   },
-//   projectDescription: {
-//     fontSize: 14,
-//     color: "#333", // Dark gray text color
-//   },
-// });
-
-// export default MeetingsScreen;
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Context as AuthContext } from "../context/authContext";
+import { useNavigation } from "@react-navigation/native";
 import { Context as AppointmentContext } from "../context/appointmentContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -94,16 +26,14 @@ const formatTime = (timeString) => {
   const seconds = String(time.getSeconds()).padStart(2, "0");
   return `${hours}:${minutes}:${seconds}`;
 };
-const MeetingBox = ({ name, date, time, userId, onRemove }) => (
+
+const MeetingBox = ({ name, date, time, onRemove }) => (
   <View style={styles.meetingBox}>
-    <View>
+    <View style={styles.meetingInfo}>
       <Text style={styles.heading}>Meeting</Text>
       <Text style={styles.text}>Name: {name}</Text>
       <Text style={styles.text}>Date: {formatDate(date)}</Text>
-      <Text style={styles.text}>
-        Time: {formatTime(time)}
-        {/* {console.log(date, time)} */}
-      </Text>
+      <Text style={styles.text}>Time: {formatTime(time)}</Text>
     </View>
     <TouchableOpacity onPress={onRemove}>
       <Text style={{ color: "blue" }}>Close</Text>
@@ -112,18 +42,27 @@ const MeetingBox = ({ name, date, time, userId, onRemove }) => (
 );
 
 const MeetingsScreen = ({ route }) => {
+  const navigation = useNavigation();
   const { state, getAppointments } = useContext(AppointmentContext);
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
   const [displayedAppointments, setDisplayedAppointments] = useState([]);
   const { workerData } = route.params;
-  // console.log(selectedDate, selectedTime);
+  const activityIndicatorColor = "#00716F";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
   useEffect(() => {
     const loadData = async () => {
       try {
         const id = await getUserId();
         setUserId(id);
-
         await getAppointments();
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -133,7 +72,6 @@ const MeetingsScreen = ({ route }) => {
     loadData();
   }, []);
 
-  // console.log(workerData._id, displayedAppointments[0]?.userId);
   const removeAppointment = (appointmentId) => {
     setDisplayedAppointments((prevAppointments) =>
       prevAppointments.filter(
@@ -148,58 +86,103 @@ const MeetingsScreen = ({ route }) => {
     }
   }, [state.appointemnt]);
 
+  const handlePress = () => {
+    navigation.goBack();
+  };
   return (
-    <View style={{ flex: 1, marginTop: 100 }}>
-      <Text style={styles.projectName}>Meetings</Text>
-      {displayedAppointments &&
-        displayedAppointments.map(
-          (appointment) =>
-            workerData._id === appointment.userId &&
-            Array.isArray(appointment.appointments) &&
-            appointment.appointments.map(
-              (meeting) =>
-                meeting.clientId === userId &&
-                meeting.status === "accepted" && (
-                  <MeetingBox
-                    key={meeting._id}
-                    name={workerData.username}
-                    date={meeting.date}
-                    time={meeting.time}
-                    onRemove={() => removeAppointment(appointment._id)}
-                  />
-                )
-            )
+    <View style={styles.container}>
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={handlePress} style={styles.barContainer}>
+          <Ionicons
+            name="arrow-back-outline"
+            size={24}
+            // marginTop={0}
+            color="black"
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.container}>
+        <Text style={styles.projectName}>Meetings</Text>
+        {displayedAppointments &&
+          displayedAppointments.map(
+            (appointment) =>
+              workerData._id === appointment.userId &&
+              Array.isArray(appointment.appointments) &&
+              appointment.appointments.map(
+                (meeting) =>
+                  meeting.clientId === userId &&
+                  meeting.status === "accepted" && (
+                    <MeetingBox
+                      key={meeting._id}
+                      name={workerData.username}
+                      date={meeting.date}
+                      time={meeting.time}
+                      onRemove={() => removeAppointment(appointment._id)}
+                    />
+                  )
+              )
+          )}
+        {isLoading && (
+          <View style={styles.activityIndicatorContainer}>
+            <ActivityIndicator size="large" color={activityIndicatorColor} />
+          </View>
         )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 30,
+    paddingHorizontal: 20,
+    backgroundColor: "#f0f8ff",
+    alignItems: "center",
+  },
   meetingBox: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    borderRadius: 8, // Add border radius for card-like container
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 20,
+    marginBottom: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   projectName: {
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#00716F", // Dark green text color
+    color: "#00716F",
   },
   heading: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#333", // Dark gray heading color
+    color: "#333",
   },
   text: {
     fontSize: 16,
     marginBottom: 5,
-    color: "#666", // Dark gray text color
+    color: "#666",
+  },
+  meetingInfo: {
+    flex: 1,
+  },
+  navbar: {
+    height: 50,
+    top: 40,
+    right: 150,
+    padding: 10,
+    zIndex: 1,
   },
 });
 
