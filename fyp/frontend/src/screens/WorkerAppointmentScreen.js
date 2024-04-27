@@ -118,7 +118,7 @@ const WorkerAppointmentScreen = ({ route }) => {
               ) {
                 return (
                   <View key={appointmentItem._id} style={styles.card}>
-                    <Text style={styles.dateTime}>
+                    <Text style={styles.name}>
                       {clientNames[appointmentItem._id]}
                     </Text>
                     <Text style={styles.dateTime}>
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   name: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
