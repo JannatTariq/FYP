@@ -46,6 +46,26 @@ const proposalSchema = new mongoose.Schema({
       },
     },
   ],
+  monthlyReports: [
+    {
+      month: {
+        type: Number,
+        required: true,
+      },
+      year: {
+        type: Number,
+        required: true,
+      },
+      reportText: {
+        type: String,
+        required: true,
+      },
+      submittedAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
 
 mongoose.model("Proposal", proposalSchema);

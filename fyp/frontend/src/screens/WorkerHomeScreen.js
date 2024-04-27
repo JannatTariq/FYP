@@ -211,6 +211,13 @@ const WorkerHomeScreen = () => {
           <Ionicons name="person" size={30} color="#00716F" />
           <Text>Profile</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomBarItem}
+          onPress={() => navigation.navigate("MonthlyReportScreen")}
+        >
+          <Ionicons name="person" size={30} color="#00716F" />
+          <Text>MonthlyReportScreen</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

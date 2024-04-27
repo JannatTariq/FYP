@@ -19,6 +19,7 @@ const WorkerAppointmentScreen = ({ route }) => {
   const [userId, setUserId] = useState(null);
 
   const { worker } = route.params;
+  console.log(worker);
 
   const [workerProfileData, setWorkerProfileData] = useState(null);
 
@@ -38,8 +39,8 @@ const WorkerAppointmentScreen = ({ route }) => {
       try {
         const id = await getUserId();
         setUserId(id);
-        const workerProfileData = workerProfile({ id: worker });
-        setWorkerProfileData(workerProfileData);
+        // const workerProfileData = workerProfile({ id: worker });
+        // setWorkerProfileData(workerProfileData);
       } catch (error) {
         console.error("Error fetching user ID:", error);
       }
@@ -89,9 +90,9 @@ const WorkerAppointmentScreen = ({ route }) => {
               (appointments) =>
                 appointments.status !== "accepted" && (
                   <View key={appointemnt._id} style={styles.card}>
-                    <Text style={styles.name}>
+                    {/* <Text style={styles.name}>
                       {workerProfileData?._j?.username}
-                    </Text>
+                    </Text> */}
                     <Text style={styles.dateTime}>
                       Date: {formatDate(appointments.date)}
                     </Text>

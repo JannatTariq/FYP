@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useState } from "react";
 import {
   Text,
@@ -21,12 +21,14 @@ const SignInScreen = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const emailInputRef = useRef(null);
 
   const [imageLoaded, setImageLoaded] = useState(false);
   useEffect(() => {
     if (state.errorMessage) {
       setEmail("");
       setPassword("");
+      emailInputRef.current.focus();
     }
   }, [state.errorMessage]);
 
@@ -58,6 +60,7 @@ const SignInScreen = () => {
               <View style={styles.inputContainer}>
                 <Icon name="user" size={24} color="#777" />
                 <TextInput
+                  ref={emailInputRef}
                   placeholder="Email"
                   value={email}
                   onChangeText={setEmail}
@@ -88,7 +91,13 @@ const SignInScreen = () => {
                 style={styles.signInButton}
                 onPress={() => {
                   // navigation.navigate("WorkerHomeScreen");
-                  signIn({ email, password });
+                  signIn({
+                    email,
+                    password,
+                    setEmail,
+                    setPassword,
+                    emailInputRef,
+                  });
                 }}
               >
                 <Text style={styles.signInButtonText}>Log In</Text>
