@@ -272,7 +272,7 @@ router.get("/workerProposals/:id", async (req, res) => {
 router.post("/submit-report", async (req, res) => {
   try {
     // Extract userId, projectId, and monthly report text from request body
-    const { userId, projectId, monthlyReport } = req.body;
+    const { userId, projectId, monthlyReport, month } = req.body;
 
     // Check if the proposal exists in the database
     const proposal = await Proposal.findOne({
@@ -284,8 +284,9 @@ router.post("/submit-report", async (req, res) => {
     }
 
     // Create a new monthly report object
+    // console.log(month);
     const newReport = {
-      month: new Date().getMonth() + 1, // Get current month
+      month, // Get current month
       // day: new Date().getDay() + 1,
       year: new Date().getFullYear(), // Get current year
       reportText: monthlyReport,
@@ -304,6 +305,31 @@ router.post("/submit-report", async (req, res) => {
   } catch (error) {
     console.error("Error submitting monthly report:", error);
     res.status(500).send({ error: "Internal server error" });
+  }
+});
+
+router.get("/monthly-reports/:userId/:projectId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const projectId = req.params.projectId;
+    // console.log(projectId);
+
+    // Find the proposals associated with the user ID
+    const proposals = await Proposal.find({
+      "bids.userId": userId,
+      _id: projectId,
+    });
+
+    // Extract monthly reports from proposals
+    const monthlyReports = proposals.map((proposal) => {
+      return proposal.monthlyReports;
+    });
+
+    // Send the monthly reports as response
+    res.send({ monthlyReports });
+  } catch (error) {
+    console.error("Error fetching monthly reports:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

@@ -17,7 +17,7 @@ import { ScrollView } from "react-native-gesture-handler";
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width - 20;
 
-const WorkerProjectsScreen = ({ route }) => {
+const ClientProjectsScreen = ({ route }) => {
   const navigation = useNavigation();
   const { state, proposalBids } = useContext(ProposalContext);
   const { getUserId } = useContext(AuthContext);
@@ -74,7 +74,7 @@ const WorkerProjectsScreen = ({ route }) => {
                       </Text>
                       <TouchableOpacity
                         onPress={() =>
-                          navigation.navigate("MonthlyReportScreen", {
+                          navigation.navigate("ClientMonthlyReportScreen", {
                             bidderId: bid.userId,
                             projectId: proposal._id,
                           })
@@ -158,8 +158,6 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#00716F",
     borderRadius: 10,
     padding: 5,
     shadowColor: "#000",
@@ -227,4 +225,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WorkerProjectsScreen;
+export default ClientProjectsScreen;
