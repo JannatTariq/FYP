@@ -56,6 +56,20 @@ const constructorSchema = new mongoose.Schema({
     enum: ["pending", "blocked", "unblocked"],
     default: "pending",
   },
+  money: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
+
   reviews: [
     {
       user: {
