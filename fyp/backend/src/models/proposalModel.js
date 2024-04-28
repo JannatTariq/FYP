@@ -49,7 +49,7 @@ const proposalSchema = new mongoose.Schema({
   monthlyReports: [
     {
       month: {
-        type: Number,
+        type: String,
         required: true,
       },
       year: {
