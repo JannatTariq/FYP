@@ -31,6 +31,8 @@ const authReducer = (state, action) => {
       };
     case "block_worker_success":
       return { ...state };
+    case "payment_success":
+      return action.payload;
     default:
       return state;
   }
@@ -452,6 +454,35 @@ const unblockWorker =
       });
     }
   };
+
+const processPayment =
+  (dispatch) =>
+  async ({ amount, workerId }) => {
+    try {
+      // console.log(amount, workerId);
+      const authToken = await AsyncStorage.getItem("token");
+      const response = await api.post(
+        "/payment",
+        { amount, workerId },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      // console.log("response", response.data);
+      dispatch({
+        type: "payment_success",
+        payload: response.data,
+      });
+      navigate("HomeScreen");
+    } catch {
+      dispatch({
+        type: "add_error",
+        payload: "Error getting user.",
+      });
+    }
+  };
 export const { Provider, Context } = createDataContext(
   authReducer,
   {
@@ -469,6 +500,7 @@ export const { Provider, Context } = createDataContext(
     workerProfile,
     blockWorker,
     unblockWorker,
+    processPayment,
   },
   { token: null, errorMessage: "" }
 );

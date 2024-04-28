@@ -15,12 +15,13 @@ const WorkerAppointmentScreen = ({ route }) => {
   const { state, acceptAppointment, getAppointments, rejectAppointment } =
     useContext(AppointmentContext);
 
-  const { getUserId, workerProfile, userProfile } = useContext(AuthContext);
+  const { getUserId, workerProfile } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
+
   const { worker } = route.params;
   console.log(worker);
 
-  const [clientNames, setClientNames] = useState({});
+  const [workerProfileData, setWorkerProfileData] = useState(null);
 
   const activityIndicatorColor = "#00716F";
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +39,6 @@ const WorkerAppointmentScreen = ({ route }) => {
       try {
         const id = await getUserId();
         setUserId(id);
-
         // const workerProfileData = workerProfile({ id: worker });
         // setWorkerProfileData(workerProfileData);
       } catch (error) {
@@ -55,33 +55,6 @@ const WorkerAppointmentScreen = ({ route }) => {
 
     fetchAppointments();
   }, [getAppointments]);
-
-  useEffect(() => {
-    const fetchClientNames = async () => {
-      const names = {};
-      if (state.appointemnt) {
-        for (const appointment of state.appointemnt) {
-          if (appointment.userId === userId && appointment.appointments) {
-            for (const appointmentItem of appointment.appointments) {
-              if (
-                appointmentItem.status !== "accepted" &&
-                appointmentItem.status !== "rejected"
-              ) {
-                const clientName = await workerProfile({
-                  id: appointmentItem.clientId,
-                });
-                names[appointmentItem._id] = clientName.username;
-              }
-            }
-          }
-        }
-      }
-      setClientNames(names);
-    };
-
-    fetchClientNames();
-  }, [state.appointemnt]);
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -97,7 +70,6 @@ const WorkerAppointmentScreen = ({ route }) => {
     const seconds = String(time.getSeconds()).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
-
   const handleAccept = async (appointmentId) => {
     await acceptAppointment({ appointmentId });
   };
@@ -111,7 +83,6 @@ const WorkerAppointmentScreen = ({ route }) => {
       <BackButton />
       <Text style={styles.heading}>Appointments</Text>
       {state.appointemnt &&
-
         state.appointemnt?.map(
           (appointemnt) =>
             appointemnt.userId === userId &&
@@ -122,47 +93,29 @@ const WorkerAppointmentScreen = ({ route }) => {
                     {/* <Text style={styles.name}>
                       {workerProfileData?._j?.username}
                     </Text> */}
-
-        state.appointemnt.map(
-          (appointment) =>
-            appointment.userId === userId &&
-            appointment.appointments &&
-            appointment.appointments.map((appointmentItem) => {
-              if (
-                appointmentItem.status !== "accepted" &&
-                appointmentItem.status !== "rejected"
-              ) {
-                return (
-                  <View key={appointmentItem._id} style={styles.card}>
-                    <Text style={styles.name}>
-                      {clientNames[appointmentItem._id]}
-                    </Text>
-
                     <Text style={styles.dateTime}>
-                      Date: {formatDate(appointmentItem.date)}
+                      Date: {formatDate(appointments.date)}
                     </Text>
                     <Text style={styles.dateTime}>
-                      Time: {formatTime(appointmentItem.time)}
+                      Time: {formatTime(appointments.time)}
                     </Text>
                     <View style={styles.buttonContainer}>
                       <TouchableOpacity
                         style={[styles.button, styles.acceptButton]}
-                        onPress={() => handleAccept(appointmentItem._id)}
+                        onPress={() => handleAccept(appointments._id)}
                       >
                         <Text style={styles.buttonText}>Accept</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={[styles.button, styles.rejectButton]}
-                        onPress={() => handleReject(appointmentItem._id)}
+                        onPress={() => handleReject(appointments._id)}
                       >
                         <Text style={styles.buttonText}>Reject</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
-                );
-              }
-              return null;
-            })
+                )
+            )
         )}
       {isLoading && (
         <View style={styles.activityIndicatorContainer}>
@@ -194,7 +147,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   name: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
