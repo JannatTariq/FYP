@@ -275,120 +275,149 @@
 // });
 
 // export default TransactionScreen;
-
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
-  Button,
-  Alert,
   TouchableOpacity,
+  ImageBackground,
+  Alert,
 } from "react-native";
 import { CardField, useConfirmPayment } from "@stripe/stripe-react-native";
+import BackButton from "../Components/BackButton";
 
 import { Context as AuthContext } from "../context/authContext";
-//ADD localhost address of your server
-// const API_URL = "http://localhost:3000";
 
 const TransactionScreen = ({ route }) => {
-  const [email, setEmail] = useState();
-  const [cardDetails, setCardDetails] = useState();
-  const [amount, setAmount] = useState(0);
-  const { confirmPayment, loading } = useConfirmPayment();
-  const { state, processPayment } = useContext(AuthContext);
+  const [cardDetails, setCardDetails] = useState(null);
+  const [amount, setAmount] = useState("");
+  const { processPayment } = useContext(AuthContext);
   const { workerId } = route.params;
-  // console.log("worker.id", workerId);
-  // console.log("state", state.amount);
-  // const fetchPaymentIntentClientSecret = async () => {
-  //   const response = await fetch(`${API_URL}/create-payment-intent`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   const { clientSecret, error } = await response.json();
-  //   return { clientSecret, error };
-  // };
+  // console.log(workerId.username);
+  // const { confirmPayment, loading } = useConfirmPayment();
 
   const handlePayPress = async () => {
-    //1.Gather the customer's billing information (e.g., email)
     if (!cardDetails?.complete || !amount) {
-      Alert.alert("Please enter Complete card details and Email");
+      Alert.alert("Error", "Please enter complete card details and amount.");
       return;
+    }
+
+    // Process payment logic here (e.g., call processPayment function)
+    try {
+      const { paymentIntent, error } = await confirmPayment(cardDetails);
+      if (error) {
+        Alert.alert("Payment Error", error.message);
+      } else {
+        // Payment successful, process further if needed
+        processPayment({ amount: parseFloat(amount), workerId });
+        Alert.alert(
+          "Payment Successful",
+          "Your payment was processed successfully!"
+        );
+      }
+    } catch (error) {
+      console.error("Payment Error:", error);
+      Alert.alert(
+        "Payment Error",
+        "An error occurred during payment processing."
+      );
     }
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Amount"
-        keyboardType="numeric"
-        onChangeText={(value) => setAmount(parseFloat(value))}
-        style={styles.input}
-      />
-      <CardField
-        postalCodeEnabled={true}
-        placeholder={{
-          number: "4242 4242 4242 4242",
-        }}
-        cardStyle={styles.card}
-        style={styles.cardContainer}
-        onCardChange={(cardDetails) => {
-          setCardDetails(cardDetails);
-        }}
-      />
+    <ImageBackground
+      source={require("../../assets/creditCard.jpg")}
+      style={styles.background}
+    >
+      <BackButton />
+      <View style={styles.container}>
+        <Text style={styles.heading}>Transaction System</Text>
+        <TextInput
+          placeholder={`Amount to ${workerId.username}`}
+          keyboardType="numeric"
+          style={styles.input}
+          value={amount}
+          onChangeText={(value) => setAmount(value)}
+        />
 
-      <TouchableOpacity
-        style={styles.signInButton}
-        onPress={() => {
-          // navigation.navigate("WorkerHomeScreen");
-          processPayment({ amount, workerId });
-          handlePayPress();
-        }}
-      >
-        <Text style={styles.signInButtonText}>Log In</Text>
-      </TouchableOpacity>
-    </View>
+        <CardField
+          postalCodeEnabled={false} // Disable postal code input
+          placeholder={{
+            number: "4242 4242 4242 4242",
+            placeholder: "MM/YY",
+          }}
+          // cardStyle={styles.card}
+          style={styles.cardContainer}
+          onCardChange={(cardDetails) => {
+            setCardDetails(cardDetails);
+          }}
+        />
+
+        <TouchableOpacity style={styles.payButton} onPress={handlePayPress}>
+          <Text style={styles.payButtonText}>Pay Now</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
+
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
-    margin: 20,
+    alignItems: "center",
+    padding: 20,
   },
   input: {
-    backgroundColor: "#efefefef",
-
+    backgroundColor: "white",
     borderRadius: 8,
-    fontSize: 20,
+    fontSize: 18,
     height: 50,
-    padding: 10,
+    width: "100%",
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   card: {
-    backgroundColor: "#efefefef",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: 8,
+    height: 50,
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   cardContainer: {
     height: 50,
-    marginVertical: 30,
+    width: "100%",
+    // flexDirection: "column",
+    marginBottom: 20,
   },
-  signInButton: {
-    backgroundColor: "rgba(169, 169, 169, 0.3)",
-    paddingVertical: 14,
+  payButton: {
+    backgroundColor: "#00716F",
     borderRadius: 8,
+    marginTop: 50,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
     alignItems: "center",
-    marginTop: 16,
-    borderColor: "#FFF",
-    borderWidth: 2,
-    borderStyle: "solid",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    borderWidth: 3,
-    width: 310,
-    height: 50,
-    marginLeft: 25,
+  },
+  payButtonText: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  heading: {
+    fontSize: 36,
+    fontWeight: "bold",
+    flex: 0.2,
+    color: "#fff",
+    textShadowColor: "#000",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
   },
 });
 

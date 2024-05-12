@@ -7,6 +7,7 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import BackButton from "../Components/BackButton";
 
@@ -19,12 +20,16 @@ const WorkerAppointmentScreen = ({ route }) => {
   const [userId, setUserId] = useState(null);
 
   const { worker } = route.params;
-  console.log(worker);
+  // console.log(worker);
 
   const [workerProfileData, setWorkerProfileData] = useState(null);
-
+  const [userProfileData, setUserProfileData] = useState(null);
+  const [appointmentUserProfileData, setAppointmentUserProfileData] =
+    useState(null);
+  const [showTransactionDetails, setShowTransactionDetails] = useState(true);
   const activityIndicatorColor = "#00716F";
   const [isLoading, setIsLoading] = useState(true);
+  const counter = false;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -39,8 +44,8 @@ const WorkerAppointmentScreen = ({ route }) => {
       try {
         const id = await getUserId();
         setUserId(id);
-        // const workerProfileData = workerProfile({ id: worker });
-        // setWorkerProfileData(workerProfileData);
+        const workerProfileData = workerProfile({ id: worker });
+        setWorkerProfileData(workerProfileData);
       } catch (error) {
         console.error("Error fetching user ID:", error);
       }
@@ -77,51 +82,101 @@ const WorkerAppointmentScreen = ({ route }) => {
   const handleReject = async (appointmentId) => {
     await rejectAppointment({ appointmentId });
   };
+  useEffect(() => {
+    const userProfile = async (workerId) => {
+      try {
+        const profileData = await workerProfile({ id: workerId });
+        setUserProfileData(profileData);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+    state.appointemnt?.forEach((appointment) => {
+      if (appointment.userId === userId) {
+        appointment.appointments?.forEach((appointment) => {
+          if (appointment.status !== "accepted") {
+            userProfile(appointment.clientId);
+          }
+        });
+      }
+    });
+  }, [state.appointemnt, userId, workerProfile]);
+
+  useEffect(() => {
+    const moneyUserProfile = async (workerId) => {
+      try {
+        const profileData = await workerProfile({ id: workerId });
+        setAppointmentUserProfileData(profileData);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+    workerProfileData?._j?.money.forEach((money) => {
+      moneyUserProfile(money.user);
+    });
+  }, [workerProfileData, workerProfile]);
 
   return (
     <View style={styles.container}>
-      <BackButton />
-      <Text style={styles.heading}>Appointments</Text>
-      {state.appointemnt &&
-        state.appointemnt?.map(
-          (appointemnt) =>
-            appointemnt.userId === userId &&
-            appointemnt.appointments?.map(
-              (appointments) =>
-                appointments.status !== "accepted" && (
-                  <View key={appointemnt._id} style={styles.card}>
-                    {/* <Text style={styles.name}>
-                      {workerProfileData?._j?.username}
-                    </Text> */}
-                    <Text style={styles.dateTime}>
-                      Date: {formatDate(appointments.date)}
-                    </Text>
-                    <Text style={styles.dateTime}>
-                      Time: {formatTime(appointments.time)}
-                    </Text>
-                    <View style={styles.buttonContainer}>
-                      <TouchableOpacity
-                        style={[styles.button, styles.acceptButton]}
-                        onPress={() => handleAccept(appointments._id)}
-                      >
-                        <Text style={styles.buttonText}>Accept</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={[styles.button, styles.rejectButton]}
-                        onPress={() => handleReject(appointments._id)}
-                      >
-                        <Text style={styles.buttonText}>Reject</Text>
-                      </TouchableOpacity>
+      <View>
+        <BackButton />
+        <Text style={styles.heading}>Appointments</Text>
+        {state.appointemnt &&
+          state.appointemnt?.map(
+            (appointemnt) =>
+              appointemnt.userId === userId &&
+              appointemnt.appointments?.map(
+                (appointments) =>
+                  appointments.status !== "accepted" && (
+                    <View key={appointemnt._id} style={styles.card}>
+                      {/* {userProfile(appointments.clientId)} */}
+                      <Text style={styles.name}>
+                        {userProfileData ? userProfileData?.username : ""}
+
+                        {/* {workerProfileData?._j?.username} */}
+                      </Text>
+                      <Text style={styles.dateTime}>
+                        Date: {formatDate(appointments.date)}
+                      </Text>
+                      <Text style={styles.dateTime}>
+                        Time: {formatTime(appointments.time)}
+                      </Text>
+                      <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                          style={[styles.button, styles.acceptButton]}
+                          onPress={() => handleAccept(appointments._id)}
+                        >
+                          <Text style={styles.buttonText}>Accept</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[styles.button, styles.rejectButton]}
+                          onPress={() => handleReject(appointments._id)}
+                        >
+                          <Text style={styles.buttonText}>Reject</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                )
-            )
+                  )
+              )
+          )}
+        {isLoading && (
+          <View style={styles.activityIndicatorContainer}>
+            <ActivityIndicator size="large" color={activityIndicatorColor} />
+          </View>
         )}
-      {isLoading && (
-        <View style={styles.activityIndicatorContainer}>
-          <ActivityIndicator size="large" color={activityIndicatorColor} />
-        </View>
-      )}
+      </View>
+      <View style={styles.card}>
+        {workerProfileData?._j?.money.map((money) => (
+          <View key={money._id}>
+            <Text style={styles.dateTime}>
+              You received Rs.{money.amount} from{" "}
+              {appointmentUserProfileData
+                ? appointmentUserProfileData?.username
+                : ""}
+            </Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
@@ -150,6 +205,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+    color: "black",
     marginBottom: 10,
   },
   dateTime: {
@@ -178,6 +234,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  transaction: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 20,
+    elevation: 2,
   },
 });
 
