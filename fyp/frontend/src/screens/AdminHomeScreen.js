@@ -48,6 +48,7 @@ const AdminHomeScreen = () => {
     fetchData();
   }, [isFocused, fetchWorkers]);
   // console.log(state);
+  // console.log(state);
 
   // console.log(workerState);
 
@@ -197,32 +198,34 @@ const AdminHomeScreen = () => {
                 >
                   {state.worker[role].map((worker) => (
                     <View key={worker._id}>
-                      {worker.status === "unblocked" && (
-                        <View>
-                          <Text style={styles.subHeading}>
-                            {capitalFirstLetter(`${role}s:`)}
-                          </Text>
-                          <TouchableOpacity
-                            key={worker._id}
-                            style={styles.recommendationCard}
-                            onPress={() => handleRecommendationPress(worker)}
-                          >
-                            <Image
-                              source={require("../../assets/user.png")}
-                              style={styles.recommendationImage}
-                            />
-                            <Text style={styles.recommendationTitle}>
-                              {worker.username}
+                      {(worker.status === "unblocked" ||
+                        worker.status === "pending") &&
+                        worker.ratings <= 2 && (
+                          <View>
+                            <Text style={styles.subHeading}>
+                              {capitalFirstLetter(`${role}s:`)}
                             </Text>
-                            <Text style={styles.recommendationDescription}>
-                              {worker.role}
-                            </Text>
-                            <View style={{ alignItems: "center" }}>
-                              <StarRating rating={worker.ratings} />
-                            </View>
-                          </TouchableOpacity>
-                        </View>
-                      )}
+                            <TouchableOpacity
+                              key={worker._id}
+                              style={styles.recommendationCard}
+                              onPress={() => handleRecommendationPress(worker)}
+                            >
+                              <Image
+                                source={require("../../assets/user.png")}
+                                style={styles.recommendationImage}
+                              />
+                              <Text style={styles.recommendationTitle}>
+                                {worker.username}
+                              </Text>
+                              <Text style={styles.recommendationDescription}>
+                                {worker.role}
+                              </Text>
+                              <View style={{ alignItems: "center" }}>
+                                <StarRating rating={worker.ratings} />
+                              </View>
+                            </TouchableOpacity>
+                          </View>
+                        )}
                     </View>
                   ))}
                 </ScrollView>

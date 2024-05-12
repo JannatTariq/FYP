@@ -11,6 +11,7 @@ import {
 import StarRating from "../Components/StarRating";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { Context as AuthContext } from "../context/authContext";
+import BackButton from "../Components/BackButton";
 
 const UnBlockWorkerScreen = () => {
   const navigation = useNavigation();
@@ -70,7 +71,7 @@ const UnBlockWorkerScreen = () => {
                 {state.worker[role].map((worker) => (
                   <View key={worker._id}>
                     {worker.status === "blocked" && (
-                      <View key={worker._id}>
+                      <View key={worker._id} style={styles.card}>
                         <Text style={styles.subHeading}>
                           {capitalFirstLetter(`${role}s:`)}
                         </Text>
@@ -78,7 +79,10 @@ const UnBlockWorkerScreen = () => {
                           <Text style={styles.workerName}>
                             {worker.username}
                           </Text>
-                          <StarRating rating={worker.ratings} />
+                          <StarRating
+                            style={styles.rating}
+                            rating={worker.ratings}
+                          />
                         </View>
                         <TouchableOpacity
                           style={styles.unblockButton}
@@ -99,6 +103,7 @@ const UnBlockWorkerScreen = () => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <Text style={styles.heading}>Unblock Worker</Text>
 
       <ScrollView>{renderWorkerList()}</ScrollView>
@@ -109,43 +114,28 @@ const UnBlockWorkerScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+    padding: 20,
+    // justifyContent: "center",
   },
   unblockButton: {
     backgroundColor: "#00716F",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 8,
+    marginTop: 50,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    alignItems: "center",
   },
   buttonText: {
-    color: "#fff",
+    color: "#FFF",
     fontSize: 18,
     fontWeight: "bold",
-  },
-  mainContainer: {
-    flex: 1,
-    backgroundColor: "#f0f8ff",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  container: {
-    padding: 20,
-    backgroundColor: "#f0f8ff",
-    paddingBottom: 80, // Adjust paddingBottom to accommodate the bottom navigation bar
   },
 
   heading: {
     fontSize: 24,
     fontWeight: "bold",
-    marginTop: 40,
-    marginBottom: 10,
+    marginTop: 50,
+    marginBottom: 30,
     color: "#00716F",
     textAlign: "center",
   },
@@ -156,91 +146,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#00716F",
   },
-  recommendationCard: {
-    width: 150,
-    height: 200,
-    marginRight: 15,
-    borderWidth: 1,
-    borderColor: "#00716F",
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: "#FFF",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  recommendationImage: {
-    width: "90%",
-    height: "40%",
-    height: 120,
-    borderRadius: 8,
-    marginBottom: 10,
-    alignItems: "center",
-  },
-  recommendationTitle: {
-    fontSize: 12,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  recommendationDescription: {
-    fontSize: 12,
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-    zIndex: 1,
-  },
-  bottomBarItem: {
-    alignItems: "center",
-  },
-  tipsContainer: {
-    backgroundColor: "#d3f5e9",
-    padding: 20,
-    marginTop: 20,
-  },
-  tipsHeading: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  tipCard: {
-    borderWidth: 1,
-    borderColor: "#00716F",
-    borderRadius: 10,
-    padding: 10,
-  },
-  tipTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  tipDescription: {
-    fontSize: 14,
-  },
+
   rating: {
     fontSize: 12,
     color: "#00716F",
     marginTop: 5,
-  },
-  workerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    paddingBottom: 5,
   },
+
   workerInfo: {
     flexDirection: "row",
     alignItems: "center",
@@ -249,6 +162,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginRight: 10,
+    marginBottom: 30,
+    textAlign: "center",
   },
   unblockButton: {
     backgroundColor: "#00716F",
@@ -260,6 +175,14 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontWeight: "bold",
+  },
+
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 20,
+    elevation: 2,
   },
 });
 
