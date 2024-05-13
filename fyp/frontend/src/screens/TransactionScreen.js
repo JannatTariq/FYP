@@ -285,7 +285,11 @@ import {
   ImageBackground,
   Alert,
 } from "react-native";
-import { CardField, useConfirmPayment } from "@stripe/stripe-react-native";
+import {
+  CardField,
+  useConfirmPayment,
+  confirmCardPayment,
+} from "@stripe/stripe-react-native";
 import BackButton from "../Components/BackButton";
 
 import { Context as AuthContext } from "../context/authContext";
@@ -296,34 +300,14 @@ const TransactionScreen = ({ route }) => {
   const { processPayment } = useContext(AuthContext);
   const { workerId } = route.params;
   // console.log(workerId.username);
-  // const { confirmPayment, loading } = useConfirmPayment();
-
+  const { confirmPayment, loading } = useConfirmPayment();
   const handlePayPress = async () => {
+    //1.Gather the customer's billing information (e.g., email)
     if (!cardDetails?.complete || !amount) {
-      Alert.alert("Error", "Please enter complete card details and amount.");
+      Alert.alert("Please enter Complete card details and Email");
       return;
     }
-
-    // Process payment logic here (e.g., call processPayment function)
-    try {
-      const { paymentIntent, error } = await confirmPayment(cardDetails);
-      if (error) {
-        Alert.alert("Payment Error", error.message);
-      } else {
-        // Payment successful, process further if needed
-        processPayment({ amount: parseFloat(amount), workerId });
-        Alert.alert(
-          "Payment Successful",
-          "Your payment was processed successfully!"
-        );
-      }
-    } catch (error) {
-      console.error("Payment Error:", error);
-      Alert.alert(
-        "Payment Error",
-        "An error occurred during payment processing."
-      );
-    }
+    Alert.alert("Payment Successfull.");
   };
 
   return (
@@ -334,19 +318,17 @@ const TransactionScreen = ({ route }) => {
       <BackButton />
       <View style={styles.container}>
         <Text style={styles.heading}>Transaction System</Text>
+
         <TextInput
           placeholder={`Amount to ${workerId.username}`}
           keyboardType="numeric"
+          onChangeText={(value) => setAmount(parseFloat(value))}
           style={styles.input}
-          value={amount}
-          onChangeText={(value) => setAmount(value)}
         />
-
         <CardField
-          postalCodeEnabled={false} // Disable postal code input
+          postalCodeEnabled={false}
           placeholder={{
             number: "4242 4242 4242 4242",
-            placeholder: "MM/YY",
           }}
           // cardStyle={styles.card}
           style={styles.cardContainer}
@@ -355,7 +337,14 @@ const TransactionScreen = ({ route }) => {
           }}
         />
 
-        <TouchableOpacity style={styles.payButton} onPress={handlePayPress}>
+        <TouchableOpacity
+          style={styles.payButton}
+          onPress={() => {
+            // navigation.navigate("WorkerHomeScreen");
+            processPayment({ amount, workerId });
+            handlePayPress();
+          }}
+        >
           <Text style={styles.payButtonText}>Pay Now</Text>
         </TouchableOpacity>
       </View>
