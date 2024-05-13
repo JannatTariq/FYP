@@ -1,8 +1,17 @@
 import React, { useContext, useState } from "react";
-import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Context as ProposalContext } from "../context/proposalContext";
+import BackButton from "../Components/BackButton";
 
 const months = [
   { label: "January", value: "January" },
@@ -51,7 +60,7 @@ const MonthlyReportScreen = ({ route }) => {
     if (value || isFocus) {
       return (
         <Text style={[styles.label, isFocus && { color: "blue" }]}>
-          {month ? month.label : "Dropdown label"}
+          {/* {month ? month.label : ""} */}
         </Text>
       );
     }
@@ -61,6 +70,8 @@ const MonthlyReportScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       {renderLabel()}
+      <BackButton />
+      <Text style={styles.heading}>Monthly Reports</Text>
       <Dropdown
         style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
         placeholderStyle={styles.placeholderStyle}
@@ -99,35 +110,48 @@ const MonthlyReportScreen = ({ route }) => {
         numberOfLines={4}
         style={styles.input}
       />
-      <Button title="Submit Report" onPress={handleSubmit} />
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit Report</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
-    backgroundColor: "white",
-    padding: 16,
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#f0f8ff",
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginTop: 70,
+    marginBottom: 30,
+    color: "#00716F",
+    textAlign: "center",
+  },
+  dropdownContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
   },
   dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
-  },
-  icon: {
-    marginRight: 5,
+    marginBottom: 20,
   },
   label: {
-    position: "absolute",
-    backgroundColor: "white",
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 14,
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "#ccc",
+    padding: 10,
+    marginBottom: 20,
+    height: 100,
   },
   placeholderStyle: {
     fontSize: 16,
@@ -143,6 +167,19 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
+  submitButton: {
+    backgroundColor: "#00716F",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    alignSelf: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
-
 export default MonthlyReportScreen;
