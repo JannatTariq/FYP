@@ -372,6 +372,7 @@ router.get("/userProfile/:userId", requireAuth, async (req, res) => {
     }
     res.json(user);
     // console.log(user);
+    // console.log(user);
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ error: "Internal server error" });

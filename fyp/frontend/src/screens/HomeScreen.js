@@ -175,37 +175,39 @@ const HomeScreen = () => {
             Array.isArray(state.worker[role]) &&
             state.worker[role].length > 0 && (
               <>
-                <Text style={styles.subHeading}>
-                  {capitalFirstLetter(`${role}s:`)}
-                </Text>
-
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ flexDirection: "row" }}
                 >
-                  {state.worker[role].map((worker) => (
-                    <TouchableOpacity
-                      key={worker._id}
-                      style={styles.recommendationCard}
-                      onPress={() => handleRecommendationPress(worker)}
-                    >
-                      <Image
-                        source={require("../../assets/user.png")}
-                        style={styles.recommendationImage}
-                      />
-                      <Text style={styles.recommendationTitle}>
-                        {worker.username}
-                      </Text>
+                  {state.worker[role].map(
+                    (worker) =>
+                      worker.status !== "blocked" && (
+                        <TouchableOpacity
+                          key={worker._id}
+                          style={styles.recommendationCard}
+                          onPress={() => handleRecommendationPress(worker)}
+                        >
+                          <Text style={styles.subHeading}>
+                            {capitalFirstLetter(`${role}:`)}
+                          </Text>
+                          <Image
+                            source={require("../../assets/user.png")}
+                            style={styles.recommendationImage}
+                          />
+                          <Text style={styles.recommendationTitle}>
+                            {worker.username}
+                          </Text>
 
-                      <Text style={styles.recommendationDescription}>
-                        {worker.role}
-                      </Text>
-                      <View style={{ alignItems: "center" }}>
-                        <StarRating rating={worker.ratings} />
-                      </View>
-                    </TouchableOpacity>
-                  ))}
+                          <Text style={styles.recommendationDescription}>
+                            {worker.role}
+                          </Text>
+                          <View style={{ alignItems: "center" }}>
+                            <StarRating rating={worker.ratings} />
+                          </View>
+                        </TouchableOpacity>
+                      )
+                  )}
                 </ScrollView>
               </>
             )}
@@ -294,12 +296,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 10,
-    marginBottom: 10,
+    // marginBottom: 10,
     color: "#00716F",
   },
   recommendationCard: {
     width: 150,
-    height: 200,
+    height: 240,
     marginRight: 15,
     borderWidth: 1,
     borderColor: "#00716F",
@@ -346,6 +348,7 @@ const styles = StyleSheet.create({
   },
   tipsContainer: {
     backgroundColor: "#d3f5e9",
+    marginBottom: 30,
     padding: 20,
     marginTop: 20,
   },

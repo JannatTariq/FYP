@@ -118,7 +118,7 @@ const AppointmentScreen = ({ route }) => {
     }
   }, [notification]);
   const handleTransaction = () => {
-    navigation.navigate("Transaction");
+    navigation.navigate("Transaction", { workerId: worker });
   };
 
   const handleViewMeetings = () => {
