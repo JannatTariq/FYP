@@ -115,66 +115,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    // justifyContent: "center",
+    backgroundColor: "#f0f8ff",
   },
-  unblockButton: {
-    backgroundColor: "#00716F",
-    borderRadius: 8,
-    marginTop: 50,
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
   heading: {
     fontSize: 24,
     fontWeight: "bold",
-    marginTop: 50,
+    marginTop: 70,
     marginBottom: 30,
     color: "#00716F",
     textAlign: "center",
   },
   subHeading: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     marginTop: 10,
     marginBottom: 10,
     color: "#00716F",
-  },
-
-  rating: {
-    fontSize: 12,
-    color: "#00716F",
-    marginTop: 5,
-    marginBottom: 10,
-  },
-
-  workerInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  workerName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginRight: 10,
-    marginBottom: 30,
-    textAlign: "center",
-  },
-  unblockButton: {
-    backgroundColor: "#00716F",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
   },
 
   card: {
@@ -183,6 +139,31 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
     elevation: 2,
+  },
+  workerInfo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  workerName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "black",
+  },
+  unblockButton: {
+    backgroundColor: "#00716F",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    alignSelf: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

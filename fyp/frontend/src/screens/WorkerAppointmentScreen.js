@@ -118,8 +118,8 @@ const WorkerAppointmentScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <View>
-        <BackButton />
         <Text style={styles.heading}>Appointments</Text>
         {state.appointemnt &&
           state.appointemnt?.map(
@@ -165,7 +165,7 @@ const WorkerAppointmentScreen = ({ route }) => {
           </View>
         )}
       </View>
-      <View style={styles.card}>
+      {/* <View style={styles.card}>
         {workerProfileData?._j?.money.map((money) => (
           <View key={money._id}>
             <Text style={styles.dateTime}>
@@ -176,7 +176,7 @@ const WorkerAppointmentScreen = ({ route }) => {
             </Text>
           </View>
         ))}
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 60,
     color: "#00716F",
+    textAlign: "center",
   },
   card: {
     backgroundColor: "#fff",

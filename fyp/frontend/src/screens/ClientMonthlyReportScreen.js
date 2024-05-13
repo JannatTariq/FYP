@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import BackButton from "../Components/BackButton";
 
 const months = [
   { label: "Select Month", value: null },
@@ -28,6 +29,15 @@ const ClientMonthlyReportScreen = ({ route }) => {
   const [value, setValue] = useState(null);
   const [allReports, setAllReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const activityIndicatorColor = "#00716F";
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     getMonthlyReport({ userId: bidderId, projectId });
@@ -55,7 +65,7 @@ const ClientMonthlyReportScreen = ({ route }) => {
     if (value || isFocus) {
       return (
         <Text style={[styles.label, isFocus && { color: "blue" }]}>
-          {selectedMonth ? selectedMonth.label : "Dropdown label"}
+          {selectedMonth ? selectedMonth.label : ""}
         </Text>
       );
     }
@@ -68,6 +78,7 @@ const ClientMonthlyReportScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <Text style={styles.heading}>Monthly Reports</Text>
       <View style={styles.dropdownContainer}>
         {renderLabel()}
@@ -103,25 +114,40 @@ const ClientMonthlyReportScreen = ({ route }) => {
         />
       </View>
       <View style={styles.reportContainer}>
-        {filteredReports.map(
-          (reports, index) =>
-            reports._id === projectId && (
-              <View key={index}>
+        {filteredReports.map((reports) => {
+          if (reports._id === projectId) {
+            return (
+              <View key={reports._id}>
                 {reports.monthlyReports.map((report) => (
                   <View key={report._id} style={styles.report}>
-                    <Text>Month: {report.month}</Text>
-                    <Text>Year: {report.year}</Text>
-                    <Text>Report: {report.reportText}</Text>
-                    <Text>Submitted At: {report.submittedAt}</Text>
+                    <View style={styles.reportRow}>
+                      <Text style={styles.reportText}>
+                        Month: {report.month}
+                      </Text>
+                      <Text style={styles.reportText}>Year: {report.year}</Text>
+                    </View>
+                    <Text style={styles.reportText}>
+                      Report: {report.reportText}
+                    </Text>
+                    <Text style={styles.reportText}>
+                      Submitted At:{" "}
+                      {new Date(report.submittedAt).toLocaleDateString()}
+                    </Text>
                   </View>
                 ))}
               </View>
-            )
-        )}
+            );
+          }
+        })}
         {filteredReports.length === 0 && (
           <Text>No reports available for this period</Text>
         )}
       </View>
+      {isLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color={activityIndicatorColor} />
+        </View>
+      )}
     </View>
   );
 };
@@ -130,60 +156,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#f0f8ff",
   },
   heading: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginTop: 70,
+    color: "#00716F",
+    textAlign: "center",
   },
   dropdownContainer: {
-    marginTop: 100,
-    backgroundColor: "white",
-    padding: 16,
-  },
-  reportContainer: {
-    marginBottom: 20,
-  },
-  report: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 10,
+    marginTop: 20,
+    paddingHorizontal: 20,
   },
   dropdown: {
-    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
   },
-  dropdownItem: {
-    paddingVertical: 12,
-  },
-  dropdownLabel: {
-    fontSize: 16,
-    color: "#000",
-  },
-  activeDropdownItem: {
-    backgroundColor: "#f0f0f0",
-  },
-  activeDropdownLabel: {
-    color: "blue",
-  },
   label: {
     position: "absolute",
-    backgroundColor: "white",
-    left: 22,
+    left: 12,
     top: 4,
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 14,
   },
-  dropdownList: {
-    marginTop: 4,
-    borderRadius: 8,
-    borderColor: "#ccc",
+  reportContainer: {
+    marginTop: 20,
+  },
+  report: {
     borderWidth: 1,
+    backgroundColor: "white",
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
+  reportText: {
+    fontSize: 16,
+    marginBottom: 8,
+    // color: "#00716F",
+  },
+  reportRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 5,
   },
 });
 

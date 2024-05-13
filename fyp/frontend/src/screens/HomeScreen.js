@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     color: "#00716F",
   },
   recommendationCard: {
-    width: 150,
+    width: 160,
     height: 240,
     marginRight: 15,
     borderWidth: 1,

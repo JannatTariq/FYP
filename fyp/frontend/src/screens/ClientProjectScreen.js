@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Context as ProposalContext } from "../context/proposalContext";
 import { Context as AuthContext } from "../context/authContext";
@@ -23,6 +24,16 @@ const ClientProjectsScreen = ({ route }) => {
   const { getUserId } = useContext(AuthContext);
   const [userId, setUserId] = useState(null);
   const { workerId } = route.params;
+  const [isLoading, setIsLoading] = useState(true);
+  const activityIndicatorColor = "#00716F";
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   // console.log(workerId);
 
   useEffect(() => {
@@ -105,6 +116,11 @@ const ClientProjectsScreen = ({ route }) => {
               )
           )}
       </ScrollView>
+      {isLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color={activityIndicatorColor} />
+        </View>
+      )}
     </View>
   );
 };
