@@ -74,7 +74,7 @@ const acceptAppointment =
         type: "accept_appointment",
         payload: response.data,
       });
-      navigate("WorkerHomeScreen");
+      // navigate("WorkerHomeScreen");
     } catch (error) {
       dispatch({
         type: "add_error",
@@ -102,7 +102,7 @@ const rejectAppointment =
         type: "submit_appointment",
         payload: response.data,
       });
-      navigate("WorkerHomeScreen");
+      // navigate("WorkerHomeScreen");
     } catch (error) {
       dispatch({
         type: "add_error",

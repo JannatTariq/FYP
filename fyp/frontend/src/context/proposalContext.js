@@ -237,7 +237,7 @@ const acceptBid =
           });
         }
       }
-      navigate("HomeScreen");
+      // navigate("HomeScreen");
 
       dispatch({
         type: "accept_bid",
@@ -265,7 +265,7 @@ const rejectBid =
         }
       );
       const bids = response.data.proposal.bids;
-      navigate("HomeScreen");
+      // navigate("HomeScreen");
 
       // for (const bid of bids) {
       //   console.log(`Rejecting bid ${bid._id}`);

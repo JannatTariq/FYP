@@ -296,19 +296,30 @@ const TransactionScreen = ({ route }) => {
   const { processPayment } = useContext(AuthContext);
   const { workerId } = route.params;
   // console.log(workerId.username);
-  // const { confirmPayment, loading } = useConfirmPayment();
-
+  const { confirmPayment, loading } = useConfirmPayment();
   const handlePayPress = async () => {
     if (!cardDetails?.complete || !amount) {
       Alert.alert("Error", "Please enter complete card details and amount.");
       return;
     }
 
-    // Process payment logic here (e.g., call processPayment function)
     try {
-      const { paymentIntent, error } = await confirmPayment(cardDetails);
+      console.log("Card details:", cardDetails);
+
+      // Call confirmPayment and wait for the promise to resolve
+      const paymentResult = await confirmPayment(cardDetails);
+
+      // Extract paymentIntent and error from the resolved value
+      const { paymentIntent, error } = paymentResult;
+
+      console.log("Payment result:", paymentIntent, error);
+
       if (error) {
-        Alert.alert("Payment Error", error.message);
+        console.error("Payment Error:", error);
+        Alert.alert(
+          "Payment Error",
+          error.message || "An error occurred during payment processing."
+        );
       } else {
         // Payment successful, process further if needed
         processPayment({ amount: parseFloat(amount), workerId });
