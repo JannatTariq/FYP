@@ -307,6 +307,41 @@ const TransactionScreen = ({ route }) => {
       Alert.alert("Please enter Complete card details and Email");
       return;
     }
+
+
+    try {
+      console.log("Card details:", cardDetails);
+
+      // Call confirmPayment and wait for the promise to resolve
+      const paymentResult = await confirmPayment(cardDetails);
+
+      // Extract paymentIntent and error from the resolved value
+      const { paymentIntent, error } = paymentResult;
+
+      console.log("Payment result:", paymentIntent, error);
+
+      if (error) {
+        console.error("Payment Error:", error);
+        Alert.alert(
+          "Payment Error",
+          error.message || "An error occurred during payment processing."
+        );
+      } else {
+        // Payment successful, process further if needed
+        processPayment({ amount: parseFloat(amount), workerId });
+        Alert.alert(
+          "Payment Successful",
+          "Your payment was processed successfully!"
+        );
+      }
+    } catch (error) {
+      console.error("Payment Error:", error);
+      Alert.alert(
+        "Payment Error",
+        "An error occurred during payment processing."
+      );
+    }
+=======
     Alert.alert("Payment Successfull.");
   };
 

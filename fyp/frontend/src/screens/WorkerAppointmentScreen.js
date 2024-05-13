@@ -7,12 +7,15 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  Alert,
   Button,
 } from "react-native";
 import BackButton from "../Components/BackButton";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 
 const WorkerAppointmentScreen = ({ route }) => {
-  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const { state, acceptAppointment, getAppointments, rejectAppointment } =
     useContext(AppointmentContext);
 
@@ -76,45 +79,80 @@ const WorkerAppointmentScreen = ({ route }) => {
     return `${hours}:${minutes}:${seconds}`;
   };
   const handleAccept = async (appointmentId) => {
-    await acceptAppointment({ appointmentId });
+    Alert.alert(
+      "Appointment Acceptance",
+      "Are you sure you want to accept the appointment?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Accept",
+          onPress: () => {
+            acceptAppointment({ appointmentId });
+            navigation.navigate("WorkerHomeScreen");
+          },
+        },
+      ]
+    );
   };
 
   const handleReject = async (appointmentId) => {
-    await rejectAppointment({ appointmentId });
+    Alert.alert(
+      "Appointment Rejection",
+      "Are you sure you want to reject the appointment?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Reject",
+          onPress: () => {
+            rejectAppointment({ appointmentId });
+            navigation.navigate("WorkerHomeScreen");
+          },
+        },
+      ]
+    );
   };
   useEffect(() => {
-    const userProfile = async (workerId) => {
-      try {
-        const profileData = await workerProfile({ id: workerId });
-        setUserProfileData(profileData);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-    state.appointemnt?.forEach((appointment) => {
-      if (appointment.userId === userId) {
-        appointment.appointments?.forEach((appointment) => {
-          if (appointment.status !== "accepted") {
-            userProfile(appointment.clientId);
-          }
-        });
-      }
-    });
-  }, [state.appointemnt, userId, workerProfile]);
+    if (isFocused) {
+      const userProfile = async (workerId) => {
+        try {
+          const profileData = await workerProfile({ id: workerId });
+          setUserProfileData(profileData);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      };
 
-  useEffect(() => {
-    const moneyUserProfile = async (workerId) => {
-      try {
-        const profileData = await workerProfile({ id: workerId });
-        setAppointmentUserProfileData(profileData);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-    workerProfileData?._j?.money.forEach((money) => {
-      moneyUserProfile(money.user);
-    });
-  }, [workerProfileData, workerProfile]);
+      state.appointemnt?.forEach((appointment) => {
+        if (appointment.userId === userId) {
+          appointment.appointments?.forEach((appointment) => {
+            if (appointment.status !== "accepted") {
+              userProfile(appointment.clientId);
+            }
+          });
+        }
+      });
+    }
+  }, [state.appointemnt, userId, workerProfile, isFocused]);
+
+  // useEffect(() => {
+  //   const moneyUserProfile = async (workerId) => {
+  //     try {
+  //       const profileData = await workerProfile({ id: workerId });
+  //       setAppointmentUserProfileData(profileData);
+  //     } catch (error) {
+  //       console.error("Error fetching user profile:", error);
+  //     }
+  //   };
+  //   workerProfileData?._j?.money.forEach((money) => {
+  //     moneyUserProfile(money.user);
+  //   });
+  // }, [workerProfileData, workerProfile]);
 
   return (
     <View style={styles.container}>
@@ -127,7 +165,8 @@ const WorkerAppointmentScreen = ({ route }) => {
               appointemnt.userId === userId &&
               appointemnt.appointments?.map(
                 (appointments) =>
-                  appointments.status !== "accepted" && (
+                  appointments.status !== "accepted" &&
+                  appointments.status !== "rejected" && (
                     <View key={appointemnt._id} style={styles.card}>
                       {/* {userProfile(appointments.clientId)} */}
                       <Text style={styles.name}>
