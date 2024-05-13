@@ -285,7 +285,11 @@ import {
   ImageBackground,
   Alert,
 } from "react-native";
-import { CardField, useConfirmPayment } from "@stripe/stripe-react-native";
+import {
+  CardField,
+  useConfirmPayment,
+  confirmCardPayment,
+} from "@stripe/stripe-react-native";
 import BackButton from "../Components/BackButton";
 
 import { Context as AuthContext } from "../context/authContext";
@@ -298,10 +302,12 @@ const TransactionScreen = ({ route }) => {
   // console.log(workerId.username);
   const { confirmPayment, loading } = useConfirmPayment();
   const handlePayPress = async () => {
+    //1.Gather the customer's billing information (e.g., email)
     if (!cardDetails?.complete || !amount) {
-      Alert.alert("Error", "Please enter complete card details and amount.");
+      Alert.alert("Please enter Complete card details and Email");
       return;
     }
+
 
     try {
       console.log("Card details:", cardDetails);
@@ -335,6 +341,8 @@ const TransactionScreen = ({ route }) => {
         "An error occurred during payment processing."
       );
     }
+=======
+    Alert.alert("Payment Successfull.");
   };
 
   return (
@@ -345,19 +353,17 @@ const TransactionScreen = ({ route }) => {
       <BackButton />
       <View style={styles.container}>
         <Text style={styles.heading}>Transaction System</Text>
+
         <TextInput
           placeholder={`Amount to ${workerId.username}`}
           keyboardType="numeric"
+          onChangeText={(value) => setAmount(parseFloat(value))}
           style={styles.input}
-          value={amount}
-          onChangeText={(value) => setAmount(value)}
         />
-
         <CardField
-          postalCodeEnabled={false} // Disable postal code input
+          postalCodeEnabled={false}
           placeholder={{
             number: "4242 4242 4242 4242",
-            placeholder: "MM/YY",
           }}
           // cardStyle={styles.card}
           style={styles.cardContainer}
@@ -366,7 +372,14 @@ const TransactionScreen = ({ route }) => {
           }}
         />
 
-        <TouchableOpacity style={styles.payButton} onPress={handlePayPress}>
+        <TouchableOpacity
+          style={styles.payButton}
+          onPress={() => {
+            // navigation.navigate("WorkerHomeScreen");
+            processPayment({ amount, workerId });
+            handlePayPress();
+          }}
+        >
           <Text style={styles.payButtonText}>Pay Now</Text>
         </TouchableOpacity>
       </View>
