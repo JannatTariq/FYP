@@ -86,7 +86,7 @@
 //   };
 //   const handleCVC = (text) => {
 //     const numericValue = text.replace(/[^0-9]/g, "");
-//     setCvc(`${numericValue}`);
+//     setCvc(${numericValue});
 //   };
 //   return (
 //     <ImageBackground

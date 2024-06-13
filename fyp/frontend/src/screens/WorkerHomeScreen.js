@@ -206,6 +206,15 @@ const WorkerHomeScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.bottomBarItem}
+          onPress={() =>
+            navigation.navigate("WorkerTransactionScreen", { worker: userId })
+          }
+        >
+          <Ionicons name="person" size={30} color="#00716F" />
+          <Text>Transaction</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomBarItem}
           onPress={() => navigation.navigate("WorkerProfileScreen")}
         >
           <Ionicons name="person" size={30} color="#00716F" />

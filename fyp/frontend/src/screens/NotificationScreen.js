@@ -43,13 +43,45 @@ const NotificationsScreen = () => {
   const submitBid = async (action, proposalId, bidId, bidPrice) => {
     try {
       if (action === "accept") {
-        await acceptBid({ proposalId, bidId });
-        removeBid(proposalId, bidId);
-        Alert.alert("Bid Accepted", `Bid Price: ${bidPrice}`);
+        Alert.alert(
+          "Bid Acceptance",
+          "Are you sure you want to accept the bid?",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Accept",
+              onPress: () => {
+                acceptBid({ proposalId, bidId });
+                removeBid(proposalId, bidId);
+                navigation.navigate("HomeScreen");
+                Alert.alert("Bid Accepted", `Bid Price: ${bidPrice}`);
+              },
+            },
+          ]
+        );
       } else if (action === "reject") {
-        await rejectBid({ proposalId, bidId });
-        removeBid(proposalId, bidId);
-        Alert.alert("Bid Rejected", `Bid Price: ${bidPrice}`);
+        Alert.alert(
+          "Bid Rejection",
+          "Are you sure you want to reject the bid?",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Reject",
+              onPress: () => {
+                rejectBid({ proposalId, bidId });
+                removeBid(proposalId, bidId);
+                navigation.navigate("HomeScreen");
+                Alert.alert("Bid Rejected", `Bid Price: ${bidPrice}`);
+              },
+            },
+          ]
+        );
       }
     } catch (error) {
       console.error("Error submitting bid:", error);
