@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Context as AppointmentContext } from "../context/appointmentContext";
 import { Context as AuthContext } from "../context/authContext";
+import { FontAwesome5 } from "@expo/vector-icons";
 import {
   View,
   TouchableOpacity,
@@ -9,6 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import BackButton from "../Components/BackButton";
+import { ScrollView } from "react-native-gesture-handler";
 
 const WorkerTransactionScreen = ({ route }) => {
   const { state, getAppointments } = useContext(AppointmentContext);
@@ -72,19 +74,27 @@ const WorkerTransactionScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <BackButton />
-      <Text style={styles.heading}>Transactions</Text>
-      <View style={styles.card}>
+      <ScrollView>
+        <Text style={styles.heading}>Transactions</Text>
         {workerProfileData?._j?.money.map((money) => (
-          <View key={money._id}>
+          <View key={money._id} style={styles.card}>
+            <FontAwesome5
+              name="money-check"
+              size={24}
+              color="black"
+              style={styles.icon}
+            />
+            <Text style={styles.dateTime}>You received </Text>
+            <Text style={styles.amount}>Rs.{money.amount}</Text>
             <Text style={styles.dateTime}>
-              You received Rs.{money.amount} from{" "}
+              from{" "}
               {appointmentUserProfileData
                 ? appointmentUserProfileData?.username
                 : ""}
             </Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
       {isLoading && (
         <View style={styles.activityIndicatorContainer}>
           <ActivityIndicator size="large" color={activityIndicatorColor} />
@@ -114,8 +124,12 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
     elevation: 2,
+    alignItems: "center", // Center content horizontally
   },
-  name: {
+  icon: {
+    marginBottom: 10, // Add space between the icon and text
+  },
+  amount: {
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
@@ -124,37 +138,13 @@ const styles = StyleSheet.create({
   },
   dateTime: {
     fontSize: 16,
+    textAlign: "center",
     marginBottom: 5,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  button: {
+  activityIndicatorContainer: {
     flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    padding: 10,
-    borderRadius: 5,
-  },
-  acceptButton: {
-    backgroundColor: "green",
-    marginRight: 5,
-  },
-  rejectButton: {
-    backgroundColor: "red",
-    marginLeft: 5,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  transaction: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    elevation: 2,
   },
 });
 
