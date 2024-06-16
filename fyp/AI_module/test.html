@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flask API Test</title>
+  </head>
+  <body>
+    <h1>Test Flask API</h1>
+
+    <!-- Form to test /predict endpoint -->
+    <form id="predictForm">
+      <input type="number" id="baths" placeholder="baths" required />
+      <input type="number" id="bedrooms" placeholder="bedrooms" required />
+      <input type="number" id="area_sqft" placeholder="area_sqft" required />
+      <input type="text" id="city" placeholder="city" required />
+      <input type="text" id="location" placeholder="location" required />
+      <button type="submit">Predict</button>
+    </form>
+
+    <br />
+
+    <!-- Form to test /recommend endpoint -->
+    <form id="recommendForm">
+      <input type="number" id="budget" placeholder="budget" required />
+      <input type="number" id="bathsR" placeholder="baths" required />
+      <input type="number" id="bedroomsR" placeholder="bedrooms" required />
+      <input type="text" id="cityR" placeholder="city" required />
+      <textarea id="properties" placeholder="properties JSON array" required>
+[{"price": 450000, "baths": 2, "bedrooms": 3, "city": 1, "location": 1}, {"price": 470000, "baths": 3, "bedrooms": 3, "city": 1, "location": 2}]</textarea
+      >
+      <button type="submit">Recommend</button>
+    </form>
+
+    <script>
+      document.getElementById("predictForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+          baths: document.getElementById("baths").value,
+          bedrooms: document.getElementById("bedrooms").value,
+          area_sqft: document.getElementById("area_sqft").value,
+          city: document.getElementById("city").value,
+          location: document.getElementById("location").value,
+        };
+        const response = await fetch("http://127.0.0.1:5000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+
+        alert(`Predicted Price: ${result.predicted_price}`);
+      };
+
+      document.getElementById("recommendForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+          budget: document.getElementById("budget").value,
+          baths: document.getElementById("bathsR").value,
+          bedrooms: document.getElementById("bedroomsR").value,
+          city: document.getElementById("cityR").value,
+          properties: JSON.parse(document.getElementById("properties").value),
+        };
+        console.log(data);
+        const response = await fetch("http://127.0.0.1:5000/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        alert(
+          `Recommended Locations: ${result.recommended_locations.join(", ")}
+        `
+        );
+      };
+    </script>
+  </body>
+</html>
